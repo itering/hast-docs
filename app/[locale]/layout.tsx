@@ -6,7 +6,8 @@ import { docsOrigin } from '@/lib/origins';
 import '@/styles.css';
 import '../site.css';
 export const dynamicParams = false;
-export const metadata: Metadata = { metadataBase: new URL(docsOrigin), robots: { index: false, follow: false } };
+const production = process.env.NEXT_PUBLIC_DOCS_ENV === 'production';
+export const metadata: Metadata = { metadataBase: new URL(docsOrigin), robots: { index: production, follow: production } };
 export function generateStaticParams() { return LOCALES.map(locale => ({ locale })); }
 export default async function Layout({ children, params }: { children: ReactNode; params: Promise<{locale:string}> }) {
   const locale = await setLocaleFromParams(params);

@@ -48,6 +48,23 @@ A push to `main` runs the checks and deploys only Staging. The deployment writes
 `release.json` with the exact source commit. Staging is excluded from search
 indexing. This repository has no production deployment workflow at present.
 
+Production releases require separate operator authorization. After the checks
+pass on the exact `main` commit, export and deploy only the static documentation:
+
+```sh
+NEXT_PUBLIC_DOCS_ENV=production \
+NEXT_PUBLIC_DOCS_URL=https://docs.hast.so \
+NEXT_PUBLIC_SITE_URL=https://hast.so \
+NEXT_PUBLIC_AIP_URL=https://aip.hast.so pnpm build
+vercel link out --project hast-docs --scope itering --yes
+vercel deploy out --prod --scope itering --yes
+```
+
+The export includes its Vercel configuration. A production export enables search
+indexing and uses `https://docs.hast.so` for canonical URLs and the sitemap.
+Check `release.json`, all three languages, search, and legacy redirects after
+deployment. This procedure publishes only the `hast-docs` Vercel project.
+
 Existing `/{locale}/docs/{slug}` paths and legacy `task-api-*` paths are retained.
 The main Hast website keeps its production docs until a separate production
 cutover is approved. It can redirect Staging traffic to this repository's site.
