@@ -1,0 +1,46 @@
+Hast 帮助企业连接私有数据、内部系统和业务流程，将 AI 应用到实际工作中。团队通过前线部署工程师（Forward-Deployed Engineer，FDE）参与业务场景的定义、系统接入和上线交付，并把实践中可复用的能力沉淀到 Hast AIP。
+
+<h2 id="platform">Hast AIP：支持 FDE 交付的平台</h2>
+
+Hast AIP 是团队在 FDE 实践中沉淀的平台与工作台，为 FDE 提供平台能力和团队支持。FDE 可以在工作台中配置和调试 Agent，管理知识、Skills 和业务工具，并将 Agent 接入客户的业务系统。
+
+需要了解工作台的具体操作，可以从 [AIP 工作台指南](aip-overview) 开始。
+
+<h2 id="products">两个产品子模块</h2>
+
+Hast AIP 下包含 Hast Agent 和 Hast GTM 两个子模块。
+
+| 子模块 | 用途 | 文档入口 |
+| --- | --- | --- |
+| Hast Agent | 通过对话推进研究、内容、开发与运营任务，查看执行过程并取得回复和文件 | [Task Agent 使用指南](task-overview) |
+| Hast GTM | 围绕网站建立项目，开展分析、查看品牌曝光并生成营销内容草稿 | [GTM 使用指南](gtm-overview) |
+
+本文档中的 Task Agent 指 Hast Agent 的任务使用入口，相关操作和 API 说明集中在左侧 Task Agent 分组中。
+
+<h2 id="fde">FDE：与客户共同交付的团队</h2>
+
+FDE 是交付团队，负责与客户共同定义场景、连接企业数据和系统，完成验证并推进上线。上线后，团队继续处理问题和优化效果。FDE 使用 Hast AIP 提供的能力开展工作，不作为产品子模块。
+
+企业可以直接使用 Hast Agent 或 Hast GTM，也可以与 FDE 团队合作，将具体业务流程接入现有系统。合作方式见官网的 [FDE 介绍](https://hast.so/zh-CN/fde)。
+
+<h2 id="first-use">从哪里开始</h2>
+
+登录后先确认当前 Profile。个人身份和团队身份的资源分开显示，切换身份后看到的内容可能不同。
+
+<CardGroup cols={3}>
+  <Card title="Hast Agent" href="task-quickstart" cta="完成第一个任务" arrow>
+    通过对话完成一项工作，检查结果并下载文件。
+  </Card>
+  <Card title="Hast GTM" href="gtm-quickstart" cta="创建网站项目" arrow>
+    分析网站，准备营销内容。
+  </Card>
+  <Card title="AIP 工作台" href="aip-quickstart" cta="配置业务 Agent" arrow>
+    创建 Agent，保存配置并调试对话。
+  </Card>
+</CardGroup>
+
+<h2 id="integration">通过程序接入</h2>
+
+AIP 工作台的 Agent 详情页提供带凭证的调用地址，可以从你的服务端发送消息并接收流式回复，见 [AIP HTTP 接入](aip-api)。
+
+AIP 提供使用 API 密钥认证的公开接口。调用已保存的 Agent、读取对话或管理业务资源，从 [AIP API 入门](aip-api-quickstart) 开始。密钥的访问范围和权限决定可以调用的接口。

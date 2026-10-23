@@ -1,0 +1,54 @@
+Hast AIP is the platform and workbench developed through FDE practice. It provides reusable Agent configuration, system connections, and runtime capabilities so delivery teams can integrate customer workflows with AI without rebuilding the same foundations for each project.
+
+<h2 id="uses">Suitable delivery scenarios</h2>
+
+Use AIP to configure an Agent with a defined responsibility when work repeatedly needs enterprise documents, business rules, or existing systems. Examples include knowledge retrieval and tools for customer support, sources and analysis methods for research, or query interfaces for operations.
+
+Decide who will use the Agent, what it can read, what actions it may perform, and how results will be checked. FDEs and customers agree on enterprise deployment, system access, and launch responsibilities.
+
+<h2 id="capabilities">What the workbench provides</h2>
+
+| Need | Capability | Read more |
+| --- | --- | --- |
+| Define responsibilities and rules | System prompt, model, capabilities | [Manage Agents](aip-agents) |
+| Reuse methods and information | Skills and knowledge bases | [Skills](aip-skills), [knowledge](aip-knowledge) |
+| Connect business systems | HTTP tools and secret bindings | [Tools](aip-tools), [secrets](aip-secrets) |
+| Retain business context | Memory read and write scopes | [Memory](aip-memory) |
+| Check and deliver configurations | Debugging, import/export, HTTP calls | [Debugging](aip-debug), [HTTP integration](aip-api) |
+| Call from servers or external clients | API keys, conversation events, and MCP | [API quickstart](aip-api-quickstart), [MCP integration](mcp) |
+
+The workbench maintains configuration and integration settings. Validate business outcomes with real examples: start with a clearly scoped workflow, inspect output and tool calls, then decide whether to expand usage.
+
+<h2 id="concepts">Key concepts</h2>
+
+| Term | Purpose |
+| --- | --- |
+| Agent | A configuration you can save, debug, and invoke |
+| System prompt | Responsibilities, processing rules, and output requirements |
+| Skill | Reusable working methods and supporting files |
+| Knowledge base | Indexed URLs or files for retrieval |
+| Tool | Business API access or configured runtime capabilities |
+| Secret | A stored business credential bound to an Agent |
+| Memory | Context and preferences needed in later tasks |
+| Hook | The Agent's HTTP entry point; this name appears in APIs and configuration files |
+
+<h2 id="workflow">Configuration and delivery</h2>
+
+1. Create an Agent, describe its responsibility, and choose a model.
+2. Add sources, Skills, or business tools as needed.
+3. Save and test a complete conversation in debugging.
+4. Use the invocation URL from your server and handle replies and stop requests.
+
+Start with [your first Agent](aip-quickstart), or [import or copy](aip-config-transfer) an existing configuration.
+
+<h2 id="state">Enabled state and run state</h2>
+
+An Agent's enabled state determines whether it accepts calls. Enabled does not mean a task is running or a call has completed successfully. Inspect debug replies or invocation events for the result of each test.
+
+Saved Agents use the current configuration. Before changes, [export a copy](aip-config-transfer) and debug affected workflows afterward.
+
+<h2 id="delivery">Launching with FDEs</h2>
+
+The enterprise supplies business goals and data requirements; FDEs own the solution and delivery, while the platform team supports shared capabilities. Projects move from scenario definition and technical discovery through pilot validation into staged deployment. Operational issues and user feedback guide later improvements.
+
+See [FDE delivery](https://hast.so/en/fde) and [platform support and community](https://hast.so/en/fde/community).

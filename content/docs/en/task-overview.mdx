@@ -1,0 +1,43 @@
+Hast Agent is an AI workspace for complete tasks. These docs call its task interface Task Agent. It organizes plans, tool calls, execution, and deliverable files around a goal, especially for work with multiple steps and revisions based on results.
+
+Describe your goal and requirements. The Agent starts work and shows its progress. You can follow up, revise requirements, or download generated files.
+
+<h2 id="uses">Suitable tasks</h2>
+
+| Scenario | Work to delegate | What to check |
+| --- | --- | --- |
+| Market and competitor research | Collect sources, compare options, prepare briefs | Sources, dates, and evidence |
+| Data analysis | Organize tables, compare metrics, explain findings | Definitions, calculations, outliers |
+| Content and documents | Summarize, draft reports, revise from feedback | Completeness, audience, format |
+| Development and operations | Work with code, browsers, or recurring tasks within available permissions | Actual results and required human actions |
+
+Specify sources, scope, and output format. For example: “Compare three options using these materials, produce a pros-and-cons table, and list questions still requiring verification.”
+
+<h2 id="workspace">Continue in the same workspace</h2>
+
+Replies and files remain in the workspace. Inspect execution, request additions or revisions in the original conversation, and download final outputs. See [files](task-files).
+
+Agents can use code, web search, browsers, and connected apps. External apps require authorization; the workspace shows the available connectors. See [apps and capabilities](task-capabilities).
+
+<h2 id="continuity">Reuse context and schedule recurring work</h2>
+
+Save project context, business rules, and team preferences in memory to reduce repetition. Review and maintain that memory; add temporary requirements in the current conversation.
+
+Use [schedules](task-schedules) for daily reports or recurring summaries. Set instructions, frequency, and timezone, then check each run and refine the instructions based on output.
+
+<h2 id="workflow">Complete a task</h2>
+
+1. Start a conversation with requirements and optional files.
+2. Check progress and fill information gaps.
+3. Inspect replies and files against your requirements.
+4. Request revisions in the same conversation, or start a new one for different work.
+
+Follow the [quickstart](task-quickstart) for a document task, or use [schedules](task-schedules) for recurring work.
+
+<h2 id="api">Programmatic access</h2>
+
+Manage programmatic access in AIP; see the [AIP API quickstart](aip-api-quickstart). You can call a saved AIP Agent or submit ordinary tasks with a Profile API key. These endpoints have different conversation scopes; ordinary-task API lists do not combine all historical web conversations.
+
+<h2 id="next">Get started</h2>
+
+Choose a task with complete input and easily checked output, then follow [your first task](task-quickstart). For integration, read the [AIP API quickstart](aip-api-quickstart). See [plans and usage](billing) for account information and the [Hast Agent product page](https://hast.so/en/agent) for more scenarios.

@@ -1,0 +1,313 @@
+<h2 id="prepare">始める前に</h2>
+
+AIP で [Agent を作成して有効にします](aip-quickstart)。接続先の Slack ワークスペースに App をインストールする権限が必要です。承認が必要な場合は、ワークスペース管理者に依頼してください。AIP と Slack App の設定画面を開いておきます。
+
+Slack App ごとに設定できる Events Request URL は一つです。既存の App が別のチャネルで使われている場合は、新しい App を作成してください。STG と本番でも別々の App を使います。同じ Bot Token を別の環境に入力しても、イベントの送信先は変わりません。`Verified` は設定した URL の検証成功を示すだけなので、対象の環境とチャネルに対応しているかも確認してください。詳しくは [Slack の HTTP コールバック説明](https://docs.slack.dev/apis/events-api/using-http-request-urls/)を参照してください。
+
+<h2 id="automatic">Slack App を自動作成する</h2>
+
+AIP の「チャネル」で Slack を追加し、自動作成を選んで名前を入力します。Bot User OAuth Token や Signing Secret の手動コピーは不要です。
+
+1. [Slack Apps](https://api.slack.com/apps) で対象ワークスペースの一時的な **Configuration Access Token** を生成し、AIP の設定用認証情報欄に入力します。
+2. 作成して続行し、Slack 公式認可画面でワークスペースと権限を確認して認可します。管理者承認が必要な場合は承認を待ちます。
+3. App Manifest の **Click here to verify** を押し、AIP に戻って状態を確認します。
+4. 有効な Agent を関連付け、管理された DM またはチャネルのテストメッセージで実際の返信を確認します。
+
+同じ設定を再開し、App を重複作成しないでください。取消は一時認証情報を消去しますが、作成済み App は削除しません。接続状態だけでは送達を確認できません。API／MCP は [チャネル自動作成](aip-api-quickstart#automatic-channels) を参照してください。
+
+<h2 id="manual-setup">既存 App または手動設定</h2>
+
+既存 Bot や手動インストールには以下の手順を使います。独立したチャネルごとに別の App を使ってください。
+
+<Steps titleSize="h2">
+
+<Step title="Slack App を作成する" id="create-app" stepNumber={1}>
+
+[Slack Apps](https://api.slack.com/apps) を開き、`Create an App` をクリックします。
+
+<a href="/docs/channels/slack/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/create-app.webp" alt="Slack Apps の Create an App" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+`From a manifest` を選び、接続先のワークスペースを選択します。JSON に切り替え、以下の設定をすべて貼り付けます。アプリ情報を確認して作成を完了します。
+
+<Accordion title="Slack App Manifest（JSON 全文）">
+
+```json
+{
+  "display_information": {
+    "name": "HAST Agent",
+    "description": "Agent conversations, channel history, public search and files"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "hast-agent",
+      "always_online": false
+    },
+    "app_home": {
+      "home_tab_enabled": false,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "agent_view": {
+      "agent_description": "Ask your HAST Agent for help with messages, history and files."
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "search:read.public",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://example.com/slack/events",
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "socket_mode_enabled": false,
+    "org_deploy_enabled": false,
+    "token_rotation_enabled": false
+  }
+}
+```
+
+</Accordion>
+
+<a href="/docs/channels/slack/app-method.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/app-method.webp" alt="作成画面の From a manifest" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+画像では `AI agent` が選択されていますが、この手順では `From a manifest` を選んでください。すでに `AI agent` から作成した場合は、`App Manifest` で上記の権限とイベントがそろっているか確認します。
+</Note>
+
+アプリ名と説明は変更できます。`https://example.com/slack/events` は仮の URL です。AIP のコールバックを取得したら置き換えてください。この URL ではワークスペースのメッセージを受信できません。
+
+`Socket Mode` がオフになっていることを確認します。ダイレクトメッセージを使う場合は、`App Home` の `Messages Tab` を有効にし、App へのメッセージ送信を許可します。
+
+<Accordion title="AI agent を選択した場合">
+
+`AI agent` を選んだ場合は、次の画面で `Starter agent` を選び、アプリ名と接続先のワークスペースを指定して `Review Agent` をクリックします。上記の Manifest から作成済みの場合、この説明はスキップしてください。
+
+<a href="/docs/channels/slack/ai-agent-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/ai-agent-details.webp" alt="Starter agent、アプリ名、ワークスペースと Review Agent" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+アプリ情報と権限を確認し、`Create` をクリックします。作成後に `App Manifest` を開き、上記 JSON の権限とイベントを補ってからインストールに進みます。
+
+<a href="/docs/channels/slack/review-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/review-app.webp" alt="アプリ情報と権限の確認画面の Create" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="ワークスペースにインストールする" id="install" stepNumber={2}>
+
+`OAuth & Permissions` を開き、`Bot Token Scopes` に以下の 22 項目を追加して `Install to Workspace` をクリックします。
+
+| 用途 | 権限 |
+| --- | --- |
+| メンションと Agent | `app_mentions:read`, `assistant:write` |
+| チャンネルとメッセージ | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| ダイレクトメッセージ | `im:history`, `im:read`, `im:write` |
+| グループダイレクトメッセージ | `mpim:history`, `mpim:read`, `mpim:write` |
+| 添付ファイル | `files:read`, `files:write` |
+| 絵文字とリアクション | `emoji:read`, `reactions:read`, `reactions:write` |
+| ピン留め | `pins:read`, `pins:write` |
+| 公開検索とユーザー | `search:read.public`, `users:read` |
+
+`User Token Scopes` は空のままにします。
+
+Thinking Steps は既存の `chat:write` 権限で[ストリーミングメッセージを作成・更新](https://docs.slack.dev/reference/methods/chat.startStream/)し、完了後に[Bot 自身の一時的なステップメッセージを削除](https://docs.slack.dev/reference/methods/chat.delete/)します。追加の scope やイベント購読は不要で、上記の完全な JSON に必要な権限が含まれています。以前の App に権限が不足している場合は追加してワークスペースに再インストールし、AIP の Bot Token も更新してください。
+
+<Note>
+`Bot Token Scopes` で上記の 22 項目を確認し、`User Token Scopes` は空にします。変更後は再インストールし、ワークスペースで承認が必要な場合は申請してください。
+</Note>
+
+<a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token-scopes.webp" alt="22 項目の Bot Token Scopes と空の User Token Scopes。確認箇所を赤枠で表示" width={690} height={2080} loading="lazy" decoding="async" />
+</a>
+
+`Request to Workspace Install` と表示された場合は申請を送り、管理者の承認後にインストールを続けます。
+
+<a href="/docs/channels/slack/install-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/install-request.webp" alt="OAuth & Permissions のインストール申請" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+申請画面で必要に応じて `Reason` を入力し、`Submit Request` をクリックします。申請だけではインストールは完了しません。管理者の承認を待ってから続けてください。
+
+<a href="/docs/channels/slack/submit-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/submit-request.webp" alt="インストール申請画面の Reason と Submit Request" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+この画面の `Redirect URLs` はメッセージのコールバックではありません。手順 4 の `Event Subscriptions` で設定してください。
+
+続いてアプリのインストールページが開いた場合は、`Add to Slack` をクリックします。すでに認可画面が表示されている場合は、次の手順に進みます。
+
+<a href="/docs/channels/slack/add-to-slack.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/add-to-slack.webp" alt="アプリのインストールページの Add to Slack" width={1920} height={1048} loading="lazy" decoding="async" />
+</a>
+
+認可画面で接続先のワークスペースと権限を確認し、`Allow` をクリックします。scopes を変更した場合は、権限を反映するために再インストールが必要です。公開検索には管理者の承認が必要な場合があります。
+
+<a href="/docs/channels/slack/authorize.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/authorize.webp" alt="Slack の認可画面にある Allow" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+`OAuth & Permissions` に戻り、`xoxb-` で始まる `Bot User OAuth Token` をコピーします。`User OAuth Token` も表示されている場合、そちらは AIP に入力しないでください。
+
+<a href="/docs/channels/slack/bot-token.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token.webp" alt="認証情報をぼかした Bot User OAuth Token 欄" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="AIP でチャネルを作成する" id="connect" stepNumber={3}>
+
+同じ Slack App の `Basic Information` を開き、`App Credentials` の `Signing Secret` 横にある `Show` をクリックして値をコピーします。同じページの `Client Secret`、`Verification Token` と区別してください。
+
+<a href="/docs/channels/slack/signing-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/signing-secret.webp" alt="アプリ情報をぼかした Signing Secret 欄" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+AIP のチャネル画面から新しいチャネルを作成し、Slack を選択します。チャネル名、`Bot User OAuth Token`、`Signing Secret` を入力し、保存してコールバック設定に進みます。
+
+作成後に表示されるメッセージコールバック URL を省略せずにコピーし、画面を開いたままにします。次の手順で Slack のコールバック設定を完了してから、画像内の続行ボタンをクリックしてください。
+
+<a href="/docs/channels/slack/callback.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/callback.webp" alt="URL をぼかした AIP のコールバック設定画面" width={1920} height={1020} loading="lazy" decoding="async" />
+</a>
+
+<Warning>
+Token と Signing Secret は対応する設定欄にのみ入力し、チャットや公開文書に貼り付けないでください。画像内の認証情報とコールバックは隠してあります。自分の設定画面から値をコピーしてください。
+</Warning>
+
+</Step>
+
+<Step title="コールバックとイベントを設定する" id="events" stepNumber={4}>
+
+1. Slack App の設定に戻り、`Socket Mode` がオフであることを確認します。
+2. `Event Subscriptions` を開き、`Enable Events` をオンにします。
+3. AIP のコールバック URL 全体を `Request URL` に貼り付け、`Verified` を待ちます。
+4. `Subscribe to bot events` を開き、以下の五つのイベントを確認します。
+5. `Save Changes` をクリックします。再インストールを求められたら実行します。
+
+<Note>
+画像は設定途中の状態で、`Socket Mode is enabled` と表示されています。Socket Mode をオフにして、例の URL を AIP のコールバックに置き換えてください。`Verified` が表示され、保存が完了したことを確認します。
+</Note>
+
+<a href="/docs/channels/slack/events.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/events.webp" alt="Request URL とイベント購読の設定欄" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+| Bot event | 受信するメッセージ |
+| --- | --- |
+| `app_mention` | Bot へのメンション |
+| `message.channels` | 公開チャンネルのメッセージ |
+| `message.groups` | プライベートチャンネルのメッセージ |
+| `message.im` | ダイレクトメッセージ |
+| `message.mpim` | グループダイレクトメッセージ |
+
+Slack で Bot をテスト用チャンネルに招待します。参加後、そのチャンネルのメッセージイベントを受信し、権限に応じて履歴を読めるようになります。
+
+</Step>
+
+<Step title="Agent を選んでテストする" id="test" stepNumber={5}>
+
+AIP に戻り、プラットフォーム設定の完了を確認して次に進みます。有効な Agent を選んで保存してください。後からチャネルメニューの編集画面で Agent を変更することもできます。
+
+<a href="/docs/channels/slack/select-agent.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/select-agent.webp" alt="AIP の Agent 選択と保存欄" width={1920} height={1074} loading="lazy" decoding="async" />
+</a>
+
+Bot が参加しているチャンネルで `@Bot こんにちは。何ができますか？` と送信します。`@Bot` は実際の App へのメンションに置き換えてください。元のチャンネルまたはスレッドに返信が届いたら、続けて質問します。
+
+初期設定では、チャンネルとスレッドで質問するたびにメンションが必要です。ダイレクトメッセージでは不要です。Slack はワークスペースとチャンネルのメンバー権限を使うため、招待コードは必要ありません。
+
+添付ファイルを扱う場合は、Agent のファイル操作権限を書き込み可能なワークスペースに設定し、利用可能な機能でコマンド実行とネットワークアクセスを有効にして保存します。個人情報を含まない小さなファイルを送り、Bot にメンションして読み取りを依頼します。続いてファイルの返信を依頼し、読み取りと送信をそれぞれ確認してください。
+
+</Step>
+
+</Steps>
+
+<h2 id="reply-rules">返信のトリガーを設定する</h2>
+
+Slack の返信トリガー設定で、メンション不要のチャンネルと送信者を指定できます。チャンネルには Channel ID、送信者には Slack User ID または Bot ID を入力します。複数の場合は改行またはカンマで区切ります。
+
+Bot が参加しているチャンネルでは、メンション、チャンネルの例外、送信者の例外のいずれかに一致すると返信します。自動アラートには通知用 Bot の ID を指定できます。Bot 自身のメッセージは無視されます。
+
+Channel ID は、Slack のチャンネル名をクリックして `About` を開き、下部の `Channel ID` からコピーします。
+
+<a href="/docs/channels/slack/channel-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/channel-id.webp" alt="個人情報と ID をぼかした About の Channel ID" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+<h2 id="operation-progress">操作の進捗を表示する</h2>
+
+チャネル設定の「詳しい操作の進捗を表示」で切り替えます。設定はチャネルごとに保存され、初期状態はオンです。Thinking Steps には実際のツール操作と Agent が出力した公開の進捗メッセージを表示します。内部の reasoning は表示せず、説明を追加生成しません。最終返信が届くと、一時的なステップのメッセージを削除します。
+
+オフにすると、以後のリクエストでは最終返信と Agent が実際に生成した plan だけを残します。Token のストリーミング権限が不足している場合や Token の種類が非対応の場合は、Thinking Steps を省略して通常の返信を送ります。Token が無効な場合はチャネルの再接続が必要です。レート制限や一時的な障害は再試行し、権限不足として扱いません。
+
+<h2 id="troubleshooting">よくある問題</h2>
+
+<AccordionGroup>
+
+<Accordion title="Request URL を検証できない">
+
+Socket Mode がオフであること、URL が現在のチャネルの完全なコールバックであること、Signing Secret が同じ Slack App のものであることを確認します。URL はインターネットから HTTPS でアクセスできる必要があります。修正後に `Retry` をクリックし、`Verified` の表示を確認して保存します。
+
+</Accordion>
+
+<Accordion title="Verified なのに返信がない">
+
+Bot のチャンネル参加、五つのイベントの保存、権限変更後の再インストール、AIP で有効な Agent が選ばれていること、返信トリガーを順に確認します。まずチャンネルで Bot にメンションするか、直接メッセージを送ってください。
+
+解決しない場合は、チャネル名と送信時刻を管理者に伝えてください。添付ファイルの問題は `files:read`、`files:write` と Agent のファイル操作権限・利用可能な機能も確認します。
+
+</Accordion>
+
+<Accordion title="新しい接続後、以前のチャネルに届かない">
+
+同じ Slack App を使い回し、Events Request URL を変更していないか確認します。以前のコールバックを復元し、新しいチャネルには別の App を作成してください。
+
+</Accordion>
+
+<Accordion title="会話できるが検索や履歴の取得に失敗する">
+
+履歴を読むには、Bot が参加しているチャンネルの Channel ID を Agent に伝えます。スレッドには Thread ID も指定します。公開・プライベートのどちらも Slack の権限に従います。
+
+公開検索には `search:read.public` を使い、Bot が未参加の公開チャンネルが含まれる場合があります。プライベートチャンネル全体の検索はできません。インストール済み Token に権限と管理者の承認があるか確認してください。詳しくは [Slack の公開検索権限](https://docs.slack.dev/reference/scopes/search.read.public/)を参照してください。
+
+</Accordion>
+
+</AccordionGroup>

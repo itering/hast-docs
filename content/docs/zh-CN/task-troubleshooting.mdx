@@ -1,0 +1,39 @@
+<h2 id="questions">常见问题</h2>
+
+<AccordionGroup>
+
+<Accordion title="为什么无法开始任务" id="access">
+
+检查当前 Profile 是否正确，以及套餐是否包含 Task Agent。模型目录加载失败时先重试；模型不可用时选择目录中支持任务执行的模型。
+
+</Accordion>
+
+<Accordion title="为什么只有计划，没有生成文件" id="planning">
+
+新消息会直接进入执行，回复中的计划用于说明工作步骤。任务结束时如果只有回复文本，请明确要求 Agent 将结果保存成指定格式的文件，并查看文件列表确认结果。
+
+</Accordion>
+
+<Accordion title="页面断线后要重新提交吗" id="connection">
+
+先重新打开原对话并查看状态。任务可能仍在运行，重复发送可能产生新的工作。需要中止时使用停止操作。
+
+</Accordion>
+
+<Accordion title="为什么无法通过连接器读取内容" id="apps">
+
+打开连接器，确认应用状态和授权账户。检查你的应用账户本身是否能访问目标文件或项目。授权过期时重新连接；目录显示不可用时，需要管理员检查集成配置。
+
+</Accordion>
+
+<Accordion title="为什么找不到文件" id="missing-file">
+
+从原对话的“查看聊天中文件”进入并刷新。确认 Agent 已完成文件保存；如果它只给出了内容，继续要求保存文件。更多操作见 [文件指南](task-files)。
+
+</Accordion>
+
+</AccordionGroup>
+
+<h2 id="support">提交问题时提供什么</h2>
+
+记录产品名称、发生时间和时区、所用 Profile、会话或任务标识、界面错误，以及预期结果。不要附上 API 密钥、调用地址中的凭证或业务密钥值。

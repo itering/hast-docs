@@ -1,0 +1,45 @@
+<h2 id="statuses">查看运行状态</h2>
+
+在 `Run activity` 查看相关任务及事件。
+
+| 状态 | 如何理解 |
+| --- | --- |
+| Waiting | 等待前置工作或依赖 |
+| Queued | 已进入队列，尚未开始 |
+| Running | 正在执行 |
+| Succeeded | 任务已完成，可到对应区域检查结果 |
+| Failed | 执行失败，查看错误与事件 |
+| Skipped | 此次任务未执行，检查前置任务 |
+| Canceled | 此次任务被取消 |
+
+<h2 id="questions">常见问题</h2>
+
+<AccordionGroup>
+
+<Accordion title="初始化一直没有完成" id="setup">
+
+确认网站地址正确且可以访问，再查看最早失败的任务。后面的分析可能依赖抓取和公司资料；只重复点击后续任务不能补齐前置资料。
+
+有恢复或重新运行入口时，在处理错误后再发起。任务仍在运行时避免重复提交。
+
+</Accordion>
+
+<Accordion title="报告或 Feed 为空" id="empty">
+
+先核对当前项目，再查看对应任务状态。新建项目不代表所有内容草稿都已经生成。要获取 X 或文章内容，需要运行相应 Agent。
+
+Traffic 为空时检查 Google Analytics 账号、属性和同步任务。AI Mention 不完整时检查各模型任务，等待中的结果不能按未提及计算。
+
+</Accordion>
+
+<Accordion title="为什么 Mark sent 没有发布到 X" id="publish">
+
+`Mark sent` 只保存草稿的处理状态。发布需要在预览中选择 `Open composer`，到 X 编辑器确认发送。
+
+</Accordion>
+
+</AccordionGroup>
+
+<h2 id="help">反馈问题</h2>
+
+提供项目标识、发生时间、任务类型、运行状态和错误信息。报告内容问题时附上相关问题或草稿片段；不要提供授权令牌或完整凭证。

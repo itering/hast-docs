@@ -1,0 +1,24 @@
+A knowledge base combines several sources for an Agent. Original material, the search index, and compiled knowledge are separate. Check the current Profile and base before you make changes.
+
+<h2 id="create">Add source material</h2>
+
+1. Create a knowledge base and enter its name and description.
+2. Add a file or public URL, or link an existing source from the material library. URLs must use HTTPS and must not contain account credentials.
+3. Direct uploads require a nonempty file of no more than 10 MiB. This upload form does not accept video. To sync Google Drive, connect an account, then select the Drive source and root folder.
+4. After submission, check source processing and indexing status. An accepted request does not mean the material is searchable. If processing fails, inspect the source and error, then use the available retry action.
+
+Source processing, indexing, and knowledge compilation have separate states. If status cannot load, retry the read; do not treat missing status as an empty library or completed work.
+
+<h2 id="use">Use it in an Agent</h2>
+
+Refresh the knowledge catalog in the Agent editor, select the required base, and save. In debugging, ask one question covered by the material and another that is not. Check the answer and its references.
+
+You can enable knowledge compilation and view the Wiki and entity relationships after it completes. Compiled pages are derived results. Open their references to check the original material; a generated page does not replace source evidence.
+
+<h2 id="update">Maintain sources and results</h2>
+
+Add or remove sources in the same base. You do not need a new base for each material change. Removing a source from a base changes that base's references; the original remains in the material library.
+
+Save changes to the name and description. After source changes, check indexing and compilation status. Use the page actions to retry failed processing or rebuild the index. Clearing compiled knowledge and removing a source are separate actions; read the impact description before proceeding.
+
+Before changing or deleting a base, check the Agents that use it. If another edit causes a version conflict, reload the current content before submitting your changes.

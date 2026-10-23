@@ -1,0 +1,89 @@
+このページでは、Agent 詳細画面の完全な Hook URL を使い、保存済み設定で呼び出します。API キー認証では [AIP API クイックスタート](aip-api-quickstart)に従って単一 Agent の会話キーを作成してください。両方式で URL と認証情報が異なります。
+
+<h2 id="auth">呼び出し URL を準備</h2>
+
+<Warning>Agent 詳細画面の URL をコピーし、サーバー環境変数 `AIP_HOOK_URL` に保存します。認証情報を含む完全な URL を使用し、公開ページやフロントエンドコードには書かないでください。</Warning>
+
+Agent が有効であることを確認し、先に[デバッグ](aip-debug)で同じタスクを試します。以下の例は実際に実行します。
+
+<h2 id="first">最初のメッセージを送信</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "created",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-001",
+      "prompt": "サポート担当者が注文番号を入力して状態を照会できる、という要件を整理してください。",
+      "context": {"source": "requirements-form"}
+    }
+  }'
+```
+
+同じ会話では `session_id` を再利用します。新しいメッセージには新しい `request_id` を使い、同じメッセージの再試行では元の ID と内容を保持します。例の ID は説明用であり、アプリでは会話やメッセージごとに別の ID を生成してください。
+
+受け付け後も実行イベントを読む必要があります。送信成功はタスク完了ではありません。
+
+<h2 id="stream">応答をストリーミングで取得</h2>
+
+```bash
+curl -N --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "sse",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "after_event_id": 0
+    }
+  }'
+```
+
+応答のセッション ID を使います。最後に受信したイベント番号を保存し、切断後はその位置から再開して番号で重複排除します。
+
+<h2 id="continue">会話を継続</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-002",
+      "signal": "continue",
+      "prompt": "未確認事項を優先順位順に並べてください。"
+    }
+  }'
+```
+
+<h2 id="stop">生成を停止</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "signal": "stop"
+    }
+  }'
+```
+
+SSE を閉じるだけでは受信しか止まりません。実行を止める場合は上記の停止リクエストを送り、結果を引き続き確認します。
+
+<h2 id="fields">リクエスト項目</h2>
+
+| 項目 | 使用箇所 | 意味 |
+| --- | --- | --- |
+| `action` | 全リクエスト | `created`、`prompted`、`sse` |
+| `payload.session_id` | 全リクエスト | 同じ会話の識別子 |
+| `payload.request_id` | 新規メッセージ | 再試行の識別。新規ごとに別の値 |
+| `payload.prompt` | 初回と継続 | 入力テキスト |
+| `payload.context` | 初回の例 | 業務の背景オブジェクト |
+| `payload.signal` | `prompted` | `continue` または `stop` |
+| `payload.after_event_id` | `sse` | 指定位置の後から取得 |
+
+業務システム側でメッセージ入口、ユーザー検証、セッション対応付けを管理します。顧客ごとに異なるセッション ID を割り当ててください。

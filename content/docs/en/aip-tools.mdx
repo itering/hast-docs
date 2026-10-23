@@ -1,0 +1,41 @@
+<h2 id="choose">Choose a tool type</h2>
+
+| Configuration | Use case |
+| --- | --- |
+| Dynamic HTTP tool | Expose a business operation with a defined name, inputs, and result |
+| Event tool | Emit tool events to an existing integration and configure a response template |
+| HTTP proxy | Set allowed hosts and injected request headers |
+
+<h2 id="http">Configure a dynamic HTTP tool</h2>
+
+For order lookup, first prepare a business endpoint that accepts requests and returns JSON.
+
+1. Open business tools in the Agent editor and add an HTTP tool.
+2. Name it `lookup_order` and describe it as “Look up the current status by order number.”
+3. Enter the business service URL.
+4. Add an input schema with a required string `order_id`.
+5. Reference a bound secret in headers if authentication is required.
+6. Apply the tool configuration, then save the Agent.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "order_id": {"type": "string", "description": "Order number supplied by the customer"}
+  },
+  "required": ["order_id"],
+  "additionalProperties": false
+}
+```
+
+In debugging, ask “Check the status of order DEMO-001.” Replace the example with your test data. Check the selected tool, complete arguments, and whether its response is sufficient to answer.
+
+<h2 id="proxy">Configure an HTTP proxy</h2>
+
+Set host rules and headers for the business requirement. Reference secrets instead of pasting real tokens into prompts. Verify host scope so one system's authentication headers are not sent elsewhere.
+
+<h2 id="troubleshoot">When calls fail</h2>
+
+Inspect the debug tool error, then check the URL, input schema, headers, and secret bindings. Apply in the tool dialog only updates the draft; save the Agent afterward.
+
+Event tools require a corresponding event-processing service. A response template does not perform the actual business operation.

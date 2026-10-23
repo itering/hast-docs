@@ -1,0 +1,180 @@
+<h2 id="prepare">始める前に</h2>
+
+[有効な Agent](aip-quickstart) と WeCom 管理者アカウントを用意します。
+
+<Note>
+WeCom の WeChat カスタマーサービスを接続し、顧客が WeChat から Agent に問い合わせられるようにします。社内グループの Bot 設定ではありません。
+</Note>
+
+<Steps titleSize="h2">
+
+<Step title="WeCom アプリを用意する" id="app" stepNumber={1}>
+
+[WeCom 管理画面](https://work.weixin.qq.com/) のアプリ管理から自作アプリを作成または選択し、名前・アイコン・公開範囲を設定します。
+
+<a href="/docs/channels/wechat-kf/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-app.webp" alt="自作アプリの作成" width={1920} height={1014} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/app-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-details.webp" alt="アプリ詳細" width={1920} height={1004} loading="lazy" decoding="async" />
+</a>
+
+「企業情報」で Corp ID をコピーします。
+
+<a href="/docs/channels/wechat-kf/corp-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/corp-id.webp" alt="Corp ID の場所" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="コールバック認証情報を用意する" id="callback-values" stepNumber={2}>
+
+アプリの「メッセージ受信 → API 受信設定」で Token と EncodingAESKey を生成して控えます。URL は後で保存します。
+
+<a href="/docs/channels/wechat-kf/receive-messages.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/receive-messages.webp" alt="API 受信設定" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+| 項目 | 値 |
+| --- | --- |
+| Token | 生成した 3〜32 文字の検証文字列 |
+| EncodingAESKey | 生成した 43 文字の暗号化キー全体 |
+
+</Step>
+
+<Step title="AIP チャネルを作成する" id="connect" stepNumber={3}>
+
+AIP のチャネルで WeChat カスタマーサービスを追加し、名前、Corp ID、Token、EncodingAESKey を入力します。作成後のインストール設定でコールバック URL、ドメイン検証アドレス、信頼済み IP を確認します。
+
+<Note>
+AIP と WeCom で同じ Token と EncodingAESKey を使います。画像の値ではなく、自分で生成した値全体を入力してください。
+</Note>
+
+</Step>
+
+<Step title="ドメイン検証と信頼済み IP" id="domain" stepNumber={4}>
+
+<Accordion title="ドメイン検証を求められた場合">
+
+WeCom の `WW_verify_*.txt` を変更せずに AIP のインストール設定へアップロードします（4 KiB 以下）。公開 URL で内容を確認してから WeCom で検証します。ドメイン欄に `/webhooks/` パスは含めません。
+
+<a href="/docs/channels/wechat-kf/domain-verification.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/domain-verification.webp" alt="ドメイン検証ファイルと検証ボタン" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+AIP のインストール設定に表示される IP をすべてアプリの信頼済み IP に登録し、保存します。
+
+<Note>
+信頼済み IP は AIP サーバーの送信元アドレスです。PC の IP や DNS の解決先ではありません。
+</Note>
+
+</Step>
+
+<Step title="コールバック設定を保存する" id="callback" stepNumber={5}>
+
+API メッセージ受信設定に戻り、次の項目を入力して保存します。
+
+| 項目 | 設定 |
+| --- | --- |
+| URL | `/webhooks/wechat_kf/` を含む AIP の完全なコールバック URL |
+| Token、EncodingAESKey | AIP チャネル作成時と同じ値 |
+| 受信イベント | WeChat カスタマーサービスのメッセージとイベント |
+
+<a href="/docs/channels/wechat-kf/callback-fields.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-fields.webp" alt="コールバック項目とカスタマーサービスイベント" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+画像の URL は未完成です。ほかの選択済みイベントはこの手順の要件ではありません。上の表に従い、赤枠のカスタマーサービスイベントを確認します。
+</Note>
+
+<Accordion title="保存後の画面">
+
+<a href="/docs/channels/wechat-kf/callback-saved.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-saved.webp" alt="保存後のコールバック設定例" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="カスタマーサービスを認可する" id="authorize" stepNumber={6}>
+
+WeChat カスタマーサービスでアカウントを作成または選択し、名前とアイコンを設定します。
+
+<a href="/docs/channels/wechat-kf/create-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-service.webp" alt="サービスアカウントの作成" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+サービスアカウントの API 設定を開き、API を呼び出せるアプリの変更から先ほどのアプリを選びます。
+
+<a href="/docs/channels/wechat-kf/service-api.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/service-api.webp" alt="サービスアカウントの API 設定" width={1920} height={683} loading="lazy" decoding="async" />
+</a>
+
+企業内開発で対象サービスアカウントをアプリに関連付け、管理対象になっていることを確認します。
+
+<a href="/docs/channels/wechat-kf/bind-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/bind-app.webp" alt="認可するアプリを選択" width={1920} height={427} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/select-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/select-service.webp" alt="アプリとサービスアカウントの関連付け" width={1920} height={327} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="AIP のインストールを完了する" id="verify" stepNumber={7}>
+
+認可済みアプリの詳細で Secret の表示を選び、WeCom の案内に従ってクライアントで取得します。
+
+<a href="/docs/channels/wechat-kf/app-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-secret.webp" alt="アプリ Secret の表示" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+AIP のインストール設定に Secret を入力し、サービスアカウント一覧を取得して名前で選択します。検証を完了し、有効な Agent を割り当てます。管理可能なアカウントが 1 つの場合は自動選択されます。
+
+<Note>
+アプリの Agent ID とサービスアカウントの Open Kf ID は別の値です。組織が専用のカスタマーサービス Secret を使う場合は、その認可済み認証情報を使用します。
+</Note>
+
+</Step>
+
+<Step title="WeChat で返信を確認する" id="test" stepNumber={8}>
+
+顧客用の WeChat でサービスリンクまたは QR コードを開きます。メッセージを送って Agent の返信を確認し、画像や音声も試します。
+
+<Note>
+利用認可が有効な場合、ほかのユーザーには招待による検証が必要です。一般公開の窓口では必要に応じて無効にします。コールバック検証と利用認可は別の設定です。
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="troubleshooting">よくある問題</h2>
+
+<AccordionGroup>
+
+<Accordion title="ドメイン・コールバック検証に失敗する">
+
+検証ファイルの公開アクセスと内容を確認します。完全なコールバック URL を使い、両側の Token と EncodingAESKey を一致させます。
+
+</Accordion>
+
+<Accordion title="サービスアカウントを取得できない">
+
+Corp ID と Secret の所属企業・アプリ、カスタマーサービスの認可、必要な信頼済み IP を確認します。
+
+</Accordion>
+
+<Accordion title="メッセージは届くが返信がない">
+
+カスタマーサービスイベント、Agent の状態、利用認可、プラットフォームの返信制限を確認します。管理者にサービス名・送信時刻・エラーコードを伝えます。
+
+</Accordion>
+
+</AccordionGroup>

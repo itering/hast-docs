@@ -1,0 +1,36 @@
+<h2 id="edit">Edit configuration</h2>
+
+Open an Agent's detail page and choose edit. Form and JSON modes edit the same draft; changes take effect only after saving.
+
+| Setting | Guidance |
+| --- | --- |
+| Name and description | Describe the business responsibility so it is easy to find and select |
+| System prompt | Define inputs, processing, when to ask for more information, and output |
+| Model and reasoning effort | Choose available catalog options; supported effort varies by model |
+| Invocation state | Enable or disable external calls |
+| Sandbox permissions | Choose according to file-writing and execution needs |
+| Skills | Select the working methods needed |
+| Knowledge bases | Select indexed sources |
+| Policy | Enable capabilities such as retrieval or long-term memory |
+
+Retry if resource catalogs fail to load. Refreshing preserves the draft. Adding knowledge bases enables knowledge retrieval in the form; check other capabilities separately.
+
+If CRM or secrets are missing, use the matching “Manage in a new tab” link. Keep the Agent editor open, complete resource setup, return and refresh the CRM or secret list before selecting the new resource. Refresh reads resources without replacing the Agent name, purpose or advanced-setting draft. Closing or fully reloading the original tab can still lose unsaved content.
+
+<h2 id="save">Save and collaborate</h2>
+
+Saving updates the current configuration. There is no configuration history or rollback interface; concurrent edits use the last successful save. Export a copy before important prompt or tool changes.
+
+When leaving an unsaved editor, follow the prompt to keep editing or discard changes. After saving, verify the result in a new debug session.
+
+<h2 id="disable">Disable and delete</h2>
+
+Disable an Agent to stop accepting calls temporarily. Before deletion, confirm business services no longer use its URL and preserve any configuration or memory you need.
+
+If a service synchronizes Agent configuration on startup, the next synchronization may overwrite console edits. Agree with its maintainer where changes should be made.
+
+<h2 id="related">Related tasks</h2>
+
+- [Debug an Agent](aip-debug)
+- [Import, export, and copy](aip-config-transfer)
+- [Connect business tools](aip-tools)

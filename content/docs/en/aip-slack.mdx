@@ -1,0 +1,313 @@
+<h2 id="prepare">Before you start</h2>
+
+[Create and enable an Agent](aip-quickstart) in AIP. You need permission to install apps in the target Slack workspace. If approval is required, ask a workspace administrator to approve the installation. Keep AIP and the Slack App settings open.
+
+Each Slack App has one Events Request URL. Create a separate App if an existing one serves another channel, including separate Apps for STG and production. Entering the same Bot Token in another environment does not change where events are sent. `Verified` confirms the configured URL responded correctly; also check that it belongs to the intended environment and channel. See [Slack's HTTP callback documentation](https://docs.slack.dev/apis/events-api/using-http-request-urls/).
+
+<h2 id="automatic">Create a Slack App automatically</h2>
+
+Add Slack from AIP Channels, choose automatic creation and enter a name. This flow does not require copying a Bot User OAuth Token or Signing Secret.
+
+1. Open [Slack Apps](https://api.slack.com/apps), generate a temporary **Configuration Access Token** for the intended workspace, and enter it in AIP's configuration credential field.
+2. Create and continue. Review the workspace and permissions on Slack's official consent page, then authorize. Wait for administrator approval when required.
+3. Follow the link to App Manifest, click **Click here to verify**, and return to AIP to check status.
+4. Associate an enabled Agent, then send a controlled DM or channel message and confirm the actual reply.
+
+Continue the same setup instead of creating another App. Cancellation clears temporary credentials but does not delete an App already created. A connected state does not prove message delivery. See [automatic channel creation](aip-api-quickstart#automatic-channels) for API/MCP calls.
+
+<h2 id="manual-setup">Use an existing App or configure manually</h2>
+
+For an existing bot or manual installation, use the following steps. Each independent channel needs its own App.
+
+<Steps titleSize="h2">
+
+<Step title="Create a Slack App" id="create-app" stepNumber={1}>
+
+Open [Slack Apps](https://api.slack.com/apps) and select `Create an App`.
+
+<a href="/docs/channels/slack/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/create-app.webp" alt="Create an App in Slack Apps" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+Choose `From a manifest`, select your workspace, switch to JSON, and paste the full configuration below. Review the app details and finish creating it.
+
+<Accordion title="Slack App Manifest (complete JSON)">
+
+```json
+{
+  "display_information": {
+    "name": "HAST Agent",
+    "description": "Agent conversations, channel history, public search and files"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "hast-agent",
+      "always_online": false
+    },
+    "app_home": {
+      "home_tab_enabled": false,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "agent_view": {
+      "agent_description": "Ask your HAST Agent for help with messages, history and files."
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "search:read.public",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://example.com/slack/events",
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "socket_mode_enabled": false,
+    "org_deploy_enabled": false,
+    "token_rotation_enabled": false
+  }
+}
+```
+
+</Accordion>
+
+<a href="/docs/channels/slack/app-method.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/app-method.webp" alt="From a manifest in the creation dialog" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+The screenshot has `AI agent` selected by default. Choose `From a manifest` for this guide. If you already created an App using `AI agent`, open `App Manifest` and check that it includes the permissions and events above.
+</Note>
+
+You can change the app name and description. Replace the placeholder `https://example.com/slack/events` after obtaining the AIP callback. The placeholder does not receive your workspace messages.
+
+Confirm that `Socket Mode` is off. For direct messages, enable `Messages Tab` in `App Home` and allow users to send messages to the App.
+
+<Accordion title="Already selected AI agent?">
+
+If you chose `AI agent`, select `Starter agent`, enter an app name, choose the target workspace, and click `Review Agent`. Skip this section if you created the App from the Manifest above.
+
+<a href="/docs/channels/slack/ai-agent-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/ai-agent-details.webp" alt="Starter agent, app name, workspace, and Review Agent controls" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+Review the app details and permissions, then click `Create`. Open `App Manifest` and add the permissions and events from the complete JSON above before installing.
+
+<a href="/docs/channels/slack/review-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/review-app.webp" alt="App details and permissions review with Create" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="Install in your workspace" id="install" stepNumber={2}>
+
+Open `OAuth & Permissions`, add the 22 scopes below under `Bot Token Scopes`, then click `Install to Workspace`.
+
+| Purpose | Scopes |
+| --- | --- |
+| Mentions and Agent | `app_mentions:read`, `assistant:write` |
+| Channels and messages | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| Direct messages | `im:history`, `im:read`, `im:write` |
+| Group direct messages | `mpim:history`, `mpim:read`, `mpim:write` |
+| Files | `files:read`, `files:write` |
+| Emoji and reactions | `emoji:read`, `reactions:read`, `reactions:write` |
+| Pins | `pins:read`, `pins:write` |
+| Public search and users | `search:read.public`, `users:read` |
+
+Leave `User Token Scopes` empty.
+
+Thinking Steps uses the existing `chat:write` scope to [create and update streamed messages](https://docs.slack.dev/reference/methods/chat.startStream/) and [delete the Bot's own temporary steps message](https://docs.slack.dev/reference/methods/chat.delete/) after completion. No additional scope or event subscription is needed; the complete JSON already includes the required permissions. If an older App lacks a scope, add it, reinstall the App in the workspace, and update its Bot Token in AIP.
+
+<Note>
+Check all 22 scopes above under `Bot Token Scopes` and leave `User Token Scopes` empty. Reinstall after changing scopes; submit an approval request if required by your workspace.
+</Note>
+
+<a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token-scopes.webp" alt="All 22 Bot Token Scopes and empty User Token Scopes, with verification areas outlined in red" width={690} height={2080} loading="lazy" decoding="async" />
+</a>
+
+If you see `Request to Workspace Install`, submit a request and wait for administrator approval before continuing the installation.
+
+<a href="/docs/channels/slack/install-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/install-request.webp" alt="Installation request in OAuth & Permissions" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+In the request dialog, fill in `Reason` if needed and click `Submit Request`. Submitting a request does not complete installation. Wait for administrator approval before continuing.
+
+<a href="/docs/channels/slack/submit-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/submit-request.webp" alt="Reason and Submit Request in the installation request dialog" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+The `Redirect URLs` field here is not the message callback. Configure the message callback in `Event Subscriptions` in step 4.
+
+If the app installation page opens next, click `Add to Slack` to reach authorization. If you are already on the authorization page, continue to the next step.
+
+<a href="/docs/channels/slack/add-to-slack.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/add-to-slack.webp" alt="Add to Slack on the app installation page" width={1920} height={1048} loading="lazy" decoding="async" />
+</a>
+
+Confirm the target workspace on the authorization page, review the permissions, and select `Allow`. Reinstall the App after any scope changes so the new permissions take effect. Public search may require administrator approval.
+
+<a href="/docs/channels/slack/authorize.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/authorize.webp" alt="Allow on the Slack authorization page" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+Return to `OAuth & Permissions` and copy the `Bot User OAuth Token` beginning with `xoxb-`. If a `User OAuth Token` is also shown, do not use it in AIP.
+
+<a href="/docs/channels/slack/bot-token.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token.webp" alt="Bot User OAuth Token field with credentials blurred" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="Create the channel in AIP" id="connect" stepNumber={3}>
+
+In the same Slack App, open `Basic Information`, find `App Credentials`, and click `Show` beside `Signing Secret` to reveal and copy it. This is separate from `Client Secret` and `Verification Token` on the same page.
+
+<a href="/docs/channels/slack/signing-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/signing-secret.webp" alt="Signing Secret in Basic Information with app details blurred" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+In AIP, open Channels, select New channel, and choose Slack. Enter a channel name, `Bot User OAuth Token`, and `Signing Secret`, then save to configure the callback.
+
+Copy the complete platform message callback URL shown after creation. Keep this page open. Complete the Slack callback setup in the next step before clicking the continue button shown in the screenshot.
+
+<a href="/docs/channels/slack/callback.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/callback.webp" alt="AIP channel callback URL with the address blurred" width={1920} height={1020} loading="lazy" decoding="async" />
+</a>
+
+<Warning>
+Enter the Token and Signing Secret only in their configuration fields. Do not paste them into chat messages or public documents. Credentials and callback addresses are hidden in these screenshots; copy the values from your own settings.
+</Warning>
+
+</Step>
+
+<Step title="Verify the callback and save events" id="events" stepNumber={4}>
+
+1. Return to the Slack App settings and confirm `Socket Mode` is off.
+2. Open `Event Subscriptions` and turn on `Enable Events`.
+3. Paste the complete AIP callback into `Request URL` and wait for `Verified`.
+4. Expand `Subscribe to bot events` and check all five events below.
+5. Select `Save Changes`. Reinstall the App if Slack prompts you to do so.
+
+<Note>
+This screenshot shows an unfinished configuration with `Socket Mode is enabled`. Turn Socket Mode off and replace the example URL with your AIP channel callback. Confirm that the page shows `Verified` and saves successfully.
+</Note>
+
+<a href="/docs/channels/slack/events.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/events.webp" alt="Request URL and bot event subscriptions" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+| Bot event | Messages received |
+| --- | --- |
+| `app_mention` | Mentions of the Bot |
+| `message.channels` | Public channel messages |
+| `message.groups` | Private channel messages |
+| `message.im` | Direct messages |
+| `message.mpim` | Group direct messages |
+
+Invite the Bot to your test channel in Slack. Channel membership allows it to receive that channel's message events and read history within its permissions.
+
+</Step>
+
+<Step title="Select an Agent and test" id="test" stepNumber={5}>
+
+Return to AIP, confirm that platform setup is complete, select an enabled Agent, and save. You can later change the Agent by opening Edit channel from the channel menu.
+
+<a href="/docs/channels/slack/select-agent.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/select-agent.webp" alt="Agent selection and save controls in AIP" width={1920} height={1074} loading="lazy" decoding="async" />
+</a>
+
+In a channel the Bot has joined, send `@Bot Hello, what can you help me with?`, replacing `@Bot` with a mention of your App. Confirm that the Agent replies in the original channel or thread, then ask a follow-up question.
+
+By default, every question in a channel or thread needs a mention. Direct messages do not. Slack uses workspace and channel membership without invitation codes.
+
+For attachments, set the Agent's file access to a writable workspace and enable command execution and network access in its available capabilities. Save before testing. Send a small file without private information, mention the Bot to read it, and ask for a file attachment in return. Check both reading and delivery.
+
+</Step>
+
+</Steps>
+
+<h2 id="reply-rules">Configure reply triggers</h2>
+
+In Slack reply trigger settings, configure channels or senders that do not need a mention. Use Channel IDs for channels and Slack User IDs or Bot IDs for senders. Separate multiple IDs with newlines or commas.
+
+In channels the Bot has joined, any mention, channel exception, or sender exception can trigger a reply. For automated alerts, enter the alert Bot's ID. The Bot ignores its own messages.
+
+To find a Channel ID, click the channel name in Slack, open `About`, and copy `Channel ID` at the bottom.
+
+<a href="/docs/channels/slack/channel-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/channel-id.webp" alt="Channel ID in About with personal details and ID blurred" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+<h2 id="operation-progress">Show operation progress</h2>
+
+Turn "Show detailed operation progress" on or off in channel settings. Each channel saves its own setting, enabled by default. Thinking Steps shows actual tool operations and public progress text the Agent emits. It does not display raw reasoning or generate extra narration. The temporary steps message is deleted after the final reply is delivered.
+
+When disabled, subsequent requests retain only the final reply and any plan the Agent actually produces. If the Token lacks streaming permission or its type is unsupported, Thinking Steps is skipped and an ordinary reply is still sent. An invalid Token requires reconnecting the channel. Rate limits and temporary failures are retried, not treated as missing permissions.
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<AccordionGroup>
+
+<Accordion title="Request URL verification fails">
+
+Check that Socket Mode is off, the full callback belongs to the current channel, and the Signing Secret comes from the same Slack App. The callback must be publicly reachable over HTTPS. Correct the settings, select `Retry`, and save after `Verified` appears.
+
+</Accordion>
+
+<Accordion title="Verified, but no reply">
+
+Check channel membership, all five event subscriptions, reinstallation after scope changes, the enabled Agent assigned in AIP, and the current reply triggers. Start by mentioning the Bot in a channel or sending it a direct message.
+
+If it still does not reply, give an administrator the channel name and send time. For attachment failures, also check `files:read`, `files:write`, and the Agent's file access and capabilities.
+
+</Accordion>
+
+<Accordion title="An older channel stopped receiving messages">
+
+Check whether the same Slack App was reused and its Events Request URL replaced. Restore the old callback and create a separate App for the new channel.
+
+</Accordion>
+
+<Accordion title="Chat works, but search or history does not">
+
+For history, provide a Channel ID for a channel the Bot has joined. For thread replies, also provide the Thread ID. Slack permissions apply to both public and private channels.
+
+Public search uses `search:read.public` and may include public channels the Bot has not joined. It does not provide global private-channel search. Check that the installed Token has the scope and administrator approval. See [Slack's public search scope](https://docs.slack.dev/reference/scopes/search.read.public/).
+
+</Accordion>
+
+</AccordionGroup>

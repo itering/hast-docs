@@ -1,0 +1,180 @@
+<h2 id="prepare">开始前</h2>
+
+准备一个[已启用的 Agent](aip-quickstart)，以及企业微信管理员账号。
+
+<Note>
+本教程接入企业微信的“微信客服”，让客户在微信中与 Agent 对话，不用于企业内部群机器人。
+</Note>
+
+<Steps titleSize="h2">
+
+<Step title="准备企业微信应用" id="app" stepNumber={1}>
+
+在[企业微信管理后台](https://work.weixin.qq.com/)进入“应用管理 → 自建”，创建或选择本次接入的应用。创建时填写名称、图标和可见范围。
+
+<a href="/docs/channels/wechat-kf/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-app.webp" alt="创建自建应用" width={1920} height={1014} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/app-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-details.webp" alt="应用详情入口" width={1920} height={1004} loading="lazy" decoding="async" />
+</a>
+
+在“我的企业 → 企业信息”复制企业 ID（Corp ID）。
+
+<a href="/docs/channels/wechat-kf/corp-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/corp-id.webp" alt="企业 ID 所在位置" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="准备回调凭证" id="callback-values" stepNumber={2}>
+
+返回应用，打开“接收消息 → 设置 API 接收”。生成并保存 Token 和 EncodingAESKey，暂不提交 URL。
+
+<a href="/docs/channels/wechat-kf/receive-messages.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/receive-messages.webp" alt="设置 API 接收入口" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+| 字段 | 填写内容 |
+| --- | --- |
+| Token | 生成的 3–32 位校验字符串 |
+| EncodingAESKey | 生成的 43 位消息加密密钥，完整保留 |
+
+</Step>
+
+<Step title="在 AIP 创建渠道" id="connect" stepNumber={3}>
+
+在 AIP 的“渠道”中新增“微信客服”，填写渠道名称、Corp ID、Token 和 EncodingAESKey。创建后，在安装配置中查看回调 URL、域名验证地址及可信 IP。
+
+<Note>
+AIP 与企业微信必须使用同一组 Token 和 EncodingAESKey。截图中的值仅用于示意，请使用自己生成的完整值。
+</Note>
+
+</Step>
+
+<Step title="验证域名并添加可信 IP" id="domain" stepNumber={4}>
+
+<Accordion title="页面要求验证域名时">
+
+下载企业微信提供的 `WW_verify_*.txt` 文件，在 AIP 渠道安装配置中原样上传（不超过 4 KiB）。打开验证文件地址，确认能读取文件原文，再回企业微信点击验证。域名栏只填安装配置提供的域名，不含 `/webhooks/` 路径。
+
+<a href="/docs/channels/wechat-kf/domain-verification.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/domain-verification.webp" alt="域名验证文件与验证按钮" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+在应用的“企业可信 IP”中添加 AIP 安装配置列出的全部 IP，保存。
+
+<Note>
+可信 IP 是 AIP 服务的出口地址，不是电脑 IP 或域名解析地址。
+</Note>
+
+</Step>
+
+<Step title="保存回调配置" id="callback" stepNumber={5}>
+
+回到“API 接收消息”设置，填写以下内容并保存。
+
+| 项目 | 配置 |
+| --- | --- |
+| URL | AIP 提供的完整回调 URL，包含 `/webhooks/wechat_kf/` 路径 |
+| Token、EncodingAESKey | 创建 AIP 渠道时使用的同一组值 |
+| 接收事件 | 勾选“微信客服消息与事件” |
+
+<a href="/docs/channels/wechat-kf/callback-fields.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-fields.webp" alt="回调字段及微信客服消息与事件" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+截图中的 URL 未填写完整，其他事件也不属于本教程要求。请按上表填写，并只核对红框中的微信客服事件。
+</Note>
+
+<Accordion title="查看保存后的页面">
+
+<a href="/docs/channels/wechat-kf/callback-saved.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-saved.webp" alt="回调保存后的页面示例" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="授权微信客服账号" id="authorize" stepNumber={6}>
+
+进入“微信客服”，创建或选择客服账号，填写客服名称和头像。
+
+<a href="/docs/channels/wechat-kf/create-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-service.webp" alt="创建客服账号" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+展开客服账号的 API 设置，在“可调用接口的应用”中点击“修改”，选择刚才的应用。
+
+<a href="/docs/channels/wechat-kf/service-api.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/service-api.webp" alt="客服账号 API 设置入口" width={1920} height={683} loading="lazy" decoding="async" />
+</a>
+
+在“企业内部开发”中将客服账号关联到该应用。确认应用可管理本次接入的客服账号。
+
+<a href="/docs/channels/wechat-kf/bind-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/bind-app.webp" alt="选择可调用接口的应用" width={1920} height={427} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/select-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/select-service.webp" alt="关联应用与客服账号" width={1920} height={327} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="完成 AIP 安装" id="verify" stepNumber={7}>
+
+在已授权应用的详情中点击“查看 Secret”，按企业微信提示在客户端获取。
+
+<a href="/docs/channels/wechat-kf/app-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-secret.webp" alt="查看应用 Secret 的入口" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+回到 AIP 安装配置，填写该 Secret，获取客服账号列表并按名称选择目标账号，完成验证。只有一个可管理账号时会自动选择。随后绑定已启用的 Agent。
+
+<Note>
+Agent ID 不是客服账号的 Open Kf ID。若企业使用独立的微信客服 Secret，请使用组织授权的对应凭证。
+</Note>
+
+</Step>
+
+<Step title="用微信测试回复" id="test" stepNumber={8}>
+
+用客户微信打开客服链接或扫码，发送一条消息，确认收到 Agent 回复，再测试图片或语音。
+
+<Note>
+开启准入时，其他用户需通过邀请验证。用于公开客服时，可按需关闭渠道准入；企业微信的回调验证不等于用户准入。
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="troubleshooting">常见问题</h2>
+
+<AccordionGroup>
+
+<Accordion title="域名或回调验证失败">
+
+确认验证文件可公开访问且内容未改；回调使用完整 URL，两边 Token 和 EncodingAESKey 一致。
+
+</Accordion>
+
+<Accordion title="无法获取客服账号">
+
+核对 Corp ID、Secret 的所属企业与应用，确认应用已获客服授权，并已添加全部可信 IP。
+
+</Accordion>
+
+<Accordion title="收到消息但没有回复">
+
+检查“微信客服消息与事件”、Agent 状态、渠道准入及平台回复限制。向管理员提供客服名称、发送时间和错误码。
+
+</Accordion>
+
+</AccordionGroup>

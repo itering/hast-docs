@@ -1,0 +1,17 @@
+<h2 id="import">Import configuration</h2>
+
+Import an AIP template or compatible Hook JSON in the editor. Review the preview, confirm replacement of the current draft, then save.
+
+Import checks Skills and knowledge bases in the current Profile. Missing or unavailable resources are removed from the selection and reported in the preview. If catalogs fail to load, retry before importing.
+
+<h2 id="copy">Copy an Agent</h2>
+
+Choose “Copy as new Agent” on the detail page. Review the draft, change its name and any independently maintained settings, then create it. The new Agent has its own invocation endpoint; changing the copy does not update the original.
+
+<h2 id="export">Export and hand over</h2>
+
+Exports exclude invocation credentials, secret values, and secret bindings. Inline header values and URL query parameters are replaced by placeholders; pure secret references remain.
+
+Still review free text such as prompts, descriptions, and business paths before sharing. After importing into another Profile, reselect resources, restore secret bindings and placeholders, and debug.
+
+An export can help with manual recovery; there is no automatic configuration rollback UI.

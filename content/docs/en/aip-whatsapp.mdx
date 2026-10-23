@@ -1,0 +1,87 @@
+<h2 id="prepare">Before you start</h2>
+
+New WhatsApp channels created in the AIP console use Dualhook. Your FDE helps you connect your own Dualhook organization and WhatsApp Business account. The account holder must complete authorization.
+
+Use the existing channel if this Profile already has the account. Adding it to a knowledge base does not require another authorization. Prepare an [enabled Agent](aip-quickstart) if you need automatic replies.
+
+<Steps titleSize="h2">
+
+<Step title="Prepare account authorization" id="account" stepNumber={1}>
+
+Follow the [Dualhook account setup guide](https://dualhook.com/docs/getting-started) to prepare your organization and WhatsApp Business account. Confirm the account and number for this connection.
+
+To import history, select it during initial WhatsApp authorization and request it within 24 hours of onboarding. Available records can cover up to 180 days before onboarding. The provider determines availability; groups and all historical media are not included.
+
+</Step>
+
+<Step title="Create the channel in AIP" id="connect" stepNumber={2}>
+
+Open Channels → Add channel and select WhatsApp. Enter a name, select whether to import available history, and click Prepare channel.
+
+AIP shows a callback URL and verification token. If setup is incomplete, use Finish setup in the channel list to continue.
+
+</Step>
+
+<Step title="Configure the message callback" id="webhook" stepNumber={3}>
+
+Enter the complete AIP callback URL and verification token in the current Dualhook organization's setup, then complete account authorization. Keep both values private.
+
+Use the callback for this channel. Do not replace an existing account's callback with another account's values.
+
+</Step>
+
+<Step title="Save account details" id="identifiers" stepNumber={4}>
+
+Enter the `WABA ID` and `Phone Number ID` supplied for this Dualhook connection in AIP. These identify the account and number; they are not the phone number itself.
+
+<h3 id="credentials">Get an Outbound API key</h3>
+
+Follow the [Dualhook Runtime API guide](https://dualhook.com/docs/runtime-api) to obtain the organization's `Outbound API key`. Enter it in the matching field and click Save account details. This field uses the Dualhook outbound API credential.
+
+AIP then shows Account configured. Provider callbacks update history status. Media can arrive after the status says history messages have been received.
+
+</Step>
+
+<Step title="Associate an Agent and test" id="test" stepNumber={5}>
+
+New content syncs automatically. Knowledge sync does not require an Agent. Open View content for the channel and check for new messages. Add the source to a knowledge base when you need retrieval.
+
+For automatic replies, associate this connection in the Agent's Channels settings and save. Enable the Agent. Send a message from another WhatsApp number and confirm the reply in that conversation, then test an image or file. Configure channel associations and knowledge access separately.
+
+<Note>
+Connected status or a successful save does not prove message delivery. Give an administrator the channel name, send time, and error details. Do not send credentials.
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="app">Existing Meta connections</h2>
+
+You can maintain an existing WhatsApp channel that connects directly to Meta. Use Reauthorize on that channel. Enter the original account's `phone_number_id`, `business_account_id`, `token_secret_value`, and `app_secret_value`, save, and test messages. The token and App Secret must belong to the same Meta app, with access to the target WABA.
+
+Existing Meta connections and new Dualhook connections use different credentials. Keep the account and callback when updating an existing connection. Do not create a duplicate channel to renew credentials.
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<AccordionGroup>
+
+<Accordion title="Setup is still incomplete">
+
+Open Finish setup or Account setup in Settings. Check the current Dualhook organization's callback, WABA ID, Phone Number ID, and Outbound API key, then save account details.
+
+</Accordion>
+
+<Accordion title="Connected, but no reply">
+
+First check View content for new messages. Then check that the Agent is enabled, associated with this channel, and allowed by the channel's trigger rules. Knowledge sync does not enable automatic replies.
+
+</Accordion>
+
+<Accordion title="History is incomplete">
+
+Check whether history was requested during initial authorization and inspect the provider's progress. The import has time and content limits. Not all media is available; do not create a second source through repeated authorization.
+
+</Accordion>
+
+</AccordionGroup>

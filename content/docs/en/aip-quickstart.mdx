@@ -1,0 +1,46 @@
+This example creates a requirements assistant that separates known facts from open questions. Start with text-only conversation before adding business tools.
+
+<h2 id="prepare">Before you start</h2>
+
+Sign in to AIP and check the Profile in your avatar menu. You need access to the Agent list and the available model catalog.
+
+<Steps titleSize="h2">
+
+<Step title="Create and save" id="create" stepNumber={1}>
+
+1. Open the new Agent page from the list.
+2. Name it “Requirements assistant” and describe it as “Organize goals, constraints, and open questions.”
+3. Enter the system prompt below.
+4. Choose an available model and, when shown, a reasoning effort supported by it.
+5. Enable invocation. No business tools or secrets are needed for this example.
+6. Save and confirm that the detail page opens.
+
+```text
+Organize the requirements supplied by the user.
+Summarize the goal in one paragraph, then list known constraints and open questions.
+Preserve the original numbers, dates, and names.
+Mark missing information as “To confirm”; do not present assumptions as facts.
+Respond in English.
+```
+
+</Step>
+
+<Step title="Send a test message" id="test" stepNumber={2}>
+
+Open debugging from the detail page, select the new Agent, create a debug session, and send:
+
+```text
+We need an order lookup assistant for a customer. Support staff will enter an order number in chat.
+We want the first version this month. It should only query status, not modify orders.
+Please organize these requirements.
+```
+
+Check that the answer retains “this month” and “only query status,” and identifies missing API details as open questions. Follow up with “Sort the open questions by priority” to check conversation continuity.
+
+</Step>
+
+</Steps>
+
+<h2 id="next">Next steps</h2>
+
+Add a [Skill](aip-skills) for a repeatable workflow or a [knowledge base](aip-knowledge) for product information. When ready to integrate, create a single-Agent key using the [API quickstart](aip-api-quickstart). For the full Hook URL method, see [Webhook HTTP integration](aip-api).

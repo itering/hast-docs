@@ -1,0 +1,7 @@
+.reference { min-width: 0; }
+.operation { margin: 12px 0; border: 1px solid var(--docs-border); border-radius: 8px; overflow: hidden; }
+.operation > summary { padding: 14px; overflow-wrap: anywhere; }
+.operation > summary strong { color: var(--docs-accent); margin-right: 8px; }
+.operation > summary span { display: block; color: var(--docs-muted); margin-top: 6px; }
+.body { padding: 0 16px 16px; border-top: 1px solid var(--docs-border); }
+.schema pre { max-height: 440px; }

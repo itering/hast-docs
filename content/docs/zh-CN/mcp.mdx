@@ -1,0 +1,117 @@
+通过 MCP（Model Context Protocol），你可以让外部 Agent 客户端发现并调用 Hast AIP 的能力，例如管理 Agent、知识库、CRM、渠道和定时任务。MCP 与 Public API 共用一把密钥、同一个 Profile（业务身份）和相同权限。
+
+<h2 id="prepare">准备密钥与权限</h2>
+
+1. 在 AIP 切换到目标业务身份，打开“API 密钥”。
+2. 创建时选择“单 Agent 对话”或“Profile API key”。前者绑定一个 Agent，勾选发送消息会包含读取该 Agent 全部历史对话。后者按功能授权：查看 Agent 配置使用 `webhooks:read`，创建、修改和调用使用 `webhooks:write`；知识库使用 `knowledge-bases:read/write`，CRM 使用 `business-resources:read/write`。写入自动包含对应读取，也适用于已有的写入权限。
+3. 确认当前环境的 Backplane 服务地址。生产环境使用 `https://backend.hast.so`；开发或自部署环境请向部署管理员确认地址。
+
+已有密钥可以编辑访问范围和权限，无需更换密钥值；保存后对后续 API 和 MCP 请求生效。除写入包含对应读取外，不会自动授予新增能力。工具列表只显示这把密钥有权使用的工具；找不到工具时，先检查权限、当前业务身份并刷新工具列表。
+
+<Warning>
+
+Public API Key 是连接凭证。把真实值保存在客户端的安全凭据配置中，不要写进提示词、公开配置或代码仓库。撤销密钥会同时停止它的 API 与 MCP 访问。
+
+</Warning>
+
+<h2 id="connect">配置 MCP 客户端</h2>
+
+选择支持 Streamable HTTP 和自定义 `Authorization` 请求头的客户端，添加远程 MCP 服务。将 `BACKPLANE_URL` 替换为当前环境的服务地址，将密钥占位符替换为你的 Public API Key。
+
+```json
+{
+  "mcpServers": {
+    "hast": {
+      "url": "BACKPLANE_URL/api/public/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_PUBLIC_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+这是配置结构示例，具体字段以客户端要求为准。非本地环境使用 HTTPS；此入口采用 API Key 认证，不提供 MCP OAuth 自动发现。保存后，在客户端连接服务并刷新工具列表。
+
+<h2 id="verify">验证连接并读取指南</h2>
+
+单 Agent key 只提供 `post_agent_prompts`、`get_agent_sessions` 和 `get_agent_sessions_session_id_events`；只读 key 不提供发送工具。发送参数为 `{"body":{"prompt":"你好","request_id":"message-1"}}`，续聊时加入返回的 `body.session_id`。接受请求后，使用返回的 `session_id` 读取事件，直到事件 `run_id` 与回执 `request_id` 一致且状态为 `run.completed`、`run.failed` 或 `run.interrupted`。此 key 不提供以下管理指南和配置工具。
+
+Profile key 可以让客户端读取资源 `hast://guides/overview`。如果客户端不支持资源，可以调用 `get_guides_topic`，传入以下参数：
+
+```json
+{
+  "path": {
+    "topic": "overview"
+  }
+}
+```
+
+成功后应得到平台指南正文。接着按任务读取对应资源，了解所需权限、参数和执行顺序：
+
+| 资源 | 用途 |
+| --- | --- |
+| `hast://guides/overview` | 平台能力、身份与权限 |
+| `hast://guides/enterprise-agent` | 创建并验证企业 Agent |
+| `hast://guides/channels` | 渠道授权、安装、绑定与消息投递 |
+| `hast://guides/whatsapp` | WhatsApp Cloud API 配置 |
+| `hast://guides/knowledge-crm` | 知识库、CRM 与持久记忆 |
+| `hast://guides/connectors` | 外部账号连接和授权 |
+
+这些资源也可以通过 `get_guides_topic` 读取，只需把 `path.topic` 换成资源地址最后一段，例如 `enterprise-agent`。
+
+<h2 id="wechat-accounts">获取微信客服账号</h2>
+
+先读取 `hast://guides/channels` 完成微信客服草稿和企业微信配置，再使用带 `channels:write` 的 Profile key 调用 `post_channels_connection_id_wechat_kf_accounts`：
+
+```json
+{
+  "path": {"connection_id":"OWNED_CONNECTION_ID"},
+  "body": {"corp_secret":"<APPLICATION_SECRET>"}
+}
+```
+
+真实应用 Secret 只通过客户端安全工具参数传入，不要写入提示词、日志或回执。结果为 `status` 和 `body.accounts`，每项包含 `name`、`open_kfid`、`manage_privilege`。按名称选择有管理权限的账号后，调用 `patch_channels_connection_id_wechat_kf`，保留相同 `path`，在 `body` 传入 `corp_secret` 和选中的 `open_kfid`。获取列表不会保存凭据或绑定账号；单 Agent 对话 key 无法调用这些工具。详细响应与错误见 [API 参考](aip-api-reference#wechat-accounts)。
+
+<h2 id="use">让 Agent 开始工作</h2>
+
+完成客户端配置后，可以发送以下提示词。把业务目标、已有资料和允许执行的操作补充到最后一行。
+
+```text
+请使用已连接的 Hast AIP MCP，先读取 hast://guides/overview，
+再根据我的需求读取对应指南，并发现当前密钥可用的工具和资源。
+不要显示任何凭证。创建 Agent 前先核对可选模型、已有 Skills、知识库和已连接账号。
+执行异步任务后继续读取状态和事件，直到得到最终结果。
+如需第三方账号授权，请告诉我具体步骤；未完成的授权或投递要明确说明。
+
+我的需求：列出当前业务身份下已有的 Agent，并说明各自用途，暂不修改配置。
+```
+
+需要创建企业 Agent 时，可使用客户端提供的 `build_enterprise_agent` 提示词，并在 `requirements` 中填写业务需求。它返回操作指导，实际创建和修改仍由后续工具调用执行。
+
+常见交付流程是先发现资源，再准备 Skill、机密和知识库，保存 Agent 配置，完成渠道或外部账号授权，最后调用 Agent 并读取会话事件。验收时检查实际回复、知识引用和业务操作结果；如需渠道投递，还要在原渠道确认收到消息。
+
+<h2 id="results">理解结果与限制</h2>
+
+工具参数按 `path`、`query`、`body` 分组，请遵循每个工具的输入结构。结果包含 `status` 和 `body`；HTTP 失败会设置 MCP `isError`。
+
+- `202` 表示请求已接收。长任务需要继续按游标读取事件和状态，直到终态。
+- 工作区与知识库文件上传使用 `upload.filename`、`upload.data_base64` 和可选的 `form`，解码后最多 10 MiB。CRM 附件使用 JSON `body.data_base64`，受 MCP 传输大小限制。
+- MCP 请求与响应各有 1 GiB 的大小上限。较大的下载使用对应 Public API；二进制结果包含 `content_type` 和 `data_base64`。
+- 写入超时或结果不确定时，先读取当前状态再决定是否重试，避免重复创建资源或执行操作。
+
+
+自动创建 Slack App／Telegram Bot、查询 Agent 运行记录、修改邮箱名称和渠道进度设置均有 MCP 工具，操作顺序见 [API 管理接入](aip-api-quickstart#automatic-channels)。发布后重新获取工具列表；单 Agent 对话 key 不会获得这些管理工具。失败回执还包含脱敏的 `code`、`request_id`、`retryable` 和 `next_step`，请展示可执行的下一步，写入结果不确定时先回读。
+
+<h2 id="troubleshoot">连接或调用失败时</h2>
+
+| 现象 | 检查方式 |
+| --- | --- |
+| 认证失败 | 确认地址所属环境、Bearer 请求头，以及密钥是否有效或已被撤销。 |
+| 工具缺失或操作被拒绝 | 核对对应读写权限和资源所属业务身份，更新客户端使用的密钥后重新发现工具。 |
+| 浏览器连接被拒绝 | 浏览器发送的 `Origin` 必须与 MCP 端点主机匹配；跨域网页不能直接连接此入口。 |
+| 客户端要求 OAuth 登录 | 改用支持自定义 Bearer 请求头的远程 MCP 配置。 |
+| 参数错误 | 按工具声明分别填写 `path`、`query` 和 `body`，不要把它们平铺在顶层。 |
+| 已接受但没有最终结果 | 继续读取事件和状态；第三方授权、索引或消息投递可能仍未完成。 |
+
+若希望从自己的服务直接调用已保存的 Agent，可继续阅读 [HTTP 接入](aip-api)。

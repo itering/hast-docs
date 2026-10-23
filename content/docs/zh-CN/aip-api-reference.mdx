@@ -1,0 +1,29 @@
+import { TaskAgentApiReference } from "../../../src/components/docs/task-agent-api-reference";
+
+<h2 id="openapi">OpenAPI JSON</h2>
+
+AIP Public API 使用工作台中创建的 API 密钥。单 Agent 对话 key 调用 `/agent/*`，使用已保存的 Agent 配置；Profile API key 按权限访问当前业务身份的资源。开始调用前请阅读 [API 入门](aip-api-quickstart)，会话结果处理见 [会话事件与 SSE](aip-api-events)。
+
+下方接口定义来自 Backplane OpenAPI 快照，按资源分组展示参数、请求体和响应结构。
+
+<TaskAgentApiReference />
+
+<h2 id="wechat-accounts">获取微信客服账号</h2>
+
+创建微信客服渠道草稿并完成企业微信授权后，使用带 `channels:write` 的 Profile API key 调用 `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts`。写入权限包含读取；单 Agent 对话 key 无法使用此接口。
+
+请求体（Secret 占位符只通过客户端安全参数替换，不要写入提示词或日志）：
+
+```json
+{"corp_secret":"<APPLICATION_SECRET>"}
+```
+
+成功返回 `200`：
+
+```json
+{"accounts":[{"open_kfid":"wk-example","name":"Customer support","manage_privilege":true}]}
+```
+
+按名称选择 `manage_privilege: true` 的账号。只有一个可管理账号时可以预选，多个时由用户选择；空列表也是有效结果。获取列表不会保存 Secret 或修改绑定。确认后向 `PATCH /api/public/v1/channels/{connection_id}/wechat-kf` 提交同一个 `corp_secret` 和选中的 `open_kfid`，后端会再次校验管理权限。
+
+`400/422 wechat_credentials_invalid`：检查应用 Secret 和企业 ID；`422 wechat_permission_denied`：授权应用调用客服 API；`422 wechat_ip_not_allowed`：配置可信出口 IP；`422/502 wechat_accounts_unavailable`：稍后重试。`401/403` 检查 API key 和权限，`404` 检查渠道归属，`409` 检查渠道账号初始化。

@@ -1,0 +1,9 @@
+allowBuilds:
+  # Retain the build permission already used by the Hast source repository.
+  sharp: true
+  esbuild: true
+overrides:
+  # Fixed build dependencies for the public static export.
+  postcss: "~8.5.23"
+  sharp: "~0.35.5"
+  katex: "~0.18.11"

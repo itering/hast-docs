@@ -1,0 +1,341 @@
+<h2 id="prepare">开始前</h2>
+
+准备一个[已启用的 Agent](aip-quickstart)，以及 Slack 工作区的 App 安装权限。
+
+<Note>
+每个渠道请使用独立的 Slack App，避免覆盖已有渠道的[消息回调](https://docs.slack.dev/apis/events-api/using-http-request-urls/)。STG 与生产也应使用不同 App：同一个 App 只有一个 Events Request URL，将同一 Bot Token 填入另一个环境不会改变消息去向。`Verified` 只表示当前 URL 验证成功，还需核对它属于目标环境和渠道。
+</Note>
+
+<h2 id="automatic">自动创建 Slack App</h2>
+
+在 AIP「渠道」中添加 Slack，选择自动创建并填写名称。此方式不需要手动复制 Bot User OAuth Token 或 Signing Secret。
+
+1. 打开 [Slack Apps 后台](https://api.slack.com/apps)，为目标工作区生成临时 **Configuration Access Token**，填入 AIP 的配置凭据字段。
+2. 创建并继续，在 Slack 官方授权页核对工作区和权限后授权；如需管理员批准，等待批准后继续。
+3. 按页面提示进入 App Manifest，点击 **Click here to verify**，再回到 AIP 检查状态。
+4. 渠道就绪后关联已启用的 Agent；在私信或已加入的频道中发送测试消息，确认收到实际回复。
+
+保留同一次配置继续操作。取消会清除临时凭据，但不会删除已创建的 Slack App。连接成功不代表消息已经送达。API／MCP 调用见 [自动创建渠道](aip-api-quickstart#automatic-channels)。
+
+<h2 id="manual-setup">使用已有 App 或手动配置</h2>
+
+已有 Bot 或需要手动安装时，按下面步骤配置。每条独立渠道使用独立 App。
+
+<Steps titleSize="h2">
+
+<Step title="创建 Slack App" id="create-app" stepNumber={1}>
+
+打开 [Slack Apps 后台](https://api.slack.com/apps)，点击 `Create an App`。
+
+<a href="/docs/channels/slack/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/create-app.webp" alt="Slack Apps 后台的 Create an App 入口" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+选择 `From a manifest` 和目标工作区，切换到 JSON，粘贴以下配置并完成创建。
+
+<Accordion title="Slack App Manifest（完整 JSON）">
+
+```json
+{
+  "display_information": {
+    "name": "HAST Agent",
+    "description": "Agent conversations, channel history, public search and files"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "hast-agent",
+      "always_online": false
+    },
+    "app_home": {
+      "home_tab_enabled": false,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "agent_view": {
+      "agent_description": "Ask your HAST Agent for help with messages, history and files."
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "search:read.public",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://example.com/slack/events",
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "socket_mode_enabled": false,
+    "org_deploy_enabled": false,
+    "token_rotation_enabled": false
+  }
+}
+```
+
+</Accordion>
+
+<a href="/docs/channels/slack/app-method.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/app-method.webp" alt="创建窗口中的 From a manifest 入口" width={1920} height={1015} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+截图默认选中了 `AI agent`，请改选红框中的 `From a manifest`。
+</Note>
+
+<Note>
+应用名称和描述可自行修改。`https://example.com/slack/events` 是占位地址，第 4 步需替换为 AIP 回调地址。
+</Note>
+
+如需私聊，在 `App Home` 开启 `Messages Tab`，允许用户向 App 发送消息。
+
+<Accordion title="已选择 AI agent？查看对应创建流程">
+
+选择 `Starter agent`，填写应用名称和工作区，点击 `Review Agent`。
+
+<a href="/docs/channels/slack/ai-agent-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/ai-agent-details.webp" alt="AI agent 创建页中的 Starter agent、名称、工作区和 Review Agent" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+点击 `Create`。创建后在 `App Manifest` 中按上方 JSON 补齐权限与事件。
+
+<a href="/docs/channels/slack/review-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/review-app.webp" alt="应用信息与权限确认页的 Create 按钮" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="安装到工作区" id="install" stepNumber={2}>
+
+进入 `OAuth & Permissions`，在 `Bot Token Scopes` 中添加下表的 22 项权限，再点击 `Install to Workspace`。
+
+| 用途 | 权限 |
+| --- | --- |
+| 提及与 Agent | `app_mentions:read`, `assistant:write` |
+| 频道与消息 | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| 私聊 | `im:history`, `im:read`, `im:write` |
+| 多人私聊 | `mpim:history`, `mpim:read`, `mpim:write` |
+| 附件 | `files:read`, `files:write` |
+| 表情与回应 | `emoji:read`, `reactions:read`, `reactions:write` |
+| 置顶 | `pins:read`, `pins:write` |
+| 公开搜索与用户 | `search:read.public`, `users:read` |
+
+`User Token Scopes` 留空。
+
+Thinking Steps 使用上述已有的 `chat:write` 权限来[创建和更新流式消息](https://docs.slack.dev/reference/methods/chat.startStream/)，完成后用同一权限[删除 Bot 自己的临时步骤消息](https://docs.slack.dev/reference/methods/chat.delete/)。无需新增 scope 或事件订阅；完整 JSON 已包含所需权限。旧 App 若缺少权限，补齐后重新安装到工作区，并在 AIP 更新该 App 的 Bot Token。
+
+<Note>
+在 `Bot Token Scopes` 中核对上表 22 项权限，`User Token Scopes` 留空。修改后需重新安装；若工作区要求审批，先提交申请。
+</Note>
+
+<a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token-scopes.webp" alt="Bot Token Scopes 完整的 22 项权限与空的 User Token Scopes，核查区域已用红框标出" width={690} height={2080} loading="lazy" decoding="async" />
+</a>
+
+如果显示 `Request to Workspace Install`，点击申请安装。
+
+<a href="/docs/channels/slack/install-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/install-request.webp" alt="OAuth & Permissions 中的安装申请入口" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+按需填写 `Reason`，点击 `Submit Request`，等待管理员批准。
+
+<a href="/docs/channels/slack/submit-request.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/submit-request.webp" alt="安装申请窗口中的 Reason 和 Submit Request" width={1920} height={1119} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+消息回调在第 4 步的 `Event Subscriptions` 中配置，无需填写此处的 `Redirect URLs`。
+</Note>
+
+在应用安装页点击 `Add to Slack`；已进入授权页则跳过。
+
+<a href="/docs/channels/slack/add-to-slack.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/add-to-slack.webp" alt="应用安装页的 Add to Slack 按钮" width={1920} height={1048} loading="lazy" decoding="async" />
+</a>
+
+确认工作区和权限，点击 `Allow`。
+
+<Note>
+修改权限后需重新安装 App 才能生效。公开搜索可能需要管理员审批。
+</Note>
+
+<a href="/docs/channels/slack/authorize.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/authorize.webp" alt="Slack 工作区授权页面的 Allow 按钮" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+返回 `OAuth & Permissions`，复制 `Bot User OAuth Token`（以 `xoxb-` 开头）。
+
+<a href="/docs/channels/slack/bot-token.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/bot-token.webp" alt="OAuth Tokens 中的 Bot User OAuth Token 字段，凭证已模糊" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="在 AIP 创建渠道" id="connect" stepNumber={3}>
+
+打开同一 App 的 `Basic Information` → `App Credentials`，点击 `Signing Secret` 旁的 `Show` 并复制。
+
+<a href="/docs/channels/slack/signing-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/signing-secret.webp" alt="Basic Information 中的 Signing Secret 字段，应用信息已模糊" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+在 AIP 打开“渠道” → “新建渠道”，选择 Slack。填写渠道名称、`Bot User OAuth Token` 和 `Signing Secret`，点击“保存并配置回调”。
+
+复制“平台消息回调地址”，进入下一步配置 Slack。
+
+<a href="/docs/channels/slack/callback.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/callback.webp" alt="AIP 显示当前渠道的平台消息回调地址，地址已模糊" width={1920} height={1020} loading="lazy" decoding="async" />
+</a>
+
+<Warning>
+请使用自己 App 的凭证，勿将 Token 或 Signing Secret 发到聊天或公开文档中。
+</Warning>
+
+</Step>
+
+<Step title="验证回调并保存事件" id="events" stepNumber={4}>
+
+1. 返回 Slack App 后台，确认 `Socket Mode` 已关闭。
+2. 打开 `Event Subscriptions`，开启 `Enable Events`。
+3. 将 AIP 的完整回调地址粘贴到 `Request URL`，等待显示 `Verified`。
+4. 展开 `Subscribe to bot events`，确认包含下表中的五个事件。
+5. 点击 `Save Changes`。如果 Slack 提示重新安装，按提示完成安装。
+
+<Note>
+截图为配置中的状态。完成后应关闭 Socket Mode，且 `Request URL` 显示 `Verified`。
+</Note>
+
+<a href="/docs/channels/slack/events.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/events.webp" alt="Event Subscriptions 中的 Request URL 和事件订阅入口" width={1920} height={986} loading="lazy" decoding="async" />
+</a>
+
+| Bot event | 接收的消息 |
+| --- | --- |
+| `app_mention` | 提及 Bot 的消息 |
+| `message.channels` | 公开频道消息 |
+| `message.groups` | 私有频道消息 |
+| `message.im` | 私聊消息 |
+| `message.mpim` | 多人私聊消息 |
+
+将 Bot 邀请到测试频道，才能接收消息和读取该频道历史。
+
+</Step>
+
+<Step title="选择 Agent 并测试" id="test" stepNumber={5}>
+
+回到 AIP，点击“我已完成平台配置，继续”，选择已启用的 Agent 并保存。
+
+<a href="/docs/channels/slack/select-agent.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/select-agent.webp" alt="AIP 编辑渠道窗口中的 Agent 选择和保存入口" width={1920} height={1074} loading="lazy" decoding="async" />
+</a>
+
+在测试频道 @你的 Bot，发送“你好”，确认收到回复。
+
+<Note>
+频道和 Thread 中每次提问都需 @Bot；私聊可直接发送消息。
+</Note>
+
+<Accordion title="需要收发附件？">
+
+在 Agent 编辑页设置并保存：
+
+- “文件操作权限”：可写工作区。
+- “可用能力”：开启“执行命令”和“访问网络”。
+
+发送一个测试文件，@Bot 请求读取，再让它返回文件，确认收发正常。
+
+</Accordion>
+
+</Step>
+
+</Steps>
+
+<h2 id="reply-rules">设置回复触发规则</h2>
+
+在“Slack 回复触发规则”中设置免 @ 回复：
+
+| 设置 | 填写内容 |
+| --- | --- |
+| 无需 @智能体的频道 | Channel ID |
+| 无需 @智能体的发送者 | Slack User ID 或 Bot ID |
+
+多个 ID 用换行或逗号分隔。
+
+Bot 加入频道后，@Bot 或匹配任一免 @ 规则即可触发回复。自动告警可填写告警机器人的 ID；Bot 会忽略自己的消息。
+
+查找 Channel ID：点击 Slack 频道名称 → `About`，复制底部的 `Channel ID`。
+
+<a href="/docs/channels/slack/channel-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/slack/channel-id.webp" alt="Slack 频道 About 页面底部的 Channel ID，个人信息与 ID 已模糊" width={1920} height={1067} loading="lazy" decoding="async" />
+</a>
+
+<h2 id="operation-progress">显示操作进度</h2>
+
+在渠道设置中开启或关闭“显示详细操作进度”，每个渠道独立保存，默认开启。开启后，Thinking Steps 显示真实工具操作和 Agent 实际输出的公开进展文字；不展示原始 reasoning，也不会额外生成进展说明。最终回复送达后，临时步骤消息会删除。
+
+关闭后，后续请求只保留最终回复，以及 Agent 实际产生的 plan。若当前 Token 缺少流式权限或 Token 类型不支持，系统跳过 Thinking Steps，继续发送普通回复。Token 失效需重新连接渠道；限流和临时故障会重试，不能当作缺少权限处理。
+
+<h2 id="troubleshooting">常见问题</h2>
+
+<AccordionGroup>
+
+<Accordion title="Request URL 无法验证">
+
+确认 Socket Mode 已关闭，回调 URL 完整且属于当前渠道，Signing Secret 来自同一个 Slack App。回调必须能从公网通过 HTTPS 访问。修正后在 Slack 点击 `Retry`，等待 `Verified` 后保存。
+
+</Accordion>
+
+<Accordion title="已经 Verified，仍没有回复">
+
+依次检查 Bot 是否加入频道、五类事件是否保存、修改权限后是否重新安装、AIP 是否关联已启用的 Agent，以及消息是否满足回复触发规则。测试时先在频道中 @Bot，或直接私聊。
+
+仍无回复时，将渠道名称和发送时间交给管理员排查。附件失败时，还需核对 `files:read`、`files:write` 以及 Agent 的文件操作和可用能力设置。
+
+</Accordion>
+
+<Accordion title="新渠道接入后，旧渠道收不到消息">
+
+检查是否复用了同一个 Slack App 并替换了 Events Request URL。将旧 App 恢复为原回调，为新渠道创建独立 App。
+
+</Accordion>
+
+<Accordion title="能聊天，但无法搜索或读取历史">
+
+读取历史时，向 Agent 提供 Bot 已加入频道的 Channel ID；读取线程时再提供 Thread ID。公共和私有频道都受 Slack 授权限制。
+
+公开搜索使用 `search:read.public`，可能包含 Bot 尚未加入的公开频道，不提供私有频道全局搜索。检查当前安装的 Token 是否已获得该权限和管理员批准。范围说明见 [Slack 公开搜索权限](https://docs.slack.dev/reference/scopes/search.read.public/)。
+
+</Accordion>
+
+</AccordionGroup>

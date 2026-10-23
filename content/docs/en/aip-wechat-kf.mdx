@@ -1,0 +1,180 @@
+<h2 id="prepare">Before you start</h2>
+
+Prepare an [enabled Agent](aip-quickstart) and a WeCom administrator account.
+
+<Note>
+This guide connects WeChat Customer Service through WeCom so customers can message your Agent in WeChat. It does not configure an internal group bot.
+</Note>
+
+<Steps titleSize="h2">
+
+<Step title="Prepare the WeCom app" id="app" stepNumber={1}>
+
+In the [WeCom admin console](https://work.weixin.qq.com/), open App Management → Custom Apps and create or select the app for this integration. Set its name, icon, and visibility.
+
+<a href="/docs/channels/wechat-kf/create-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-app.webp" alt="Create a custom app" width={1920} height={1014} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/app-details.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-details.webp" alt="App details" width={1920} height={1004} loading="lazy" decoding="async" />
+</a>
+
+Copy the Corp ID from My Enterprise → Enterprise Information.
+
+<a href="/docs/channels/wechat-kf/corp-id.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/corp-id.webp" alt="Corp ID location" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="Prepare callback credentials" id="callback-values" stepNumber={2}>
+
+Return to the app and open Receive Messages → Set API Reception. Generate and save the Token and EncodingAESKey. Leave URL submission for later.
+
+<a href="/docs/channels/wechat-kf/receive-messages.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/receive-messages.webp" alt="API reception settings" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+| Field | Value |
+| --- | --- |
+| Token | Generated verification string, 3–32 characters |
+| EncodingAESKey | Complete generated 43-character encryption key |
+
+</Step>
+
+<Step title="Create the AIP channel" id="connect" stepNumber={3}>
+
+Add a WeChat Customer Service channel in AIP. Enter its name, Corp ID, Token, and EncodingAESKey. After creation, open the installation settings for the callback URL, domain verification address, and trusted IPs.
+
+<Note>
+Use the same Token and EncodingAESKey in AIP and WeCom. Use your own complete values; the screenshots are examples.
+</Note>
+
+</Step>
+
+<Step title="Verify the domain and trusted IPs" id="domain" stepNumber={4}>
+
+<Accordion title="If domain verification is required">
+
+Download the `WW_verify_*.txt` file from WeCom and upload it unchanged in AIP’s channel installation settings (up to 4 KiB). Open its public URL and check the original content, then verify in WeCom. Enter only the supplied domain in the domain field, without the `/webhooks/` path.
+
+<a href="/docs/channels/wechat-kf/domain-verification.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/domain-verification.webp" alt="Domain verification file and button" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+Add every IP listed in AIP’s installation settings to the app’s trusted IP list and save.
+
+<Note>
+Trusted IPs are AIP’s outbound server addresses, not your computer’s IP or the domain’s DNS address.
+</Note>
+
+</Step>
+
+<Step title="Save callback settings" id="callback" stepNumber={5}>
+
+Return to API message reception, complete these fields, and save.
+
+| Field | Setting |
+| --- | --- |
+| URL | Complete AIP callback URL, including `/webhooks/wechat_kf/` |
+| Token, EncodingAESKey | Same values used to create the AIP channel |
+| Events | Enable WeChat Customer Service messages and events |
+
+<a href="/docs/channels/wechat-kf/callback-fields.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-fields.webp" alt="Callback fields and customer service events" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+<Note>
+The screenshot URL is incomplete and other selected events are not required by this guide. Follow the table and check the highlighted customer service event.
+</Note>
+
+<Accordion title="View the saved settings">
+
+<a href="/docs/channels/wechat-kf/callback-saved.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/callback-saved.webp" alt="Example of saved callback settings" width={1920} height={989} loading="lazy" decoding="async" />
+</a>
+
+</Accordion>
+
+</Step>
+
+<Step title="Authorize customer service accounts" id="authorize" stepNumber={6}>
+
+Open WeChat Customer Service and create or select a service account with its name and avatar.
+
+<a href="/docs/channels/wechat-kf/create-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/create-service.webp" alt="Create a service account" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+Expand the account’s API settings. Edit Apps Allowed to Call APIs and select the app created earlier.
+
+<a href="/docs/channels/wechat-kf/service-api.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/service-api.webp" alt="Service account API settings" width={1920} height={683} loading="lazy" decoding="async" />
+</a>
+
+In Internal Development, associate the service account with that app and confirm the app can manage it.
+
+<a href="/docs/channels/wechat-kf/bind-app.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/bind-app.webp" alt="Choose the authorized app" width={1920} height={427} loading="lazy" decoding="async" />
+</a>
+
+<a href="/docs/channels/wechat-kf/select-service.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/select-service.webp" alt="Associate the app and service account" width={1920} height={327} loading="lazy" decoding="async" />
+</a>
+
+</Step>
+
+<Step title="Finish installation in AIP" id="verify" stepNumber={7}>
+
+In the authorized app’s details, select View Secret and follow WeCom’s instructions to retrieve it in the client.
+
+<a href="/docs/channels/wechat-kf/app-secret.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
+  <img src="/docs/channels/wechat-kf/app-secret.webp" alt="View the app Secret" width={1920} height={1038} loading="lazy" decoding="async" />
+</a>
+
+Return to AIP’s installation settings, enter the Secret, fetch the service account list, and select the target by name. Complete verification and bind an enabled Agent. A single manageable account is selected automatically.
+
+<Note>
+The app’s Agent ID is not the service account’s Open Kf ID. If your organization uses a dedicated customer service Secret, use its authorized credential.
+</Note>
+
+</Step>
+
+<Step title="Test replies in WeChat" id="test" stepNumber={8}>
+
+Use a customer’s WeChat account to open the service link or scan its QR code. Send a message and confirm the Agent’s reply, then test an image or voice message.
+
+<Note>
+With admission enabled, other users need invitation verification. For public customer support, disable channel admission if appropriate. Callback verification and user admission are separate settings.
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<AccordionGroup>
+
+<Accordion title="Domain or callback verification fails">
+
+Check that the verification file is publicly accessible and unchanged. Use the complete callback URL and matching Token and EncodingAESKey on both sides.
+
+</Accordion>
+
+<Accordion title="Cannot load service accounts">
+
+Check the enterprise and app associated with the Corp ID and Secret, customer service authorization, and all required trusted IPs.
+
+</Accordion>
+
+<Accordion title="Messages arrive without replies">
+
+Check customer service events, Agent status, channel admission, and platform reply restrictions. Give an administrator the service name, send time, and error code.
+
+</Accordion>
+
+</AccordionGroup>

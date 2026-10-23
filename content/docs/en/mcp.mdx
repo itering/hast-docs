@@ -1,0 +1,113 @@
+MCP (Model Context Protocol) lets external Agent clients discover and use Hast AIP capabilities, including Agents, knowledge bases, CRM, channels, and schedules. MCP and the Public API share the same key, Profile (business identity), and permissions.
+
+<h2 id="prepare">Prepare a key and permissions</h2>
+
+1. Switch to the target Profile in AIP and open API keys.
+2. Choose Single Agent conversation or Profile API key. A single-Agent key binds to one Agent; sending messages includes reading all of that Agent's conversation history. Profile keys select capabilities: Agent configuration uses `webhooks:read`; creating, editing, and invoking uses `webhooks:write`. Knowledge uses `knowledge-bases:read/write`; CRM uses `business-resources:read/write`. Write includes the corresponding read permission, including on existing keys.
+3. Confirm the Backplane URL for your environment. Production uses `https://backend.hast.so`; ask your deployment administrator for development or self-hosted addresses.
+
+Edit an existing key's access range and permissions without changing its value. Changes apply to subsequent API and MCP requests. Apart from write implying read, new capabilities are not granted automatically. Discovery only shows authorized tools; check permissions and Profile, then refresh the tool list if a tool is missing.
+
+<Warning>Store the real key in the client's secure credential configuration, never in prompts, public configuration, or repositories. Revoking the key stops both its API and MCP access.</Warning>
+
+<h2 id="connect">Configure an MCP client</h2>
+
+Choose a client supporting Streamable HTTP and custom `Authorization` headers. Add a remote server, replace `BACKPLANE_URL` with your environment's address, and replace the key placeholder.
+
+```json
+{
+  "mcpServers": {
+    "hast": {
+      "url": "BACKPLANE_URL/api/public/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_PUBLIC_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+This is a configuration example; adapt its fields to your client. Use HTTPS outside local development. The endpoint uses API-key authentication, not MCP OAuth discovery. Save, connect, and refresh the tool list.
+
+<h2 id="verify">Verify and read guides</h2>
+
+Single-Agent keys expose `post_agent_prompts`, `get_agent_sessions`, and `get_agent_sessions_session_id_events`; read-only keys omit the send tool. Send `{"body":{"prompt":"Hello","request_id":"message-1"}}`, adding the returned session ID as `body.session_id` to continue. Poll events for that session until `run_id` matches the receipt's `request_id` and the event is `run.completed`, `run.failed`, or `run.interrupted`. These keys do not expose the following management guides or configuration tools.
+
+For a Profile key, read `hast://guides/overview`. If the client cannot read resources, call `get_guides_topic` with:
+
+```json
+{
+  "path": {
+    "topic": "overview"
+  }
+}
+```
+
+A successful response contains the platform guide. Read task-specific guides for permissions, parameters, and execution order:
+
+| Resource | Purpose |
+| --- | --- |
+| `hast://guides/overview` | Platform capabilities, identity, permissions |
+| `hast://guides/enterprise-agent` | Create and verify an enterprise Agent |
+| `hast://guides/channels` | Authorization, installation, binding, delivery |
+| `hast://guides/whatsapp` | WhatsApp Cloud API setup |
+| `hast://guides/knowledge-crm` | Knowledge bases, CRM and durable memories |
+| `hast://guides/connectors` | External accounts and authorization |
+
+For `get_guides_topic`, use the final segment as `path.topic`, such as `enterprise-agent`.
+
+<h2 id="wechat-accounts">Discover WeChat customer service accounts</h2>
+
+Read `hast://guides/channels` to create the WeChat draft and finish WeCom configuration, then call `post_channels_connection_id_wechat_kf_accounts` using a Profile key with `channels:write`:
+
+```json
+{
+  "path": {"connection_id":"OWNED_CONNECTION_ID"},
+  "body": {"corp_secret":"<APPLICATION_SECRET>"}
+}
+```
+
+Pass the real application Secret only through protected client tool arguments, never prompts, logs or receipts. Results contain `status` and `body.accounts`, with `name`, `open_kfid` and `manage_privilege` for each account. Select an account with management permission by name, then call `patch_channels_connection_id_wechat_kf` with the same `path` and a `body` containing `corp_secret` and the selected `open_kfid`. Discovery does not save credentials or bind an account. Single-Agent conversation keys cannot call these tools. See the [API reference](aip-api-reference#wechat-accounts) for responses and errors.
+
+<h2 id="use">Start working with your Agent</h2>
+
+After connecting the client, send the prompt below. Replace the final line with your goal, available material, and permitted actions.
+
+```text
+Use the connected Hast AIP MCP. Read hast://guides/overview first,
+then the relevant guides and discover tools and resources available to this key.
+Never display credentials. Before creating an Agent, check available models, Skills, knowledge bases, and connected accounts.
+For asynchronous work, keep reading state and events until the final outcome.
+Tell me what to do if third-party authorization is needed. Clearly report unfinished authorization or delivery.
+
+My request: List existing Agents in the current Profile and explain their purposes. Do not change configurations yet.
+```
+
+For enterprise setup, select the `build_enterprise_agent` prompt in a client that supports it and pass your requirements in `requirements`. It returns guidance; later tool calls perform actual changes.
+
+A typical workflow discovers resources, prepares Skills, secrets, and knowledge, saves Agent configuration, completes channel or account authorization, and invokes the Agent while reading session events. Verify actual replies, knowledge references, and business results. For channel delivery, check receipt in the original channel too.
+
+<h2 id="results">Results and limits</h2>
+
+Arguments use `path`, `query`, and `body`; follow each tool's input schema. Results contain `status` and `body`, with MCP `isError` for HTTP failures.
+
+- `202` means accepted. Continue reading event pages and state until a terminal result.
+- Workspace and knowledge-base uploads use `upload.filename`, `upload.data_base64`, and optional `form`; decoded files must not exceed 10 MiB. CRM attachments use JSON `body.data_base64` under the MCP transfer limit.
+- MCP requests and responses each have a 1 GiB limit. Use the corresponding Public API for larger downloads. Binary results contain `content_type` and `data_base64`.
+- After an uncertain write or timeout, read back state before retrying to avoid duplicate resources or actions.
+
+
+MCP tools support automatic Slack App/Telegram Bot creation, Agent run history, email names and channel progress settings. Follow the [API management workflow](aip-api-quickstart#automatic-channels). Refresh tool discovery after releases; single-Agent conversation keys do not gain management tools. Failure receipts also provide safe `code`, `request_id`, `retryable` and `next_step` fields. Show the next action and read back uncertain writes before retrying.
+
+<h2 id="troubleshoot">Connection and call failures</h2>
+
+| Symptom | What to check |
+| --- | --- |
+| Authentication failure | Environment, Bearer header, key validity and revocation |
+| Missing tool or denied operation | Read/write permissions and resource Profile; rediscover tools after updating the client key |
+| Browser connection denied | Browser `Origin` must match the MCP endpoint host; cross-origin pages cannot connect directly |
+| Client requests OAuth login | Use remote MCP configuration supporting a custom Bearer header |
+| Invalid arguments | Group `path`, `query`, and `body` as declared rather than flattening them |
+| Accepted but unfinished | Keep reading state and events; authorization, indexing, or delivery may still be pending |
+
+For direct server invocation of saved Agents, see [HTTP integration](aip-api).

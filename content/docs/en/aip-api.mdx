@@ -1,0 +1,89 @@
+This page calls the full Hook URL from an Agent's details page using its saved configuration. For API key authentication, create a single-Agent conversation key using the [AIP API quickstart](aip-api-quickstart). The two methods use different URLs and credentials.
+
+<h2 id="auth">Prepare the invocation URL</h2>
+
+<Warning>Copy the URL from the Agent detail page and store it in the server environment variable `AIP_HOOK_URL`. It contains credentials; use the full URL and never put it in a public page or frontend code.</Warning>
+
+Ensure the Agent is enabled and test the same task in [debugging](aip-debug) first. These examples perform real execution.
+
+<h2 id="first">Send the first message</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "created",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-001",
+      "prompt": "Organize this requirement: support staff can enter an order number to check its status.",
+      "context": {"source": "requirements-form"}
+    }
+  }'
+```
+
+Reuse `session_id` within a conversation. Use a new `request_id` for each new message; for a retry, retain the original identifier and request content. These identifiers are examples; generate distinct identifiers for separate conversations and messages in your application.
+
+After acceptance, read execution events. Successful submission does not mean the task is complete.
+
+<h2 id="stream">Receive streamed replies</h2>
+
+```bash
+curl -N --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "sse",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "after_event_id": 0
+    }
+  }'
+```
+
+Use the session identifier from the response. Save the last received event sequence, resume from it after disconnection, and deduplicate by sequence.
+
+<h2 id="continue">Continue the conversation</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-002",
+      "signal": "continue",
+      "prompt": "Sort the open questions by priority."
+    }
+  }'
+```
+
+<h2 id="stop">Stop generation</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "signal": "stop"
+    }
+  }'
+```
+
+Closing SSE only stops event reception. To stop execution, send the stop request above and continue observing the outcome.
+
+<h2 id="fields">Request fields</h2>
+
+| Field | Used in | Meaning |
+| --- | --- | --- |
+| `action` | All requests | `created`, `prompted`, or `sse` |
+| `payload.session_id` | All requests | Identifies one conversation |
+| `payload.request_id` | New messages | Retry identification; new value per new message |
+| `payload.prompt` | First and continued messages | Input text |
+| `payload.context` | First-message example | Business context object |
+| `payload.signal` | `prompted` | `continue` or `stop` |
+| `payload.after_event_id` | `sse` | Read after the specified event position |
+
+Your service owns its message entry point, user validation, and session mapping. Assign distinct session identifiers to different customers.

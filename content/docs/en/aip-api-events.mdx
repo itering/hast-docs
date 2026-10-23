@@ -1,0 +1,81 @@
+import { TaskAgentEventSchemas } from "../../../src/components/docs/task-agent-api-reference";
+
+AIP conversation events use HAST Event v2. Single-Agent conversations use JSON polling; ordinary tasks submitted with a Profile API key also support SSE. Follow the [API quickstart](aip-api-quickstart) to create the appropriate key.
+
+<h2 id="agent">Read single-Agent conversation events</h2>
+
+Use a key bound to the target Agent with `agent:conversations:read` (already included in `agent:invoke`):
+
+```bash
+export SESSION_ID='<SESSION_ID_FROM_RESPONSE>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  -H "Authorization: Bearer $HAST_API_KEY"
+```
+
+Use the response's `next_after` as `after` on the next request. Keep paging while `has_more` is `true`, even if `events` is empty; otherwise wait before polling again. This endpoint returns complete user and Agent messages and run status, without tool traces.
+
+Match the receipt's `request_id` to the event's `run_id` and wait for `run.completed`, `run.failed`, or `run.interrupted`. A `message.completed` event only ends one message. A single-Agent key can read all of its bound Agent's historical conversations, but cannot use the ordinary-task SSE route below.
+
+<h2 id="sse">Connect to the stream</h2>
+
+This flow requires a Profile API key with `prompts:write` and `sessions:read`. Submit an ordinary task to `/prompts`, set `SESSION_ID` to the returned `session_id`, then connect to SSE. This task does not use a saved Agent configuration; to call that Agent, use the single-Agent endpoints above or [Webhook HTTP integration](aip-api).
+
+```bash
+export HAST_API_KEY='<YOUR_PROFILE_API_KEY>'
+curl --fail-with-body "$HAST_API_BASE/prompts" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data '{"request_id":"task-001","prompt":"What is 2 + 2?"}'
+export SESSION_ID='<SESSION_ID_FROM_PROMPT_RESPONSE>'
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream?after=0" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream'
+```
+
+Reading requires `sessions:read`. The response is `text/event-stream` and also sends `: keep-alive` comments between events.
+
+<h2 id="frames">SSE frame format</h2>
+
+```text
+id: 42
+event: message.completed
+data: {"schema_version":2,"event_id":"evt_123",...}
+```
+
+The abbreviated `data` illustrates framing; actual data is a complete JSON event. Blank lines separate frames.
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Persisted sequence for resuming |
+| `event` | Event type, matching envelope `type` |
+| `data` | HAST Event v2 JSON envelope |
+
+<h2 id="reconnect">Resume and replay</h2>
+
+Save the processed persisted sequence. Reconnect with `after` or the `Last-Event-ID` header. Do not use `event_id` as the sequence.
+
+```bash
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream' \
+  -H 'Last-Event-ID: 42'
+```
+
+<Note>Persisted events can be replayed; ephemeral deltas cannot. Deduplicate by persisted sequence and restore the UI using complete message events rather than text deltas alone. Ignore keep-alive comments and tolerate future event types.</Note>
+
+<h2 id="poll">Read events as JSON</h2>
+
+For ordinary tasks, a Profile API key can also call `GET /sessions/{id}/events` with `after` and `limit`. Single-Agent keys use `/agent/sessions/{session_id}/events` as shown above. See the [API reference](aip-api-reference#sessions) for parameters.
+
+<h2 id="envelope">Event v2 and event types</h2>
+
+The envelope contains version, event ID, source, engine, task identity, type, and data. `sequence` is a positive integer for persisted events and `null` for ephemeral ones; `replayable` indicates replay support.
+
+`type` determines the structure of `data`. Messages, tools, plans, and runs carry different fields. A completed message does not complete a run; use `run.completed`, `run.failed`, or `run.interrupted` to determine the outcome.
+
+The schemas below come directly from the same OpenAPI JSON. Expand them for fields, required constraints, and examples. References to `api.TaskAgentEventDoc` point to the shared envelope; the other fields describe type-specific data.
+
+<TaskAgentEventSchemas locale="en" />

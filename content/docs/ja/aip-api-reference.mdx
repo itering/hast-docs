@@ -1,0 +1,29 @@
+import { TaskAgentApiReference } from "../../../src/components/docs/task-agent-api-reference";
+
+<h2 id="openapi">OpenAPI JSON</h2>
+
+AIP Public API はワークベンチで作成したキーを使用します。単一 Agent の会話キーは保存済み設定で `/agent/*` を呼び出し、Profile API key は権限に応じて現在の業務 ID のリソースにアクセスします。まず [API クイックスタート](aip-api-quickstart)を読み、結果の処理は[会話イベントと SSE](aip-api-events)を参照してください。
+
+以下の定義は Backplane OpenAPI スナップショットに基づき、引数、本文、応答をリソース別に表示します。
+
+<TaskAgentApiReference locale="ja" />
+
+<h2 id="wechat-accounts">WeChat カスタマーサービスのアカウントを取得</h2>
+
+WeChat チャネルの下書きを作成し、WeCom 側の認可を完了した後、`channels:write` を持つ Profile API key で `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts` を呼び出します。書き込み権限は読み取りを含みます。単一 Agent の会話キーでは利用できません。
+
+リクエスト本文（Secret のプレースホルダーはクライアントの保護された引数で置き換え、プロンプトやログには記載しないでください）：
+
+```json
+{"corp_secret":"<APPLICATION_SECRET>"}
+```
+
+成功時の応答（`200`）：
+
+```json
+{"accounts":[{"open_kfid":"wk-example","name":"Customer support","manage_privilege":true}]}
+```
+
+`manage_privilege: true` のアカウントを名前で選択します。管理可能なアカウントが 1 つなら事前選択でき、複数ならユーザーが選びます。空の一覧も有効です。一覧取得では Secret の保存や紐付けの変更は行いません。確定時に同じ `corp_secret` と選択した `open_kfid` を `PATCH /api/public/v1/channels/{connection_id}/wechat-kf` に送信します。サーバーは管理権限を再確認します。
+
+`400/422 wechat_credentials_invalid` はアプリの Secret と企業 ID を確認します。`422 wechat_permission_denied` はアプリにカスタマーサービス API の利用を許可し、`422 wechat_ip_not_allowed` は信頼する送信元 IP を設定します。`422/502 wechat_accounts_unavailable` は再試行してください。`401/403` は API key と権限、`404` はチャネルの所有権、`409` はチャネルアカウントの初期化を確認します。

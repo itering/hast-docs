@@ -1,0 +1,13 @@
+<h2 id="questions">Common questions</h2>
+
+<AccordionGroup>
+<Accordion title="Why can’t I start a task?" id="access">Check the current Profile and whether its plan includes Task Agent. Retry a failed model catalog load; if a model is unavailable, choose one that supports task execution.</Accordion>
+<Accordion title="Why is there a plan but no file?" id="planning">New messages start execution directly. A plan in the reply describes the work steps. If the finished task only contains reply text, ask for a file in the required format and check the file list.</Accordion>
+<Accordion title="Should I resubmit after a disconnection?" id="connection">Reopen the original conversation and check status first. It may still be running; resubmitting can start more work. Use Stop if you want to interrupt it.</Accordion>
+<Accordion title="Why can’t an Agent read a connected app?" id="apps">Check connector state and the authorized account. Verify that the account itself can access the target file or project. Reconnect expired authorization; if the catalog says Unavailable, ask the administrator to inspect integration configuration.</Accordion>
+<Accordion title="Where is my file?" id="missing-file">Open files from the original conversation and refresh. Verify that the Agent saved the file; if it only returned content, ask it to save a file. See the [file guide](task-files).</Accordion>
+</AccordionGroup>
+
+<h2 id="support">What to include in a report</h2>
+
+Record the product, time and timezone, Profile, session or task identifier, UI error, and expected result. Do not include API keys, credentials embedded in invocation URLs, or business secret values.

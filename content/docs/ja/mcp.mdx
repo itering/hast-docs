@@ -1,0 +1,113 @@
+MCP（Model Context Protocol）では外部 Agent クライアントが Hast AIP の Agent、ナレッジベース、CRM、チャネル、スケジュールなどを検出して呼び出せます。Public API と同じキー、Profile（業務上の利用主体）、権限を使います。
+
+<h2 id="prepare">キーと権限を準備</h2>
+
+1. AIP で対象 Profile に切り替え、API キーを開きます。
+2. 単一 Agent 会話キーまたは Profile API key を選びます。単一 Agent キーは一つの Agent に紐づき、メッセージ送信にはその Agent の全会話履歴の読み取りを含みます。Profile キーでは機能ごとに選択します。Agent 設定の閲覧は `webhooks:read`、作成・編集・呼び出しは `webhooks:write`、ナレッジは `knowledge-bases:read/write`、CRM と顧客コミュニケーションナレッジは `business-resources:read/write` です。書き込みには対応する読み取りが含まれ、既存キーにも適用されます。
+3. 現在の環境の Backplane URL を確認します。本番環境は `https://backend.hast.so` です。開発環境やセルフホスト環境のアドレスはデプロイ管理者に確認してください。
+
+既存キーのアクセス範囲と権限はキーの値を変えずに編集でき、保存後の API・MCP リクエストに適用されます。書き込みに対応する読み取り以外の新しい権限は自動追加されません。一覧には許可されたツールのみ表示されるため、見つからない場合は権限と Profile を確認して一覧を更新します。
+
+<Warning>実際のキーはクライアントの安全な認証設定に保存し、プロンプト、公開設定、リポジトリに書かないでください。キーを失効させると API と MCP の両方のアクセスが停止します。</Warning>
+
+<h2 id="connect">MCP クライアントを設定</h2>
+
+Streamable HTTP とカスタム `Authorization` ヘッダーに対応したクライアントで、リモートサーバーを追加します。`BACKPLANE_URL` を環境のアドレスにし、キーのプレースホルダーを置き換えます。
+
+```json
+{
+  "mcpServers": {
+    "hast": {
+      "url": "BACKPLANE_URL/api/public/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_PUBLIC_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+これは構造の例です。項目名はクライアントの仕様に合わせます。ローカル開発以外は HTTPS を使います。API キー認証であり、MCP OAuth の自動検出は提供しません。保存して接続し、ツール一覧を更新します。
+
+<h2 id="verify">接続とガイドを確認</h2>
+
+単一 Agent キーのツールは `post_agent_prompts`、`get_agent_sessions`、`get_agent_sessions_session_id_events` のみです。読み取り専用キーには送信ツールがありません。`{"body":{"prompt":"こんにちは","request_id":"message-1"}}` を送信し、継続時は返された会話 ID を `body.session_id` に指定します。会話のイベントを取得し、`run_id` が応答の `request_id` と一致する `run.completed`、`run.failed`、`run.interrupted` を確認します。このキーには以下の管理ガイドや設定ツールはありません。
+
+Profile キーでは `hast://guides/overview` を読み取ります。リソース非対応のクライアントでは `get_guides_topic` に次を渡します。
+
+```json
+{
+  "path": {
+    "topic": "overview"
+  }
+}
+```
+
+成功するとプラットフォームガイドの本文が返ります。目的に応じて権限、引数、手順を確認してください。
+
+| リソース | 用途 |
+| --- | --- |
+| `hast://guides/overview` | 機能、利用主体、権限 |
+| `hast://guides/enterprise-agent` | 企業 Agent の作成と検証 |
+| `hast://guides/channels` | 認証、インストール、バインド、配信 |
+| `hast://guides/whatsapp` | WhatsApp Cloud API の設定 |
+| `hast://guides/knowledge-crm` | ナレッジ、顧客コミュニケーション、CRM |
+| `hast://guides/connectors` | 外部アカウントと認証 |
+
+`get_guides_topic` では最後の部分を `path.topic` に指定します。例は `enterprise-agent` です。
+
+<h2 id="wechat-accounts">WeChat カスタマーサービスのアカウントを取得</h2>
+
+`hast://guides/channels` を読み、WeChat の下書きと WeCom の設定を完了してから、`channels:write` を持つ Profile key で `post_channels_connection_id_wechat_kf_accounts` を呼び出します：
+
+```json
+{
+  "path": {"connection_id":"OWNED_CONNECTION_ID"},
+  "body": {"corp_secret":"<APPLICATION_SECRET>"}
+}
+```
+
+実際のアプリ Secret は保護されたツール引数でのみ渡し、プロンプト、ログ、完了報告には記載しないでください。結果の `status` と `body.accounts` を確認します。各項目は `name`、`open_kfid`、`manage_privilege` を含みます。管理権限のあるアカウントを名前で選び、同じ `path` と、`corp_secret` および選択した `open_kfid` を含む `body` で `patch_channels_connection_id_wechat_kf` を呼び出します。一覧取得では認証情報の保存や紐付けは行いません。単一 Agent の会話キーでは利用できません。応答とエラーは [API リファレンス](aip-api-reference#wechat-accounts) を参照してください。
+
+<h2 id="use">Agent に作業を依頼</h2>
+
+接続後、次のプロンプトを使えます。最後の行に目標、資料、許可する操作を指定してください。
+
+```text
+接続済みの Hast AIP MCP を使い、最初に hast://guides/overview を読んでください。
+次に目的に合うガイドを読み、このキーで使えるツールとリソースを確認してください。
+認証情報は表示しないでください。Agent 作成前にモデル、Skills、ナレッジ、接続済みアカウントを確認してください。
+非同期処理では状態とイベントを最終結果まで読み取ってください。
+外部サービスの認証が必要なら手順を伝え、未完了の認証や配信を明示してください。
+
+依頼：現在の Profile の Agent と用途を一覧にしてください。まだ設定は変更しないでください。
+```
+
+企業 Agent の作成には、対応クライアントの `build_enterprise_agent` プロンプトで `requirements` に要件を渡せます。これは手順を返し、実際の変更は後続のツール呼び出しが行います。
+
+一般的にはリソース確認、Skills・シークレット・ナレッジの準備、Agent 保存、チャネルや外部アカウントの認証、呼び出しとイベント取得の順に進めます。実際の回答、資料参照、業務結果を検証し、配信が必要なら元のチャネルで受信も確認します。
+
+<h2 id="results">結果と制限</h2>
+
+引数は `path`、`query`、`body` に分け、各ツールのスキーマに従います。結果は `status` と `body` を含み、HTTP 失敗時は MCP `isError` が設定されます。
+
+- `202` は受け付けです。イベントと状態を終端まで読み取ります。
+- ワークスペースとナレッジベースのアップロードは `upload.filename`、`upload.data_base64`、任意の `form` を使い、デコード後は 10 MiB 以下です。CRM 添付は JSON の `body.data_base64` を使い、MCP 転送上限が適用されます。
+- MCP のリクエストと応答はそれぞれ 1 GiB が上限です。大きなダウンロードは対応する Public API を使います。バイナリ結果は `content_type` と `data_base64` を含みます。
+- 書き込みがタイムアウトしたり結果が不明なら、再試行前に状態を読み取り、重複作成や重複操作を避けます。
+
+
+Slack App／Telegram Bot 自動作成、Agent 実行履歴、メール名とチャネル進捗設定には MCP ツールがあります。[API 管理手順](aip-api-quickstart#automatic-channels) に従ってください。リリース後はツール一覧を再取得します。単一 Agent 会話キーに管理ツールは追加されません。失敗応答には機密情報を除いた `code`、`request_id`、`retryable`、`next_step` も含まれます。次の操作を表示し、不確実な書き込みは再試行前に結果を参照してください。
+
+<h2 id="troubleshoot">接続・呼び出しの失敗</h2>
+
+| 症状 | 確認事項 |
+| --- | --- |
+| 認証失敗 | 環境、Bearer ヘッダー、キーの有効性・失効 |
+| ツールがない、操作拒否 | 読み書き権限と所属 Profile。キー変更後に再検出 |
+| ブラウザ接続拒否 | `Origin` がエンドポイントのホストと一致する必要があり、別オリジンからは直接接続できない |
+| OAuth ログインを要求 | カスタム Bearer ヘッダー対応の設定を使用 |
+| 引数エラー | `path`、`query`、`body` を平坦化せず定義どおりに指定 |
+| 受け付けたが未完了 | イベントと状態を継続確認。認証、索引化、配信が待機中の可能性 |
+
+保存済み Agent をサーバーから直接呼ぶ場合は [HTTP 接続](aip-api)を参照してください。

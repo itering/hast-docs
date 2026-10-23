@@ -1,0 +1,113 @@
+import { ApiKeyLink } from "../../../src/components/docs/task-agent-api-reference";
+
+サーバーから AIP の保存済み Agent を呼び出し、会話の結果を取得します。API キーは AIP ワークベンチで管理し、REST と [MCP](mcp) は同じキーと権限を使用します。詳細は [API リファレンス](aip-api-reference)を参照してください。
+
+<h2 id="prepare">URL とキーを準備</h2>
+
+1. AIP で対象の Profile（業務上の ID）に切り替えます。[Agent を作成してテスト](aip-quickstart)し、設定を保存して有効にします。
+2. <ApiKeyLink locale="ja" />でキーを作成し、アクセス範囲に単一 Agent の会話を選び、呼び出す Agent を指定します。
+3. メッセージ送信（`agent:invoke`）を有効にします。会話の読み取り（`agent:conversations:read`）も含まれ、他の連携で作成されたものを含む、その Agent の全会話履歴を取得できます。
+4. 作成直後に完全なキーをコピーします。後から完全な値を再表示することはできません。
+
+サーバーの端末に環境変数を設定します。以下は本番 URL です。開発環境やセルフホストでは、その環境のバックエンド URL を使用してください。
+
+```bash
+export HAST_API_BASE='https://backend.hast.so/api/public/v1'
+export HAST_API_KEY='<YOUR_SINGLE_AGENT_KEY>'
+```
+
+<Warning>各呼び出しで `Authorization: Bearer` にキーを設定します。サーバーだけに保存し、ブラウザコードや公開リポジトリには含めないでください。キーを失効させると API と MCP の両方からアクセスできなくなります。</Warning>
+
+<h2 id="send">最初のタスクを送信</h2>
+
+```bash
+curl --fail-with-body --request POST \
+  --url "$HAST_API_BASE/agent/prompts" \
+  --header "Authorization: Bearer $HAST_API_KEY" \
+  --header 'Content-Type: application/json' \
+  --data '{"request_id":"message-001","prompt":"あなたの役割と、支援できる作業を説明してください。"}'
+```
+
+キーに紐付いた Agent と保存済み設定を使用します。`session_id` を省略すると会話を作成し、返された `session_id` を指定すると続行します。新しいメッセージごとに新しい `request_id` を使い、同じメッセージの再試行では ID と内容を維持します。
+
+HTTP `202` は受け付け完了を示します。応答の `session_id` と `request_id` を保存し、イベントから今回の実行結果を確認します。
+
+<h2 id="read">実行過程を取得</h2>
+
+```bash
+export SESSION_ID='<SESSION_ID_FROM_RESPONSE>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  --header "Authorization: Bearer $HAST_API_KEY"
+```
+
+応答には `events`、`next_after`、`has_more` が含まれます。次のリクエストでは `next_after` を `after` に指定します。`has_more` が `true` なら、表示対象イベントが空でも次のページを取得します。新しいイベントがなければ、間隔を空けて再度問い合わせます。
+
+この API はユーザーのメッセージ、Agent の返信、実行状態を返します。`run_id` が受付応答の `request_id` と一致する `run.completed`、`run.failed`、`run.interrupted` で今回の終了を判断します。`message.completed` は 1 メッセージの完了です。詳細は[会話イベントと SSE](aip-api-events#agent)を参照してください。
+
+単一 Agent の会話では JSON ポーリングを使用し、SSE パスはありません。`GET /agent/sessions` でその Agent の会話履歴を探し、各会話のイベントを取得できます。
+
+<h2 id="profile">Profile API key を使う</h2>
+
+現在の業務 ID に属するリソースへ機能別にアクセスするには、<ApiKeyLink locale="ja" />で Profile API key を作成し、必要な権限を選びます。
+
+| 用途 | 権限とエンドポイント |
+| --- | --- |
+| 保存済み Agent 設定の取得 | `webhooks:read`、`GET /webhooks` |
+| 特定の Agent の呼び出し | `webhooks:write`、`POST /webhooks/{hook_id}/invoke` |
+| ナレッジベース、チャネル、CRM、スケジュールの管理 | 対応するリソース権限。[API リファレンス](aip-api-reference)を参照 |
+| 通常タスクの送信とイベント取得 | `prompts:write` と `sessions:read`、`POST /prompts` と `/sessions/{id}/events` |
+
+書き込み権限には対応する読み取り権限が含まれます。Profile key の `/prompts` は通常タスクのセッションを作成し、保存済み AIP Agent の設定を自動では適用しません。設定済み Agent を呼び出す場合は `/webhooks/{hook_id}/invoke` または上記の単一 Agent の手順を使います。
+
+通常タスクの SSE は `/sessions/{id}/events/stream` で受信できます。[SSE 接続](aip-api-events#sse)を参照してください。Profile key と単一 Agent のキーではアクセス範囲が異なり、`/agent/*` と通常タスクのパスを相互に置き換えることはできません。
+
+<h2 id="automatic-channels">API／MCP でチャネルを自動作成する</h2>
+
+`channels:write` を持つ Profile API key を使います。参照には `channels:read` が必要です。単一 Agent の会話キーではチャネルを管理できません。以下は `$HAST_API_BASE` からの相対パスです。
+
+| 操作 | REST API | MCP ツール |
+| --- | --- | --- |
+| 設定の作成・再開 | `POST /channels/automatic` | `post_channels_automatic` |
+| 進捗の参照 | `GET /channels/automatic/{setup_id}` | `get_channels_automatic_setup_id` |
+| 認可 URL の取得 | `POST /channels/automatic/{setup_id}/authorize` | `post_channels_automatic_setup_id_authorize` |
+| 検証済みチャネルの登録 | `POST /channels/automatic/{setup_id}/complete` | `post_channels_automatic_setup_id_complete` |
+| 未完了設定の取消 | `DELETE /channels/automatic/{setup_id}` | `delete_channels_automatic_setup_id` |
+
+作成リクエスト例です。新規設定ごとに新しい UUID を発行し、同じ設定の再試行では UUID、プラットフォーム、名前を維持します。
+
+```json
+{"provider":"slack","name":"Customer Support","request_key":"7d4ee264-3665-4d51-9363-b43bb302a790"}
+```
+
+`provider` は `slack` または `telegram`。名前の上限はそれぞれ 35、64 文字です。応答の `id` が後続の `setup_id` です。MCP の作成引数は `body` に包み、後続呼び出しでは `path.setup_id` に返された ID を指定します。
+
+1. `authorize` を呼び出します。Slack は一時的な `configuration_token`（Slack Configuration Access Token）を安全なクライアント保管先から渡します。チャット、ログ、リポジトリには記載しません。Telegram の本文は `{}` です。MCP 認可は `path` と `body` を指定します。
+2. 権限を持つ本人が返された `url` を開きます。Slack の認可後、`awaiting_verification` なら `verification_url` で **Click here to verify** を押します。Telegram では **START**、**Create my bot** の順に進み、名前とユーザー名を確認します。API／MCP は本人の認可を代行しません。
+3. 同じ設定を照会し、`status=complete` になったら `complete` を呼び出して `connection.id` を保存します。初回登録は 201、繰り返しは同じ接続と 200 を返します。Agent との関連付けは自動では行いません。
+4. Agent の既存チャネルを読み、必要な関連付けを残した完全な `connection_ids` を `PUT /webhooks/{hook_id}/channels` で保存します。管理されたテスト送信者からメッセージを送り、実際の返信を確認します。
+
+未完了設定は 30 分で期限切れになります。`failed`、`expired`、`canceled`、`uncertain` では `error_code` と既存の結果を確認し、新しい UUID で Bot を重複作成しないでください。コールバックと戻り先は環境設定、Profile はキーで固定されます。取消は未完了設定の一時認証情報を消去しますが、作成済みの外部 App／Bot は削除しません。完了済み設定には通常のチャネル切断・削除を使います。
+
+<h2 id="agent-management">実行履歴・メール・チャネル設定</h2>
+
+以下には対応する MCP ツールがあります。正確な引数は [API リファレンス](aip-api-reference) と再取得したツール Schema で確認してください。
+
+| 機能 | API と権限 |
+| --- | --- |
+| Agent 実行履歴 | `GET /webhooks/{hook_id}/runs` を `limit`、`cursor` でページ取得し、`/runs/{task_id}` で個別実行を参照。`webhooks:read` が必要 |
+| Token・推定費用 | Agent 詳細と `GET /schedules/{scheduleID}/runs` の `token_usage`。それぞれ `webhooks:read`、`schedules:read` が必要 |
+| メール名 | `/webhooks/{hook_id}` 以下で GET `/email/address-suggestion`、GET `/email/address?local_part=NAME`、PUT `/email/address`。更新本文は `local_part` と現在の `address_version`。`channels:read/write` が必要 |
+| 複数接続アカウント | `GET /connectors/accounts`、追加認可は `POST /connectors/{provider}/oauth/authorize`。`connectors:read/write` が必要 |
+| Slack 進捗 | `PATCH /channels/{connection_id}/slack` の `show_tool_progress`。`channels:write` が必要 |
+| Telegram ルール・ストリーミング | `PATCH /channels/{connection_id}/telegram` の `default_group_mode`、`show_tool_progress`、`streaming_replies`。`channels:write` が必要 |
+
+設定変更前に `/channels/{connection_id}/installation` を読み、完全なトリガールール配列を維持します。任意フラグの省略時は保存済み値を維持します。新規 Telegram チャネルはグループ内のメンションまたは Bot への返信で起動し、既存ルールは移行しません。メール改名後も旧アドレスは受信エイリアスとして残ります。バージョンや名前の競合時は再参照してください。
+
+Runtime の `execute_tool`／`proxy_execute` はローカルの `connector_account_ref_id` でアカウントを選択します。同じプロバイダーに複数の利用可能アカウントがある場合は必須です。アカウント管理 API と外部業務ツールの実行は別の操作です。
+
+実行、送達、業務カバレッジは別々に判断します。不明な使用量はゼロではなく、推定費用は確定請求ではありません。`budget_status=unavailable` は Agent／実行単位の予算台帳がないことを示します。削除済み履歴は復元できません。
+
+<h2 id="next">接続を続ける</h2>
+
+引数、応答、OpenAPI JSON は [API リファレンス](aip-api-reference)を参照してください。外部 Agent クライアントには [MCP 連携](mcp)、Agent 詳細画面の完全な Hook URL を使う場合は [Webhook HTTP 連携](aip-api)を利用します。

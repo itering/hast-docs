@@ -1,0 +1,87 @@
+<h2 id="prepare">始める前に</h2>
+
+AIP 画面で作成する新しい WhatsApp チャネルは Dualhook を使用します。FDE の案内に従い、自分の Dualhook 組織と WhatsApp Business アカウントを接続します。認可はアカウントの所有者が行ってください。
+
+この Profile に接続済みのアカウントは既存のチャネルを使用します。ナレッジベースへの追加に再認可は不要です。自動返信が必要な場合は[有効な Agent](aip-quickstart) を用意します。
+
+<Steps titleSize="h2">
+
+<Step title="アカウントの認可を準備する" id="account" stepNumber={1}>
+
+[Dualhook のアカウント接続ガイド](https://dualhook.com/docs/getting-started) に従い、組織と WhatsApp Business アカウントを準備します。今回接続するアカウントと番号を確認してください。
+
+履歴が必要な場合は初回の WhatsApp 認可時にインポートを選び、接続後 24 時間以内に要求します。対象は接続前の最大 180 日間です。実際の内容はプロバイダーが提供し、グループやすべての過去のメディアは含まれません。
+
+</Step>
+
+<Step title="AIP でチャネルを作成する" id="connect" stepNumber={2}>
+
+「チャネル → チャネルを追加」で WhatsApp を選びます。名前を入力し、利用可能な履歴を取り込むか選択してチャネルを作成します。
+
+コールバック URL と検証 token が表示されます。未完了の場合はチャネル一覧の設定完了ボタンから続行できます。
+
+</Step>
+
+<Step title="メッセージのコールバックを設定する" id="webhook" stepNumber={3}>
+
+現在の Dualhook 組織の接続設定に、AIP の完全なコールバック URL と検証 token を入力し、アカウントの認可を完了します。両方の値を安全に管理してください。
+
+このチャネル用のコールバックを使用します。別のアカウントの値で既存のコールバックを上書きしないでください。
+
+</Step>
+
+<Step title="アカウント情報を保存する" id="identifiers" stepNumber={4}>
+
+今回の Dualhook 接続で提供された `WABA ID` と `Phone Number ID` を AIP に入力します。これらはアカウントと番号の識別子で、電話番号そのものではありません。
+
+<h3 id="credentials">Outbound API key を取得する</h3>
+
+[Dualhook Runtime API ガイド](https://dualhook.com/docs/runtime-api) に従い、その組織の `Outbound API key` を取得します。同名の欄に入力し、アカウント情報を保存します。この欄には Dualhook の送信用 API 認証情報を使用します。
+
+保存後にアカウントの設定完了が表示されます。履歴の状態はプロバイダーのコールバックで更新されます。履歴メッセージの受信完了後も、メディアが別途届く場合があります。
+
+</Step>
+
+<Step title="Agent を関連付けてテストする" id="test" stepNumber={5}>
+
+新しい内容は自動で同期され、ナレッジの同期に Agent は不要です。チャネルの内容表示を開き、新しいメッセージが届くことを確認します。検索に使用する場合は、そのソースをナレッジベースに追加します。
+
+自動返信には Agent の「チャネル」でこの接続を関連付けて保存します。Agent を有効にし、別の WhatsApp 番号からメッセージを送って同じ会話に返信が届くことを確認してから、画像やファイルを試します。チャネルの関連付けとナレッジの参照権限は個別に設定します。
+
+<Note>
+接続済み表示や保存成功だけではメッセージの配信を確認できません。管理者にチャネル名、送信時刻、エラーの詳細を伝え、認証情報は送らないでください。
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="app">既存の Meta 接続</h2>
+
+Meta に直接接続する既存の WhatsApp チャネルは引き続き管理できます。そのチャネルの再認可を開き、元のアカウントの `phone_number_id`、`business_account_id`、`token_secret_value`、`app_secret_value` を入力して保存し、メッセージをテストします。Token と App Secret は同じ Meta App のもので、その App に対象 WABA への権限が必要です。
+
+既存の Meta 接続と新しい Dualhook 接続では認証情報が異なります。既存接続の更新時はアカウントとコールバックを維持し、認証情報の更新だけを目的にチャネルを重複作成しないでください。
+
+<h2 id="troubleshooting">よくある問題</h2>
+
+<AccordionGroup>
+
+<Accordion title="設定が未完了のままの場合">
+
+設定完了ボタン、または設定内のアカウント接続設定を開きます。現在の Dualhook 組織のコールバック、WABA ID、Phone Number ID、Outbound API key を確認し、アカウント情報を保存します。
+
+</Accordion>
+
+<Accordion title="接続済みでも返信がない場合">
+
+まず内容表示で新しいメッセージを確認します。次に Agent が有効か、このチャネルに関連付けられているか、チャネルのトリガールールを満たすかを確認します。ナレッジの同期だけでは自動返信は有効になりません。
+
+</Accordion>
+
+<Accordion title="履歴が揃わない場合">
+
+初回認可時に履歴を要求したかと、プロバイダーの進捗を確認します。インポートには時間と内容の制限があり、すべてのメディアが揃うとは限りません。認可を繰り返して別のソースを作成しないでください。
+
+</Accordion>
+
+</AccordionGroup>

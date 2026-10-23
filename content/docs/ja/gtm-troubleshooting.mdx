@@ -1,0 +1,25 @@
+<h2 id="statuses">状態を確認</h2>
+
+`Run activity` で関連タスクとイベントを開きます。
+
+| 状態 | 意味 |
+| --- | --- |
+| Waiting | 前提処理や依存関係を待機 |
+| Queued | 登録済み、未開始 |
+| Running | 実行中 |
+| Succeeded | 完了。対応する画面で結果を確認 |
+| Failed | 失敗。エラーとイベントを確認 |
+| Skipped | 未実行。前提タスクを確認 |
+| Canceled | 実行を取消済み |
+
+<h2 id="questions">よくある質問</h2>
+
+<AccordionGroup>
+<Accordion title="初期化が終わらない" id="setup">URL にアクセスできるか確認し、最初に失敗したタスクを調べます。後続分析は取得資料や会社情報に依存するため、後続だけを再実行しても前提資料は補えません。復旧や再実行の入口がある場合はエラーを解決してから使い、実行中の重複送信を避けてください。</Accordion>
+<Accordion title="レポートや Feed が空" id="empty">選択プロジェクトと関連タスクの状態を確認します。作成直後に全原稿があるわけではなく、X Agent や Article Agent を実行する必要があります。Traffic は GA アカウント、プロパティ、同期を確認します。AI Mention はモデルごとの状態を確認し、待機中を言及なしと数えないでください。</Accordion>
+<Accordion title="Mark sent で X に公開されない" id="publish">`Mark sent` は処理状態の記録だけです。プレビューの `Open composer` から X へ移動し、公開を確定してください。</Accordion>
+</AccordionGroup>
+
+<h2 id="help">問題を報告</h2>
+
+プロジェクト ID、時刻、タスク種別、状態、エラーを添えてください。内容の問題には対象質問や原稿の抜粋も含めます。認証トークンや完全な認証情報は渡さないでください。

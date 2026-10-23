@@ -1,0 +1,25 @@
+<h2 id="statuses">Read run status</h2>
+
+Open related tasks and events in `Run activity`.
+
+| State | Meaning |
+| --- | --- |
+| Waiting | Waiting for prerequisites or dependencies |
+| Queued | In the queue, not started |
+| Running | Executing |
+| Succeeded | Complete; inspect the result in its area |
+| Failed | Inspect the error and events |
+| Skipped | Not executed; check prerequisite tasks |
+| Canceled | The run was canceled |
+
+<h2 id="questions">Common questions</h2>
+
+<AccordionGroup>
+<Accordion title="Initialization never finishes" id="setup">Verify the URL is accessible and inspect the earliest failed task. Later analysis may depend on crawling and company context; retrying later jobs cannot supply missing prerequisites. If recovery or rerun is offered, address the error first. Avoid duplicate submissions while a task is running.</Accordion>
+<Accordion title="Reports or Feed are empty" id="empty">Check the selected project and related job status. Creating a project does not generate every draft; run X Agent or Article Agent as needed. For empty Traffic results, check the GA account, property, and sync job. For incomplete AI Mention results, inspect each model's job; pending results are not non-mentions.</Accordion>
+<Accordion title="Why didn’t Mark sent publish to X?" id="publish">`Mark sent` only records the draft's handling state. Choose `Open composer` in preview and publish in X.</Accordion>
+</AccordionGroup>
+
+<h2 id="help">Report an issue</h2>
+
+Include the project identifier, time, task type, run state, and error. For content issues, include the relevant question or draft excerpt. Do not provide authorization tokens or complete credentials.

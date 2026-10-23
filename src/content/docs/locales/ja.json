@@ -1,0 +1,897 @@
+{
+  "overview": {
+    "title": "Hast について",
+    "description": "Hast AIP、Hast Agent、Hast GTM と、FDE チームによる導入支援を紹介します。",
+    "toc": [
+      {
+        "id": "platform",
+        "title": "Hast AIP：FDE の導入を支えるプラットフォーム"
+      },
+      {
+        "id": "products",
+        "title": "2 つの製品モジュール"
+      },
+      {
+        "id": "fde",
+        "title": "FDE：顧客とともに導入を進めるチーム"
+      },
+      {
+        "id": "first-use",
+        "title": "最初に行うこと"
+      },
+      {
+        "id": "integration",
+        "title": "プログラムからの接続"
+      }
+    ]
+  },
+  "aip-overview": {
+    "title": "AIP の紹介",
+    "description": "FDE の導入ワークベンチで Agent を設定し、業務システムを接続します。",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "適した導入シナリオ"
+      },
+      {
+        "id": "capabilities",
+        "title": "ワークベンチの機能"
+      },
+      {
+        "id": "concepts",
+        "title": "基本用語"
+      },
+      {
+        "id": "workflow",
+        "title": "設定から導入まで"
+      },
+      {
+        "id": "state",
+        "title": "有効状態と実行状態"
+      },
+      {
+        "id": "delivery",
+        "title": "FDE と本番導入を進める"
+      }
+    ]
+  },
+  "aip-quickstart": {
+    "title": "最初の Agent を作成",
+    "description": "外部サービスを使わずに、設定・保存・デバッグを試します。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "準備"
+      },
+      {
+        "id": "create",
+        "title": "作成と保存"
+      },
+      {
+        "id": "test",
+        "title": "テストメッセージを送信"
+      },
+      {
+        "id": "next",
+        "title": "次のステップ"
+      }
+    ]
+  },
+  "aip-agents": {
+    "title": "Agent の設定と管理",
+    "description": "役割、モデル、機能を設定し、現在有効な設定を管理します。",
+    "toc": [
+      {
+        "id": "edit",
+        "title": "設定を編集"
+      },
+      {
+        "id": "save",
+        "title": "保存と共同編集"
+      },
+      {
+        "id": "disable",
+        "title": "無効化と削除"
+      },
+      {
+        "id": "related",
+        "title": "関連操作"
+      }
+    ]
+  },
+  "aip-skills": {
+    "title": "Skills の管理",
+    "description": "Agent が使うスキルファイルを作成、インポート、選択します。",
+    "toc": [
+      {
+        "id": "create",
+        "title": "Skill を作成"
+      },
+      {
+        "id": "import",
+        "title": "既存の Skill をインポート"
+      },
+      {
+        "id": "maintain",
+        "title": "編集・無効化・削除"
+      }
+    ]
+  },
+  "aip-knowledge": {
+    "title": "ナレッジベースの追加",
+    "description": "URL、ファイル、Drive の資料を組み合わせ、ナレッジベースのソース、インデックス、コンパイル済み内容を管理します。",
+    "toc": [
+      {
+        "id": "create",
+        "title": "資料を追加"
+      },
+      {
+        "id": "use",
+        "title": "Agent で利用"
+      },
+      {
+        "id": "update",
+        "title": "資料が変わった場合"
+      }
+    ]
+  },
+  "aip-secrets": {
+    "title": "業務シークレットの管理",
+    "description": "認証情報を保存して Agent にバインドし、設定例に実際の値を含めないようにします。",
+    "toc": [
+      {
+        "id": "create",
+        "title": "シークレットを作成"
+      },
+      {
+        "id": "bind",
+        "title": "Agent にバインド"
+      },
+      {
+        "id": "rotate",
+        "title": "更新と削除"
+      }
+    ]
+  },
+  "aip-tools": {
+    "title": "業務ツールの接続",
+    "description": "入力と認証方法を指定して、Agent から既存の HTTP サービスを呼び出します。",
+    "toc": [
+      {
+        "id": "choose",
+        "title": "ツールの種類を選択"
+      },
+      {
+        "id": "http",
+        "title": "HTTP 動的ツールを設定"
+      },
+      {
+        "id": "proxy",
+        "title": "HTTP プロキシを設定"
+      },
+      {
+        "id": "troubleshoot",
+        "title": "呼び出しに失敗した場合"
+      }
+    ]
+  },
+  "aip-memory": {
+    "title": "長期メモリの設定",
+    "description": "Agent が読めるメモリと、新しいメモリの保存先を指定します。",
+    "toc": [
+      {
+        "id": "enable",
+        "title": "メモリを有効化"
+      },
+      {
+        "id": "scope",
+        "title": "範囲を選択"
+      },
+      {
+        "id": "manage",
+        "title": "項目を管理"
+      }
+    ]
+  },
+  "aip-debug": {
+    "title": "Agent のデバッグ",
+    "description": "保存した設定、会話の継続、ツールの結果を検証します。",
+    "toc": [
+      {
+        "id": "start",
+        "title": "デバッグを開始"
+      },
+      {
+        "id": "check",
+        "title": "結果を確認"
+      },
+      {
+        "id": "stop",
+        "title": "停止と再接続"
+      },
+      {
+        "id": "errors",
+        "title": "よくある問題"
+      }
+    ]
+  },
+  "aip-config-transfer": {
+    "title": "インポート・エクスポート・複製",
+    "description": "設定を再利用し、移行後にリソースと認証情報を再確認します。",
+    "toc": [
+      {
+        "id": "import",
+        "title": "設定をインポート"
+      },
+      {
+        "id": "copy",
+        "title": "Agent を複製"
+      },
+      {
+        "id": "export",
+        "title": "エクスポートと引き継ぎ"
+      }
+    ]
+  },
+  "task-overview": {
+    "title": "Task Agent の紹介",
+    "description": "計画から実行、成果物まで、ツール・ファイル・継続的な文脈を使って作業を進めます。",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "適した作業"
+      },
+      {
+        "id": "workspace",
+        "title": "同じワークスペースで継続"
+      },
+      {
+        "id": "continuity",
+        "title": "背景の再利用と定期作業"
+      },
+      {
+        "id": "workflow",
+        "title": "タスクの流れ"
+      },
+      {
+        "id": "api",
+        "title": "プログラムからの利用"
+      },
+      {
+        "id": "next",
+        "title": "利用を始める"
+      }
+    ]
+  },
+  "task-quickstart": {
+    "title": "最初のタスクを完了",
+    "description": "依頼を送信し、進捗を確認して、最終成果物を検証します。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "資料を準備"
+      },
+      {
+        "id": "prompt",
+        "title": "タスクを送信"
+      },
+      {
+        "id": "plan",
+        "title": "進捗を確認"
+      },
+      {
+        "id": "result",
+        "title": "確認とダウンロード"
+      }
+    ]
+  },
+  "task-conversations": {
+    "title": "タスクの実行と会話の管理",
+    "description": "要件の補足、実行の停止、会話履歴の管理を行います。",
+    "toc": [
+      {
+        "id": "request",
+        "title": "要件を明確にする"
+      },
+      {
+        "id": "execute",
+        "title": "実行過程を確認"
+      },
+      {
+        "id": "stop",
+        "title": "停止と継続"
+      },
+      {
+        "id": "history",
+        "title": "履歴を管理"
+      }
+    ]
+  },
+  "task-files": {
+    "title": "ファイルのアップロード・閲覧・取得",
+    "description": "入力資料を渡し、タスクが作成した成果物を保存します。",
+    "toc": [
+      {
+        "id": "upload",
+        "title": "入力ファイルをアップロード"
+      },
+      {
+        "id": "view",
+        "title": "生成ファイルを閲覧"
+      },
+      {
+        "id": "download",
+        "title": "結果を取得"
+      },
+      {
+        "id": "delete",
+        "title": "ファイルを削除"
+      }
+    ]
+  },
+  "task-capabilities": {
+    "title": "アプリ接続と機能設定",
+    "description": "外部アプリを認証し、タスク間で使う背景情報を管理します。",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "外部アプリを接続"
+      },
+      {
+        "id": "memory",
+        "title": "長期メモリを保存"
+      },
+      {
+        "id": "methods",
+        "title": "製品内のスキル管理"
+      },
+      {
+        "id": "account",
+        "title": "自分の Codex アカウントを接続"
+      }
+    ]
+  },
+  "task-schedules": {
+    "title": "定期タスクの作成",
+    "description": "周期とタイムゾーンを設定し、各実行の結果を確認します。",
+    "toc": [
+      {
+        "id": "create",
+        "title": "スケジュールを作成"
+      },
+      {
+        "id": "cron",
+        "title": "カスタム Cron"
+      },
+      {
+        "id": "runs",
+        "title": "結果を確認"
+      },
+      {
+        "id": "pause",
+        "title": "一時停止・再開・削除"
+      }
+    ]
+  },
+  "task-troubleshooting": {
+    "title": "Task Agent のトラブルシューティング",
+    "description": "権限、接続、タスク状態、ファイルを確認します。",
+    "toc": [
+      {
+        "id": "questions",
+        "title": "よくある質問"
+      },
+      {
+        "id": "support",
+        "title": "問い合わせに含める情報"
+      }
+    ]
+  },
+  "gtm-overview": {
+    "title": "GTM の紹介",
+    "description": "Web サイトの共通プロジェクトで調査、露出分析、マーケティング原稿を扱います。",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "適したマーケティング業務"
+      },
+      {
+        "id": "context",
+        "title": "調査とコンテンツで背景を共有"
+      },
+      {
+        "id": "workspace",
+        "title": "プロジェクト内の機能"
+      },
+      {
+        "id": "start",
+        "title": "サイトから開始"
+      },
+      {
+        "id": "workflow",
+        "title": "分析から次の行動へ"
+      },
+      {
+        "id": "agent",
+        "title": "Growth Agent で操作"
+      }
+    ]
+  },
+  "gtm-quickstart": {
+    "title": "最初の GTM プロジェクトを作成",
+    "description": "サイトを入力し、初期化を待って最初の結果を確認します。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "準備"
+      },
+      {
+        "id": "create",
+        "title": "プロジェクトを作成"
+      },
+      {
+        "id": "setup",
+        "title": "初期化を待つ"
+      },
+      {
+        "id": "review",
+        "title": "結果を確認"
+      }
+    ]
+  },
+  "gtm-projects": {
+    "title": "プロジェクトとサイト資料の管理",
+    "description": "プロジェクトの切り替え、サイト情報の更新、設定の管理を行います。",
+    "toc": [
+      {
+        "id": "switch",
+        "title": "プロジェクトを識別して切り替え"
+      },
+      {
+        "id": "refresh",
+        "title": "サイト資料を更新"
+      },
+      {
+        "id": "files",
+        "title": "サイトファイルを確認"
+      },
+      {
+        "id": "settings",
+        "title": "名前の変更と削除"
+      }
+    ]
+  },
+  "gtm-company": {
+    "title": "会社分析とプロジェクト文書",
+    "description": "製品、競合、マーケティング資料を確認し、コンテンツ作成の背景に使います。",
+    "toc": [
+      {
+        "id": "intelligence",
+        "title": "会社分析を確認"
+      },
+      {
+        "id": "documents",
+        "title": "文書を閲覧"
+      },
+      {
+        "id": "review",
+        "title": "生成前に事実を確認"
+      }
+    ]
+  },
+  "gtm-performance": {
+    "title": "SEO とサイト性能",
+    "description": "モバイルとデスクトップの PageSpeed レポートを確認します。",
+    "toc": [
+      {
+        "id": "run",
+        "title": "チェックを実行"
+      },
+      {
+        "id": "read",
+        "title": "レポートを読む"
+      },
+      {
+        "id": "compare",
+        "title": "修正後に再確認"
+      }
+    ]
+  },
+  "gtm-geo": {
+    "title": "AI によるブランド言及",
+    "description": "購買者の質問と、モデル回答でのブランド言及を確認します。",
+    "toc": [
+      {
+        "id": "prompts",
+        "title": "購買者の質問を確認"
+      },
+      {
+        "id": "run",
+        "title": "言及分析を実行"
+      },
+      {
+        "id": "read",
+        "title": "回答を確認"
+      }
+    ]
+  },
+  "gtm-traffic": {
+    "title": "Google Analytics の接続",
+    "description": "アカウントを認証し、GA プロパティを選んでトラフィックを確認します。",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "アカウントを接続"
+      },
+      {
+        "id": "property",
+        "title": "プロパティを選択"
+      },
+      {
+        "id": "sync",
+        "title": "同期して閲覧"
+      }
+    ]
+  },
+  "gtm-x": {
+    "title": "X 原稿の生成と公開",
+    "description": "投稿を生成し、プレビューを確認して X で公開します。",
+    "toc": [
+      {
+        "id": "generate",
+        "title": "下書きを生成"
+      },
+      {
+        "id": "review",
+        "title": "内容をレビュー"
+      },
+      {
+        "id": "publish",
+        "title": "X で公開"
+      }
+    ]
+  },
+  "gtm-articles": {
+    "title": "記事の下書きを生成",
+    "description": "スタイル、言語、読者を指定し、Markdown を確認してコピーします。",
+    "toc": [
+      {
+        "id": "configure",
+        "title": "記事の要件を指定"
+      },
+      {
+        "id": "generate",
+        "title": "生成を待つ"
+      },
+      {
+        "id": "review",
+        "title": "確認して利用"
+      }
+    ]
+  },
+  "gtm-growth-agent": {
+    "title": "Growth Agent の利用",
+    "description": "会話でプロジェクト資料を参照し、対応するバックグラウンド操作を開始します。",
+    "toc": [
+      {
+        "id": "ask",
+        "title": "現在のプロジェクトについて質問"
+      },
+      {
+        "id": "operations",
+        "title": "会話から操作を開始"
+      },
+      {
+        "id": "status",
+        "title": "回答とバックグラウンド結果"
+      }
+    ]
+  },
+  "gtm-troubleshooting": {
+    "title": "実行状態とトラブルシューティング",
+    "description": "キュー、依存関係、結果を確認し、未完了をデータなしと混同しないようにします。",
+    "toc": [
+      {
+        "id": "statuses",
+        "title": "状態を確認"
+      },
+      {
+        "id": "questions",
+        "title": "よくある質問"
+      },
+      {
+        "id": "help",
+        "title": "問題を報告"
+      }
+    ]
+  },
+  "billing": {
+    "title": "プランと使用量",
+    "description": "現在の Profile の利用権限、使用量、請求を確認します。",
+    "toc": [
+      {
+        "id": "plan",
+        "title": "製品の権限を確認"
+      },
+      {
+        "id": "usage",
+        "title": "使用量を確認"
+      },
+      {
+        "id": "team",
+        "title": "チーム席数"
+      },
+      {
+        "id": "renew",
+        "title": "更新と解約"
+      }
+    ]
+  },
+  "aip-api": {
+    "title": "Webhook HTTP 連携",
+    "description": "サーバーから Agent を呼び出し、会話の継続、応答の取得、停止を行います。",
+    "toc": [
+      {
+        "id": "auth",
+        "title": "呼び出し URL を準備"
+      },
+      {
+        "id": "first",
+        "title": "最初のメッセージを送信"
+      },
+      {
+        "id": "stream",
+        "title": "応答をストリーミングで取得"
+      },
+      {
+        "id": "continue",
+        "title": "会話を継続"
+      },
+      {
+        "id": "stop",
+        "title": "生成を停止"
+      },
+      {
+        "id": "fields",
+        "title": "リクエスト項目"
+      }
+    ]
+  },
+  "aip-api-quickstart": {
+    "title": "API クイックスタート",
+    "description": "AIP でキーを作成し、保存済み Agent の呼び出し、応答の取得、許可された業務リソースへのアクセスを行います。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "URL とキーを準備"
+      },
+      {
+        "id": "send",
+        "title": "最初のタスクを送信"
+      },
+      {
+        "id": "read",
+        "title": "実行過程を取得"
+      },
+      {
+        "id": "profile",
+        "title": "Profile API key を使う"
+      },
+      {
+        "id": "next",
+        "title": "接続を続ける"
+      }
+    ]
+  },
+  "aip-api-events": {
+    "title": "会話イベントと SSE",
+    "description": "単一 Agent の会話イベントを取得し、Profile API key で通常タスクの SSE に接続します。",
+    "toc": [
+      {
+        "id": "agent",
+        "title": "単一 Agent の会話イベントを取得"
+      },
+      {
+        "id": "sse",
+        "title": "ストリームへ接続"
+      },
+      {
+        "id": "frames",
+        "title": "SSE フレーム形式"
+      },
+      {
+        "id": "reconnect",
+        "title": "再接続と再生"
+      },
+      {
+        "id": "poll",
+        "title": "JSON でイベントを取得"
+      },
+      {
+        "id": "envelope",
+        "title": "Event v2 と種別"
+      }
+    ]
+  },
+  "aip-api-reference": {
+    "title": "API リファレンス",
+    "description": "AIP 公開 API の認証、Agent の会話、業務リソースのエンドポイントを確認します。",
+    "toc": [
+      {
+        "id": "openapi",
+        "title": "OpenAPI JSON"
+      },
+      {
+        "id": "wechat-accounts",
+        "title": "WeChat アカウントを取得"
+      }
+    ]
+  },
+  "mcp": {
+    "title": "MCP 接続",
+    "description": "Public API Key で外部 Agent クライアントから AIP ツールを利用します。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "キーと権限を準備"
+      },
+      {
+        "id": "connect",
+        "title": "MCP クライアントを設定"
+      },
+      {
+        "id": "verify",
+        "title": "接続とガイドを確認"
+      },
+      {
+        "id": "wechat-accounts",
+        "title": "WeChat アカウントを取得"
+      },
+      {
+        "id": "use",
+        "title": "Agent に作業を依頼"
+      },
+      {
+        "id": "results",
+        "title": "結果と制限"
+      },
+      {
+        "id": "troubleshoot",
+        "title": "接続・呼び出しの失敗"
+      }
+    ]
+  },
+  "aip-slack": {
+    "title": "Slack を接続する",
+    "description": "Agent を Slack に追加して、チャンネルやダイレクトメッセージで質問したり、ファイルを扱ったり、チームで利用したりできます。",
+    "subgroup": "チャネル接続",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "始める前に"
+      },
+      {
+        "id": "create-app",
+        "title": "Slack App を作成する"
+      },
+      {
+        "id": "install",
+        "title": "ワークスペースにインストールする"
+      },
+      {
+        "id": "connect",
+        "title": "AIP でチャネルを作成する"
+      },
+      {
+        "id": "events",
+        "title": "コールバックとイベントを設定する"
+      },
+      {
+        "id": "test",
+        "title": "Agent を選んでテストする"
+      },
+      {
+        "id": "reply-rules",
+        "title": "返信のトリガーを設定する"
+      },
+      {
+        "id": "operation-progress",
+        "title": "操作の進捗を表示する"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "よくある問題"
+      }
+    ]
+  },
+  "aip-whatsapp": {
+    "title": "WhatsApp を接続",
+    "description": "WhatsApp で顧客からの質問やファイルを受け取り、Agent が返信します。",
+    "subgroup": "チャネル接続",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "始める前に"
+      },
+      {
+        "id": "account",
+        "title": "アカウントの認可を準備する"
+      },
+      {
+        "id": "connect",
+        "title": "AIP でチャネルを作成する"
+      },
+      {
+        "id": "webhook",
+        "title": "メッセージのコールバックを設定する"
+      },
+      {
+        "id": "identifiers",
+        "title": "アカウント情報を保存する"
+      },
+      {
+        "id": "credentials",
+        "title": "Outbound API key を取得する"
+      },
+      {
+        "id": "test",
+        "title": "Agent を関連付けてテストする"
+      },
+      {
+        "id": "app",
+        "title": "既存の Meta 接続"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "よくある問題"
+      }
+    ]
+  },
+  "aip-wechat-kf": {
+    "title": "WeChat カスタマーサービスを接続",
+    "description": "Agent を WeChat カスタマーサービスに接続し、顧客の質問に返信します。",
+    "subgroup": "チャネル接続",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "始める前に"
+      },
+      {
+        "id": "app",
+        "title": "WeCom アプリを用意する"
+      },
+      {
+        "id": "callback-values",
+        "title": "コールバック認証情報を用意する"
+      },
+      {
+        "id": "connect",
+        "title": "AIP チャネルを作成する"
+      },
+      {
+        "id": "domain",
+        "title": "ドメイン検証と信頼済み IP"
+      },
+      {
+        "id": "callback",
+        "title": "コールバック設定を保存する"
+      },
+      {
+        "id": "authorize",
+        "title": "カスタマーサービスを認可する"
+      },
+      {
+        "id": "verify",
+        "title": "AIP のインストールを完了する"
+      },
+      {
+        "id": "test",
+        "title": "WeChat で返信を確認する"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "よくある問題"
+      }
+    ]
+  }
+}

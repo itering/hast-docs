@@ -1,0 +1,113 @@
+import { ApiKeyLink } from "../../../src/components/docs/task-agent-api-reference";
+
+Call a saved AIP Agent from your server and read its conversation results. Manage API keys in the AIP workbench; REST and [MCP](mcp) share the same keys and permissions. See the [API reference](aip-api-reference) for endpoint details.
+
+<h2 id="prepare">Prepare the URL and key</h2>
+
+1. Select the target Profile (business identity) in AIP. [Create and test an Agent](aip-quickstart), save its configuration, and enable it.
+2. Open <ApiKeyLink locale="en" />, create a key, choose the single-Agent conversation access range, and select the Agent to call.
+3. Enable send messages (`agent:invoke`). This includes read conversations (`agent:conversations:read`), which grants access to all of that Agent's historical conversations, including those created by other integrations.
+4. Copy the full key immediately after creation. It will not be shown again.
+
+Set these variables in your server terminal. This is the production URL; use the corresponding backend URL for development or self-hosted deployments:
+
+```bash
+export HAST_API_BASE='https://backend.hast.so/api/public/v1'
+export HAST_API_KEY='<YOUR_SINGLE_AGENT_KEY>'
+```
+
+<Warning>Send the key in `Authorization: Bearer` on every call. Keep it on the server, never in browser code or public repositories. Revoking a key stops both its API and MCP access.</Warning>
+
+<h2 id="send">Submit your first task</h2>
+
+```bash
+curl --fail-with-body --request POST \
+  --url "$HAST_API_BASE/agent/prompts" \
+  --header "Authorization: Bearer $HAST_API_KEY" \
+  --header 'Content-Type: application/json' \
+  --data '{"request_id":"message-001","prompt":"Describe your role and the work you can help me complete."}'
+```
+
+The request uses the Agent bound to the key and its saved configuration. Omit `session_id` to create a conversation; include the returned `session_id` to continue it. Use a new `request_id` for each new message, and keep the identifier and request content unchanged when retrying that message.
+
+HTTP `202` means the request was accepted. Save the returned `session_id` and `request_id`, then read events to determine the outcome of this run.
+
+<h2 id="read">Read execution progress</h2>
+
+```bash
+export SESSION_ID='<SESSION_ID_FROM_RESPONSE>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  --header "Authorization: Bearer $HAST_API_KEY"
+```
+
+The response contains `events`, `next_after`, and `has_more`. Pass `next_after` as `after` on the next request. Keep paging while `has_more` is `true`, even if a page contains no visible events. When no new events are available, wait before polling again.
+
+This endpoint returns user messages, Agent replies, and run status. Wait for `run.completed`, `run.failed`, or `run.interrupted` whose `run_id` matches the receipt's `request_id`. A `message.completed` event only completes one message. See [conversation events and SSE](aip-api-events#agent) for details.
+
+Single-Agent conversations use JSON polling and have no SSE route. Use `GET /agent/sessions` to find the Agent's historical conversations and read their events.
+
+<h2 id="profile">Use a Profile API key</h2>
+
+To access resources belonging to the current business identity, create a Profile API key in <ApiKeyLink locale="en" /> and grant the required permissions:
+
+| Purpose | Permission and endpoint |
+| --- | --- |
+| Read saved Agent configurations | `webhooks:read`, `GET /webhooks` |
+| Invoke a specific Agent | `webhooks:write`, `POST /webhooks/{hook_id}/invoke` |
+| Manage knowledge bases, channels, CRM, or schedules | Corresponding resource permissions; see the [API reference](aip-api-reference) |
+| Submit an ordinary task and read events | `prompts:write` and `sessions:read`, `POST /prompts` and `/sessions/{id}/events` |
+
+Write permissions include the corresponding read permission. A Profile key's `/prompts` endpoint creates ordinary task sessions without automatically applying a saved AIP Agent configuration. To call a configured Agent, use `/webhooks/{hook_id}/invoke` or the single-Agent flow above.
+
+Ordinary tasks support SSE at `/sessions/{id}/events/stream`; see [SSE integration](aip-api-events#sse). Profile keys and single-Agent keys have different endpoint access: `/agent/*` and ordinary task paths are not interchangeable.
+
+<h2 id="automatic-channels">Create channels through API or MCP</h2>
+
+Use a Profile API key with `channels:write`; reads require `channels:read`. Single-Agent conversation keys cannot manage channels. Paths below are relative to `$HAST_API_BASE`.
+
+| Operation | REST API | MCP tool |
+| --- | --- | --- |
+| Create or resume setup | `POST /channels/automatic` | `post_channels_automatic` |
+| Read progress | `GET /channels/automatic/{setup_id}` | `get_channels_automatic_setup_id` |
+| Obtain consent URL | `POST /channels/automatic/{setup_id}/authorize` | `post_channels_automatic_setup_id_authorize` |
+| Register verified channel | `POST /channels/automatic/{setup_id}/complete` | `post_channels_automatic_setup_id_complete` |
+| Cancel incomplete setup | `DELETE /channels/automatic/{setup_id}` | `delete_channels_automatic_setup_id` |
+
+Example create body. Generate a new UUID for each new setup; retries of the same setup preserve its UUID, provider and name:
+
+```json
+{"provider":"slack","name":"Customer Support","request_key":"7d4ee264-3665-4d51-9363-b43bb302a790"}
+```
+
+Choose `slack` or `telegram`; names allow 35 or 64 characters respectively. The response `id` is the subsequent `setup_id`. MCP creation wraps this object in `body`; subsequent calls put the returned ID in `path.setup_id`.
+
+1. Call `authorize`. Slack requires a temporary `configuration_token` (Slack Configuration Access Token), supplied from secure client storage, never chat, logs or a repository. Telegram uses `{}`. MCP authorization takes both `path` and `body`.
+2. The authorized owner opens the returned `url`. Complete Slack consent; at `awaiting_verification`, open `verification_url` and click **Click here to verify**. In Telegram, press **START**, then **Create my bot**, and confirm the bot name and username. API/MCP does not replace the owner's provider consent.
+3. Poll the same setup. When `status=complete`, call `complete` and retain `connection.id`. Initial registration returns 201; repeated completion returns the same connection with 200. No Agent is bound automatically.
+4. Read the Agent's existing channels, then save the full desired `connection_ids` through `PUT /webhooks/{hook_id}/channels`. Preserve other intended bindings. Verify a controlled incoming message and the actual channel reply.
+
+Incomplete setups expire after 30 minutes. For `failed`, `expired`, `canceled` or `uncertain`, inspect `error_code` and existing effects before proceeding; do not blindly create another bot with a new UUID. The deployment fixes callback and return destinations, and the key fixes the Profile. Cancellation clears incomplete setup credentials without deleting an external App/Bot already created. Completed setups use normal channel disconnect/removal.
+
+<h2 id="agent-management">Run history, email and channel settings</h2>
+
+These management routes have matching MCP tools. Use the [API reference](aip-api-reference) and refreshed tool schemas for exact parameters.
+
+| Capability | API and scope |
+| --- | --- |
+| Agent runs | `GET /webhooks/{hook_id}/runs` with `limit` and `cursor`; `/runs/{task_id}` reads the exact execution. Requires `webhooks:read` |
+| Tokens and estimated cost | Agent details and `GET /schedules/{scheduleID}/runs` return `token_usage`; require `webhooks:read` and `schedules:read` respectively |
+| Email names | Under `/webhooks/{hook_id}`, GET `/email/address-suggestion`, GET `/email/address?local_part=NAME`, then PUT `/email/address` with `local_part` and current `address_version`. Requires `channels:read/write` |
+| Multiple connector accounts | `GET /connectors/accounts`; connect another through `POST /connectors/{provider}/oauth/authorize`. Requires `connectors:read/write` |
+| Slack progress | `PATCH /channels/{connection_id}/slack` accepts `show_tool_progress`. Requires `channels:write` |
+| Telegram rules and streaming | `PATCH /channels/{connection_id}/telegram` accepts `default_group_mode`, `show_tool_progress` and `streaming_replies`. Requires `channels:write` |
+
+Read `/channels/{connection_id}/installation` before updating settings and preserve complete trigger-rule arrays. Omitted optional flags preserve saved values. New Telegram channels wake on mentions or replies in groups; existing rules are retained. Renamed email addresses remain inbound aliases; reread after version or name conflicts instead of reporting a successful rename.
+
+Runtime `execute_tool` and `proxy_execute` select accounts through local `connector_account_ref_id`, required when multiple accounts for a provider are ready. Account-management APIs are separate from provider business-tool execution.
+
+Execution, delivery and business coverage are separate outcomes. Unknown usage is not zero, estimated cost is not a settled charge, and `budget_status=unavailable` means no Agent/run budget ledger exists. Pruned history cannot be recovered.
+
+<h2 id="next">Continue integration</h2>
+
+See the [API reference](aip-api-reference) for parameters, responses, and OpenAPI JSON. For external Agent clients, use [MCP integration](mcp). To call the full Hook URL from an Agent's details page, use [Webhook HTTP integration](aip-api).

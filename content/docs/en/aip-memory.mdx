@@ -1,0 +1,23 @@
+<h2 id="enable">Enable memory</h2>
+
+Enable long-term memory in the Agent configuration, choose read scope and write destination, then save. Creating a memory entry alone does not enable the Agent's memory capability.
+
+<h2 id="scope">Choose the scope</h2>
+
+| Read scope | Accessible memory |
+| --- | --- |
+| `self` | This Agent's own memory |
+| `webhook` | Webhook and shared memory in the current Profile |
+| `all` | The Webhook scope plus Task Agent memory in the current Profile |
+
+The write destination is `self` or `shared`. Shared writes require the `webhook` or `all` read scope. Changing read scope to `self` also changes the form's write destination to `self`.
+
+New Agents default to reading and writing their own memory. Check the displayed scope when editing existing Agents, especially configurations with broader access.
+
+<h2 id="manage">Maintain entries</h2>
+
+Open Memory and filter by Task Agent, shared Webhook memory, or a specific Agent. Create entries with a name and content, such as customer terminology, report formats, or long-term constraints.
+
+Names must be unique within their ownership scope and no longer than 128 characters. Content must be nonempty and at most 256 KiB. Save a new Agent before creating memory owned by it.
+
+You can edit content or move ownership. Changes affect later reads; running tasks do not automatically reload context. Memory retained after an Agent is deleted can still be moved or deleted.

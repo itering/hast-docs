@@ -1,0 +1,38 @@
+Hast は企業の非公開データ、社内システム、業務プロセスを接続し、実務での AI 活用を支援します。Forward-Deployed Engineer（FDE）が業務シナリオの定義、システム接続、本番導入に参加し、再利用できる機能を Hast AIP に蓄積します。
+
+<h2 id="platform">Hast AIP：FDE の導入を支えるプラットフォーム</h2>
+
+Hast AIP は FDE の実践から生まれたプラットフォーム兼ワークベンチです。FDE は Agent の設定とデバッグ、ナレッジ・Skills・業務ツールの管理、顧客システムへの接続を行えます。操作方法は [AIP ガイド](aip-overview)をご覧ください。
+
+<h2 id="products">2 つの製品モジュール</h2>
+
+Hast AIP には Hast Agent と Hast GTM が含まれます。
+
+| モジュール | 用途 | ガイド |
+| --- | --- | --- |
+| Hast Agent | 調査、コンテンツ、開発、運用の作業を会話で進め、実行過程を確認し、回答やファイルを取得 | [Task Agent](task-overview) |
+| Hast GTM | Web サイトのプロジェクトを作成し、分析、ブランド露出の確認、マーケティング原稿の生成を実行 | [GTM](gtm-overview) |
+
+このドキュメントでは、Hast Agent のタスク画面を Task Agent と呼びます。関連する操作と API は左側の Task Agent グループにまとめています。
+
+<h2 id="fde">FDE：顧客とともに導入を進めるチーム</h2>
+
+FDE は顧客と業務シナリオを定義し、企業データやシステムを接続して、検証と本番導入を進めるチームです。導入後も問題対応と改善を続けます。Hast AIP を使って業務を行うチームであり、製品モジュールではありません。
+
+企業は Hast Agent や Hast GTM を直接利用するほか、FDE と協力して既存システムに業務フローを組み込めます。[FDE の紹介](https://hast.so/ja/fde)をご覧ください。
+
+<h2 id="first-use">最初に行うこと</h2>
+
+ログイン後、現在の Profile を確認してください。個人とチームのリソースは別々に表示され、Profile を切り替えると表示内容が変わる場合があります。
+
+<CardGroup cols={3}>
+  <Card title="Hast Agent" href="task-quickstart" cta="最初のタスクを完了する" arrow>会話で作業を進め、結果を確認してファイルをダウンロードします。</Card>
+  <Card title="Hast GTM" href="gtm-quickstart" cta="サイトプロジェクトを作成" arrow>サイトを分析し、マーケティング原稿を準備します。</Card>
+  <Card title="AIP ワークベンチ" href="aip-quickstart" cta="業務 Agent を設定" arrow>Agent を作成し、設定を保存して会話をデバッグします。</Card>
+</CardGroup>
+
+<h2 id="integration">プログラムからの接続</h2>
+
+AIP の Agent 詳細画面には、認証情報を含む呼び出し URL があります。サーバーからメッセージを送信し、ストリーミングで応答を受信できます。[AIP HTTP 接続](aip-api)をご覧ください。
+
+AIP の公開 API は API キーで認証します。保存済み Agent の呼び出し、会話の取得、業務リソースの管理は [AIP API クイックスタート](aip-api-quickstart)から始めてください。キーのアクセス範囲と権限によって利用できる API が決まります。

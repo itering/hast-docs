@@ -1,0 +1,113 @@
+import { ApiKeyLink } from "../../../src/components/docs/task-agent-api-reference";
+
+从你的服务端调用 AIP 中已保存的 Agent，并读取对话结果。API 密钥在 AIP 工作台管理；REST API 和 [MCP](mcp) 使用相同的密钥与权限。完整接口见 [API 参考](aip-api-reference)。
+
+<h2 id="prepare">准备地址与密钥</h2>
+
+1. 在 AIP 切换到目标 Profile（业务身份）。先[创建并调试 Agent](aip-quickstart)，确认已保存配置并启用。
+2. 打开 <ApiKeyLink />，创建密钥，访问范围选择“单 Agent 对话”，再选择要调用的 Agent。
+3. 勾选“发送消息”（`agent:invoke`）。它同时包含“读取对话”（`agent:conversations:read`），可读取该 Agent 的全部历史对话，包括其他集成创建的对话。
+4. 创建后立即复制完整密钥；页面之后不会再次显示完整值。
+
+在服务端终端设置环境变量。生产环境地址如下，开发或自部署环境请使用对应的后端地址：
+
+```bash
+export HAST_API_BASE='https://backend.hast.so/api/public/v1'
+export HAST_API_KEY='<你的单 Agent 对话密钥>'
+```
+
+<Warning>每次调用都通过 `Authorization: Bearer` 发送密钥。密钥只能保存在服务端，不要放入浏览器代码或公开仓库。撤销密钥会同时停止它的 API 与 MCP 访问。</Warning>
+
+<h2 id="send">发送第一条任务</h2>
+
+```bash
+curl --fail-with-body --request POST \
+  --url "$HAST_API_BASE/agent/prompts" \
+  --header "Authorization: Bearer $HAST_API_KEY" \
+  --header 'Content-Type: application/json' \
+  --data '{"request_id":"message-001","prompt":"请说明你的职责，以及可以帮助我完成哪些工作。"}'
+```
+
+请求使用密钥绑定的 Agent 及其已保存配置。省略 `session_id` 会创建对话；继续对话时，加入响应返回的 `session_id`。每条新消息使用新的 `request_id`，重试同一条消息时保持请求内容和标识一致。
+
+HTTP `202` 表示请求已接收。保存响应中的 `session_id` 和 `request_id`，接下来读取事件，确认本轮运行结果。
+
+<h2 id="read">读取执行过程</h2>
+
+```bash
+export SESSION_ID='<响应中的 session_id>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  --header "Authorization: Bearer $HAST_API_KEY"
+```
+
+响应包含 `events`、`next_after` 和 `has_more`。后续将 `next_after` 作为 `after` 继续读取；`has_more` 为 `true` 时继续翻页，即使本页没有可见事件。暂时没有新事件时，间隔一段时间再查询。
+
+此接口返回用户消息、Agent 回复和运行状态。找到 `run_id` 与本轮回执 `request_id` 一致的 `run.completed`、`run.failed` 或 `run.interrupted`，才能判断本轮结束。`message.completed` 只表示一条消息完成。详细处理方式见 [会话事件与 SSE](aip-api-events#agent)。
+
+单 Agent 对话使用 JSON 轮询，不提供 SSE 路径。可以通过 `GET /agent/sessions` 查找该 Agent 的历史对话，再读取对应事件。
+
+<h2 id="profile">使用 Profile API key</h2>
+
+需要按功能访问当前业务身份的资源时，在 <ApiKeyLink /> 创建“Profile API key”，按需授权：
+
+| 用途 | 权限与入口 |
+| --- | --- |
+| 查看已保存的 Agent 配置 | `webhooks:read`，`GET /webhooks` |
+| 调用指定 Agent | `webhooks:write`，`POST /webhooks/{hook_id}/invoke` |
+| 管理知识库、渠道、CRM 或定时任务 | 对应资源的读写权限，见 [API 参考](aip-api-reference) |
+| 提交普通任务并读取事件 | `prompts:write` 和 `sessions:read`，`POST /prompts` 与 `/sessions/{id}/events` |
+
+写入权限包含对应读取权限。Profile key 的 `/prompts` 创建普通任务会话，不会自动应用某个已保存的 AIP Agent 配置；调用已配置的 Agent 时使用上表中的 `/webhooks/{hook_id}/invoke`，或使用本页的单 Agent 对话流程。
+
+普通任务可通过 `/sessions/{id}/events/stream` 接收 SSE，见 [SSE 接入](aip-api-events#sse)。Profile key 与单 Agent 对话 key 的接口范围不同，不能混用 `/agent/*` 和普通任务路径。
+
+<h2 id="automatic-channels">通过 API 或 MCP 自动创建渠道</h2>
+
+此流程使用具有 `channels:write` 的 Profile API key；只读查询需要 `channels:read`。单 Agent 对话密钥不提供渠道管理能力。下表路径均接在 `$HAST_API_BASE` 后面。
+
+| 操作 | REST API | MCP 工具 |
+| --- | --- | --- |
+| 创建或恢复配置 | `POST /channels/automatic` | `post_channels_automatic` |
+| 查询进度 | `GET /channels/automatic/{setup_id}` | `get_channels_automatic_setup_id` |
+| 获取授权入口 | `POST /channels/automatic/{setup_id}/authorize` | `post_channels_automatic_setup_id_authorize` |
+| 登记已验证渠道 | `POST /channels/automatic/{setup_id}/complete` | `post_channels_automatic_setup_id_complete` |
+| 取消未完成配置 | `DELETE /channels/automatic/{setup_id}` | `delete_channels_automatic_setup_id` |
+
+创建请求示例；每次新的配置使用新 UUID，重试同一次配置保留 UUID、平台和名称：
+
+```json
+{"provider":"slack","name":"Customer Support","request_key":"7d4ee264-3665-4d51-9363-b43bb302a790"}
+```
+
+`provider` 可选 `slack` 或 `telegram`；名称分别最多 35、64 个字符。响应 `id` 即后续的 `setup_id`。MCP 创建参数为 `{"body":{...}}`，后续工具把配置 ID 放在 `{"path":{"setup_id":"返回的 ID"}}` 中。
+
+1. 调用 `authorize`。Slack 请求体包含临时 `configuration_token`（Slack Configuration Access Token）；通过客户端安全存储传入，不写进聊天、日志或仓库。Telegram 请求体为 `{}`。MCP 授权参数同时包含 `path` 和 `body`。
+2. 由有权限的本人打开返回的 `url`。Slack 完成官方授权；当状态为 `awaiting_verification` 时，打开 `verification_url`，点击 **Click here to verify**。Telegram 在配置助手中点击 **START** 和 **Create my bot**，确认名称和用户名。API／MCP 不会代替本人完成平台授权。
+3. 查询同一个 `setup_id`。只有 `status=complete` 后才调用 `complete`；返回的 `connection.id` 是后续绑定的渠道。首次登记返回 201，重复完成返回同一连接和 200，不会自动绑定 Agent。
+4. 读取 Agent 已有渠道，再通过 `PUT /webhooks/{hook_id}/channels` 保存完整的 `connection_ids`，保留其他需要的关联。最后从实际渠道发送受控测试消息并确认回复。
+
+配置有效期为 30 分钟。`failed`、`expired`、`canceled`、`uncertain` 时先检查 `error_code` 和既有结果；不要换 UUID 盲目创建另一个 Bot。回调和返回页面由目标环境固定，调用方不能指定其他地址或 Profile。取消仅处理未完成配置并清除临时凭据，不删除已经创建的平台 App／Bot；已完成配置按正常渠道断开、删除流程处理。
+
+<h2 id="agent-management">运行记录、邮箱及渠道设置</h2>
+
+这些管理入口也有对应 MCP 工具，具体参数以 [API 参考](aip-api-reference) 和客户端重新获取的工具 Schema 为准。
+
+| 能力 | API 与权限 |
+| --- | --- |
+| Agent 运行记录 | `GET /webhooks/{hook_id}/runs`，使用 `limit`、`cursor` 翻页；读取 `/runs/{task_id}` 查看指定执行。需要 `webhooks:read` |
+| Token 与估算成本 | Agent 详情和 `GET /schedules/{scheduleID}/runs` 返回 `token_usage`；分别需要 `webhooks:read`、`schedules:read` |
+| 邮箱名称 | `GET /webhooks/{hook_id}/email/address-suggestion` 获取建议；`GET /email/address?local_part=名称` 检查可用性；`PUT /email/address` 提交 `local_part` 和当前 `address_version`。后两条路径沿用同一 `/webhooks/{hook_id}` 前缀，需要 `channels:read/write` |
+| 多连接器账号 | `GET /connectors/accounts` 列出账号，`POST /connectors/{provider}/oauth/authorize` 连接另一账号；需要 `connectors:read/write` |
+| Slack 过程展示 | `PATCH /channels/{connection_id}/slack` 支持 `show_tool_progress`；需要 `channels:write` |
+| Telegram 群规则及流式回复 | `PATCH /channels/{connection_id}/telegram` 支持 `default_group_mode`、`show_tool_progress`、`streaming_replies`；需要 `channels:write` |
+
+修改渠道设置前读取 `/channels/{connection_id}/installation`，保留完整触发规则数组；省略可选开关会保留原值。新 Telegram 渠道默认群内 @Bot 或回复 Bot 时唤醒，已有渠道规则不迁移。邮箱改名后旧地址继续作为收件别名；版本冲突或重名时先重新读取，不把失败当作改名成功。
+
+多账号下，Runtime 的 `execute_tool`／`proxy_execute` 使用本地 `connector_account_ref_id` 选择账号；同平台有多个就绪账号时不能省略。账号管理 API 不等同于直接执行外部平台业务操作。
+
+运行完成、消息送达和业务覆盖分别判断。未知用量不是零，估算成本不是账单扣款；`budget_status=unavailable` 表示没有 Agent／单次运行预算账本，已清理的历史也无法恢复。
+
+<h2 id="next">继续接入</h2>
+
+在 [API 参考](aip-api-reference) 查看参数、响应和 OpenAPI JSON。使用外部 Agent 客户端时阅读 [MCP 接入](mcp)；通过 Agent 详情页的完整 Hook URL 调用时阅读 [Webhook HTTP 接入](aip-api)。

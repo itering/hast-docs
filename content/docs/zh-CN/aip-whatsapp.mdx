@@ -1,0 +1,87 @@
+<h2 id="prepare">开始前</h2>
+
+AIP 页面新建 WhatsApp 渠道使用 Dualhook。由 FDE 引导你连接自己的 Dualhook 组织和 WhatsApp Business 账号，请由账号持有人完成授权。
+
+同一 Profile 已接入的账号请使用已有渠道。将渠道加入知识库不需要再次授权。需要自动回复时，另准备一个[已启用的 Agent](aip-quickstart)。
+
+<Steps titleSize="h2">
+
+<Step title="准备账号授权" id="account" stepNumber={1}>
+
+按 [Dualhook 账号接入指南](https://dualhook.com/docs/getting-started) 准备组织和 WhatsApp Business 账号。确认使用的账号和号码属于本次接入。
+
+需要历史记录时，在首次 WhatsApp 授权时选择导入，并在接入后 24 小时内发起。可用记录最多覆盖接入前 180 天；实际内容由供应商提供，不包含群聊和全部历史媒体。
+
+</Step>
+
+<Step title="在 AIP 创建渠道" id="connect" stepNumber={2}>
+
+打开“渠道 → 添加渠道”，选择 WhatsApp。填写名称，选择是否“导入可用历史记录”，点击“创建渠道”。
+
+创建后会显示回调地址和验证 token。若尚未完成配置，可从渠道列表的“完成配置”继续。
+
+</Step>
+
+<Step title="配置消息回调" id="webhook" stepNumber={3}>
+
+将 AIP 提供的完整回调地址和验证 token 填入当前 Dualhook 组织的接入配置，并完成账号授权。请妥善保管这两个值。
+
+回调配置须属于当前渠道；不同账号不要互相覆盖已有回调。
+
+</Step>
+
+<Step title="保存账号信息" id="identifiers" stepNumber={4}>
+
+在 AIP 填写本次 Dualhook 接入提供的 `WABA ID` 和 `Phone Number ID`。它们是账号与号码标识，不是手机号本身。
+
+<h3 id="credentials">获取 Outbound API key</h3>
+
+按 [Dualhook Runtime API 指南](https://dualhook.com/docs/runtime-api) 获取对应组织的 `Outbound API key`，填入同名字段，点击“保存账号信息”。此字段使用 Dualhook 的出站 API 凭证。
+
+保存后显示“账号已配置”。历史状态由供应商回调更新；显示“历史消息已接收”时，媒体仍可能另行到达。
+
+</Step>
+
+<Step title="关联 Agent 并测试" id="test" stepNumber={5}>
+
+新内容自动同步，知识同步不依赖 Agent。打开渠道的“查看内容”，检查是否收到新消息；需要检索时，将该来源加入对应知识库。
+
+需要自动回复时，在 Agent 的“渠道”中关联此连接并保存。启用 Agent 后，用另一个 WhatsApp 号码发送消息，确认原会话收到回复，再分别测试图片或文件。渠道关联与知识读取权限分别配置。
+
+<Note>
+“已连接”或保存成功不能代替实际收发验证。向管理员提供渠道名称、发送时间和错误信息；不要发送凭证。
+</Note>
+
+</Step>
+
+</Steps>
+
+<h2 id="app">已有 Meta 接入</h2>
+
+已有直接连接 Meta 的 WhatsApp 渠道仍可维护。在该渠道的“重新授权”中填写原账号的 `phone_number_id`、`business_account_id`、`token_secret_value` 和 `app_secret_value`，保存后测试消息。Token 与 App Secret 须来自同一 Meta App，且该 App 仍获目标 WABA 授权。
+
+现有 Meta 接入与新的 Dualhook 接入使用不同凭证。维护已有连接时保留其账号和回调，不要为了更新凭证重复创建渠道。
+
+<h2 id="troubleshooting">常见问题</h2>
+
+<AccordionGroup>
+
+<Accordion title="仍显示待完成配置">
+
+打开“完成配置”或设置中的“账号接入配置”，检查当前 Dualhook 组织的回调、WABA ID、Phone Number ID 与 Outbound API key，并保存账号信息。
+
+</Accordion>
+
+<Accordion title="已接入，但没有回复">
+
+先在“查看内容”确认是否收到新消息，再检查 Agent 是否启用、是否关联此渠道，以及渠道触发规则。知识同步成功不代表已开启自动回复。
+
+</Accordion>
+
+<Accordion title="历史记录尚未到齐">
+
+检查首次授权时是否请求导入，以及供应商显示的进度。历史导入有时间窗口和内容限制，不能保证所有媒体都到齐；不要通过重复授权创建第二个来源。
+
+</Accordion>
+
+</AccordionGroup>

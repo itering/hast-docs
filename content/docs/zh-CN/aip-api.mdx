@@ -1,0 +1,93 @@
+本页使用 Agent 详情页的完整 Hook URL 调用已保存的配置。通过 API 密钥调用时，按 [AIP API 入门](aip-api-quickstart) 创建单 Agent 对话 key；两种方式使用不同的地址和认证。
+
+<h2 id="auth">准备调用地址</h2>
+
+<Warning>
+
+在 Agent 详情页复制调用地址，保存为服务端环境变量 `AIP_HOOK_URL`。地址包含调用凭证，使用完整地址即可，不要把它写入公开网页或前端代码。
+
+</Warning>
+
+确认 Agent 已启用，并先在 [调试页](aip-debug) 跑通相同任务。下面的示例会发起真实执行。
+
+<h2 id="first">发送首条消息</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "created",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-001",
+      "prompt": "请整理这项需求：客服输入订单号后，可以查询订单状态。",
+      "context": {"source": "requirements-form"}
+    }
+  }'
+```
+
+同一对话使用同一个 `session_id`。每条新消息使用新的 `request_id`；重试同一条消息时，保留原标识和请求内容。示例标识用于演示，在应用中为不同对话和消息生成独立标识。
+
+请求被接收后仍需读取执行事件，不能把发送成功当作任务已完成。
+
+<h2 id="stream">接收流式回复</h2>
+
+```bash
+curl -N --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "sse",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "after_event_id": 0
+    }
+  }'
+```
+
+使用响应中的会话标识读取回复。保存最后收到的事件序号，断线后用它继续读取，并按序号去重。
+
+<h2 id="continue">继续对话</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "request_id": "message-002",
+      "signal": "continue",
+      "prompt": "把待确认的问题按优先级排序。"
+    }
+  }'
+```
+
+<h2 id="stop">停止生成</h2>
+
+```bash
+curl --fail-with-body "$AIP_HOOK_URL" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "action": "prompted",
+    "payload": {
+      "session_id": "requirements-demo-001",
+      "signal": "stop"
+    }
+  }'
+```
+
+关闭 SSE 连接只会停止接收事件。需要停止执行时，发送上面的停止请求，并继续观察结果。
+
+<h2 id="fields">请求字段速查</h2>
+
+| 字段 | 使用位置 | 含义 |
+| --- | --- | --- |
+| `action` | 所有请求 | `created`、`prompted` 或 `sse` |
+| `payload.session_id` | 所有请求 | 标识同一段对话 |
+| `payload.request_id` | 新消息 | 用于重试识别；每条新消息使用新值 |
+| `payload.prompt` | 首条消息和继续对话 | 本次输入文本 |
+| `payload.context` | 首条消息示例 | 业务上下文对象 |
+| `payload.signal` | `prompted` | `continue` 继续或 `stop` 停止 |
+| `payload.after_event_id` | `sse` | 从指定事件位置之后继续读取 |
+
+业务系统负责自己的消息入口、用户校验和会话标识映射。把不同客户的请求接入时，为他们分配不同的会话标识。

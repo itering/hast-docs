@@ -1,0 +1,35 @@
+<h2 id="create">Create a schedule</h2>
+
+1. Open scheduled tasks and create a new one.
+2. Write complete instructions for every run, rather than “repeat the last task.”
+3. Choose hourly, daily, weekdays, or weekly and set the time.
+4. Check timezone, model, and reasoning effort in advanced settings.
+5. Save and verify Next run in the list.
+
+```text
+Summarize new issues in the specified project from the past day.
+Create an English brief with issue title, link, and current status.
+If there are none, state “No new issues in the past day.”
+```
+
+Authorize required external apps in Connectors first and name the project explicitly.
+
+<h2 id="cron">Custom Cron</h2>
+
+Advanced settings support five-field Cron. This runs every Monday at 09:00 in the selected timezone:
+
+```text
+0 9 * * 1
+```
+
+Use a timezone name such as `Asia/Shanghai`. Check Next run after saving; do not confuse the browser's local time with the schedule's timezone.
+
+<h2 id="runs">Inspect results</h2>
+
+Select a schedule and view status and output in recent runs. Open the associated task or files. Run history is read-only; edit the schedule's instructions to change future executions.
+
+<h2 id="pause">Pause, resume, and delete</h2>
+
+Pausing stops future automatic scheduling. Check Next run after resuming. Deleting a schedule prevents later automatic runs; confirm the selected task first.
+
+An enabled schedule does not guarantee a successful run. On failure, inspect history, model availability, authorization, and inputs.

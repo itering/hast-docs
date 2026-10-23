@@ -1,0 +1,37 @@
+A Skill stores a repeatable working method. A package can contain an entry file and supporting material. Select it in the Agent configuration before the Agent can use it.
+
+<h2 id="create">Create a Skill</h2>
+
+1. Open Skills and create an entry.
+2. Enter a directory name, display name, and description.
+3. Write the entry file, usually `SKILL.md`.
+4. Add supporting text files for templates or references.
+5. Save, refresh the resource catalog in the Agent editor, select the Skill, and save the Agent.
+
+```markdown
+---
+name: requirements-brief
+description: Turn user requirements into an English brief for review.
+---
+
+# Requirements brief
+
+Preserve the dates, numbers, and product names supplied by the user.
+Summarize the goal, then list constraints and open questions.
+Mark missing information as “To confirm”.
+Use Markdown so the output can be copied into project documentation.
+```
+
+<h2 id="import">Import existing Skills</h2>
+
+Import local files or directories, or use GitHub or an HTTPS URL. Local imports replace the draft's file package, so save anything you need before confirming.
+
+Check the entry file, relative paths, and supporting files before saving. Each file must be UTF-8 text, at most 256 KiB; the whole package must not exceed 1 MiB.
+
+<h2 id="maintain">Edit, disable, and delete</h2>
+
+System Skills are read-only. Personal Skills can be edited or disabled, but their directory name cannot change after creation. Disabling affects subsequent executions in the current Profile; disabled personal Skills cannot be newly selected in the Agent form.
+
+Saving submits the entire package. Do not delete supporting files simply because they have not loaded. Reload before editing if the page reports changed content.
+
+Before deleting a referenced Skill, remove it from the affected Agents and save those configurations.

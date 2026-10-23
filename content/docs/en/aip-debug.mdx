@@ -1,0 +1,30 @@
+<h2 id="start">Start debugging</h2>
+
+Save the Agent and open debugging from its detail page, or open the debug page and choose an Agent in the current Profile.
+
+1. Create a debug session.
+2. Send a message that tests its main responsibility.
+3. Inspect replies and raw events.
+4. Ask a follow-up to check context retention.
+
+Debugging actually executes configured tools. For tools that write business data, use test objects you are authorized to modify.
+
+<h2 id="check">Check results</h2>
+
+| Check | Example |
+| --- | --- |
+| Complete input | Ask for a missing order number instead of inventing one |
+| Source use | Retrieve from the right knowledge base and acknowledge missing information |
+| Tool calls | Send correct parameters and report authentication errors clearly |
+| Output format | Follow the system prompt's format |
+| Conversation continuity | Keep follow-ups within the current session |
+
+<h2 id="stop">Stop and reconnect</h2>
+
+Use Stop to interrupt execution. Disconnecting the event stream or closing the page does not stop the run.
+
+After disconnection, reconnect from the last read event position. Debug session state is held in the current page; record session identifiers and errors before leaving if needed for investigation.
+
+<h2 id="errors">Common issues</h2>
+
+If changes are missing, confirm you saved and selected the correct Agent. If calls are rejected, check its enabled state. For tool authentication failures, check secrets and bindings. For missing sources, verify indexing and selection in the Agent configuration.

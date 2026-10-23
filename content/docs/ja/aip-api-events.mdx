@@ -1,0 +1,81 @@
+import { TaskAgentEventSchemas } from "../../../src/components/docs/task-agent-api-reference";
+
+AIP の会話イベントは HAST Event v2 を使用します。単一 Agent の会話は JSON ポーリング、Profile API key で送信する通常タスクは SSE にも対応します。[API クイックスタート](aip-api-quickstart)で用途に合うキーを作成してください。
+
+<h2 id="agent">単一 Agent の会話イベントを取得</h2>
+
+対象 Agent に紐付くキーと `agent:conversations:read` 権限を使用します（`agent:invoke` にも含まれます）。
+
+```bash
+export SESSION_ID='<SESSION_ID_FROM_RESPONSE>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  -H "Authorization: Bearer $HAST_API_KEY"
+```
+
+応答の `next_after` を次の `after` に指定します。`has_more` が `true` の間は、`events` が空でも次のページを取得します。それ以外は間隔を空けて再度問い合わせます。この API はユーザーと Agent の完全なメッセージと実行状態を返し、ツールの実行履歴は返しません。
+
+受付応答の `request_id` とイベントの `run_id` を照合し、`run.completed`、`run.failed`、`run.interrupted` を待ちます。`message.completed` は 1 メッセージの完了です。単一 Agent のキーは紐付く Agent の全会話履歴を取得できますが、以下の通常タスク用 SSE パスは使用できません。
+
+<h2 id="sse">ストリームへ接続</h2>
+
+以下は `prompts:write` と `sessions:read` を持つ Profile API key 用の手順です。`/prompts` に通常タスクを送信し、応答の `session_id` を `SESSION_ID` に設定して SSE に接続します。このタスクには保存済み Agent の設定は適用されません。その Agent を呼び出すには、上記の単一 Agent API または [Webhook HTTP 連携](aip-api)を使用します。
+
+```bash
+export HAST_API_KEY='<YOUR_PROFILE_API_KEY>'
+curl --fail-with-body "$HAST_API_BASE/prompts" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data '{"request_id":"task-001","prompt":"What is 2 + 2?"}'
+export SESSION_ID='<SESSION_ID_FROM_PROMPT_RESPONSE>'
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream?after=0" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream'
+```
+
+`sessions:read` が必要です。応答は `text/event-stream` で、イベント間に `: keep-alive` コメントも届きます。
+
+<h2 id="frames">SSE フレーム形式</h2>
+
+```text
+id: 42
+event: message.completed
+data: {"schema_version":2,"event_id":"evt_123",...}
+```
+
+ここでは説明のため `data` を省略しています。実際は完全な JSON イベントで、空行でフレームを区切ります。
+
+| 項目 | 意味 |
+| --- | --- |
+| `id` | 再開に使う永続シーケンス番号 |
+| `event` | エンベロープの `type` に対応する種別 |
+| `data` | HAST Event v2 JSON エンベロープ |
+
+<h2 id="reconnect">再接続と再生</h2>
+
+処理済みの永続シーケンス番号を保存します。再接続時に `after` または `Last-Event-ID` ヘッダーで渡します。`event_id` を番号として使わないでください。
+
+```bash
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream' \
+  -H 'Last-Event-ID: 42'
+```
+
+<Note>永続イベントは再生できますが、一時的な差分は再生できません。番号で重複排除し、画面復元ではテキスト差分だけでなく完全なメッセージイベントを使います。保活コメントを無視し、将来の新しい種別にも耐えられるようにします。</Note>
+
+<h2 id="poll">JSON でイベントを取得</h2>
+
+Profile API key の通常タスクでは、`after` と `limit` を指定して `GET /sessions/{id}/events` を呼び出すこともできます。単一 Agent のキーは上記の `/agent/sessions/{session_id}/events` を使用します。引数は [API リファレンス](aip-api-reference#sessions)を参照してください。
+
+<h2 id="envelope">Event v2 と種別</h2>
+
+エンベロープにはバージョン、イベント ID、ソース、エンジン、タスク識別子、種別、データがあります。`sequence` は永続イベントで正整数、一時イベントでは `null` です。`replayable` は再生可能性を表します。
+
+`type` に応じて `data` の構造が変わります。メッセージ、ツール、計画、実行では項目が異なります。メッセージ完了を実行全体の完了とせず、`run.completed`、`run.failed`、`run.interrupted` で判断してください。
+
+以下は同じ OpenAPI JSON から生成した構造です。展開すると項目、必須条件、例を確認できます。`api.TaskAgentEventDoc` 参照は共通エンベロープを指し、他の部分は種別固有のデータを表します。
+
+<TaskAgentEventSchemas locale="ja" />

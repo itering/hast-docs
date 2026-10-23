@@ -1,0 +1,85 @@
+import { TaskAgentEventSchemas } from "../../../src/components/docs/task-agent-api-reference";
+
+AIP 的会话事件使用 HAST Event v2。单 Agent 对话通过 JSON 轮询读取；Profile API key 提交的普通任务还可以使用 SSE。先按 [API 入门](aip-api-quickstart) 创建适合调用场景的密钥。
+
+<h2 id="agent">读取单 Agent 对话事件</h2>
+
+使用绑定目标 Agent 的密钥，授予 `agent:conversations:read`（发送消息的 `agent:invoke` 已包含此权限）：
+
+```bash
+export SESSION_ID='<SESSION_ID_FROM_RESPONSE>'
+curl --fail-with-body \
+  "$HAST_API_BASE/agent/sessions/$SESSION_ID/events?after=0&limit=100" \
+  -H "Authorization: Bearer $HAST_API_KEY"
+```
+
+将响应中的 `next_after` 作为下次请求的 `after`。`has_more` 为 `true` 时继续翻页，即使 `events` 为空；没有更多事件时稍后再次轮询。此接口只返回用户和 Agent 的完整消息及运行状态，不返回工具轨迹。
+
+按回执的 `request_id` 匹配事件的 `run_id`，直到出现 `run.completed`、`run.failed` 或 `run.interrupted`。`message.completed` 只结束一条消息。单 Agent key 可读取绑定 Agent 的全部历史对话，但不能使用下面的普通任务 SSE 路径。
+
+<h2 id="sse">连接事件流</h2>
+
+以下流程使用 Profile API key，授予 `prompts:write` 和 `sessions:read`。先向 `/prompts` 提交普通任务，将响应中的 `session_id` 设置为 `SESSION_ID`，再连接 SSE。此任务不使用已保存的 Agent 配置；调用该 Agent 请用上面的单 Agent 对话接口或 [Webhook HTTP 接入](aip-api)。
+
+```bash
+export HAST_API_KEY='<YOUR_PROFILE_API_KEY>'
+curl --fail-with-body "$HAST_API_BASE/prompts" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data '{"request_id":"task-001","prompt":"What is 2 + 2?"}'
+export SESSION_ID='<SESSION_ID_FROM_PROMPT_RESPONSE>'
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream?after=0" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream'
+```
+
+读取事件需要 `sessions:read` 权限。连接返回 `text/event-stream`，事件之间还会发送 `: keep-alive` 注释行。
+
+<h2 id="frames">SSE 帧格式</h2>
+
+```text
+id: 42
+event: message.completed
+data: {"schema_version":2,"event_id":"evt_123",...}
+```
+
+这里的 `data` 省略了部分字段，只用于说明帧格式。实际数据是完整的 JSON 事件对象，帧之间以空行分隔。
+
+| 字段 | 含义 |
+| --- | --- |
+| `id` | 持久化序号，用于断线后续读 |
+| `event` | 事件类型，对应信封中的 `type` |
+| `data` | HAST Event v2 JSON 信封 |
+
+<h2 id="reconnect">断线续读与回放</h2>
+
+保存已处理的持久化序号。重新连接时，通过 `after` 查询参数或 `Last-Event-ID` 请求头传入该值；不要把 `event_id` 当作序号。
+
+```bash
+curl -N --fail-with-body \
+  "$HAST_API_BASE/sessions/$SESSION_ID/events/stream" \
+  -H "Authorization: Bearer $HAST_API_KEY" \
+  -H 'Accept: text/event-stream' \
+  -H 'Last-Event-ID: 42'
+```
+
+<Note>
+
+持久化事件可以回放，易失增量不会回放。客户端应根据持久化序号去重，恢复界面时结合完整消息事件，不要只依赖文本增量。忽略保活注释，并容忍未来新增的事件类型。
+
+</Note>
+
+<h2 id="poll">通过 JSON 读取事件</h2>
+
+Profile API key 的普通任务也可以调用 `GET /sessions/{id}/events`，使用 `after` 和 `limit` 读取事件。单 Agent key 使用本页顶部的 `/agent/sessions/{session_id}/events`。参数见 [API 参考](aip-api-reference#sessions)。
+
+<h2 id="envelope">Event v2 与事件类型</h2>
+
+信封包含版本、事件 ID、来源、执行引擎、任务标识、事件类型和数据。`sequence` 对持久化事件为正整数，对易失事件为 `null`；`replayable` 表示事件是否可回放。
+
+`type` 决定 `data` 的结构。消息、工具、计划和运行事件各自携带不同字段。不要把一条消息完成当作整轮运行结束，应结合 `run.completed`、`run.failed` 或 `run.interrupted` 判断运行结果。
+
+以下结构直接由同一份 OpenAPI JSON 生成，展开后查看字段、必填约束和示例。各事件类型中的 `api.TaskAgentEventDoc` 引用指向上方的共用信封，其他部分说明该类型特有的数据结构。
+
+<TaskAgentEventSchemas />

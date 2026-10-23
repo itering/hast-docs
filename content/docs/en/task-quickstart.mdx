@@ -1,0 +1,40 @@
+<h2 id="prepare">Prepare input</h2>
+
+Check that the current Profile has Task Agent access. Prepare meeting notes without sensitive information, or paste them into the input. This example organizes existing material and needs no external apps.
+
+<Steps titleSize="h2">
+
+<Step title="Submit the task" id="prompt" stepNumber={1}>
+
+Open a new conversation and replace the final paragraph below with your notes:
+
+```text
+Turn the meeting notes below into English minutes.
+Separate decisions from questions still under discussion.
+For each action item, list the task, owner, and deadline; mark missing details as “To confirm”.
+Create a Markdown file and summarize what I should review in your reply.
+
+Meeting notes:
+Support wants an order lookup feature. Version one only checks status and does not modify orders.
+Lin will confirm API fields by Friday. The launch date is not yet decided.
+```
+
+Alternatively, upload a file and wait for the upload to finish before sending.
+
+</Step>
+
+<Step title="Check progress" id="plan" stepNumber={2}>
+
+The Agent starts work after you send the request. Check its replies and activity, and add instructions if the scope, format, or sources need correction. Use Stop when you need to interrupt the work. For example: “Only organize these notes; no external research is needed.”
+
+</Step>
+
+<Step title="Check and download" id="result" stepNumber={3}>
+
+When execution finishes, check that owners, dates, and actions come from the source. Open the conversation's file view and download the Markdown file.
+
+For revisions, continue in the same conversation: “Put action items in a table and retain open questions.” See [troubleshooting](task-troubleshooting) if needed.
+
+</Step>
+
+</Steps>

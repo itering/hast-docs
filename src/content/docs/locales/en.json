@@ -1,0 +1,897 @@
+{
+  "overview": {
+    "title": "Meet Hast",
+    "description": "Learn about Hast AIP, Hast Agent, Hast GTM, and delivery with the FDE team.",
+    "toc": [
+      {
+        "id": "platform",
+        "title": "Hast AIP: a platform for FDE delivery"
+      },
+      {
+        "id": "products",
+        "title": "Two product modules"
+      },
+      {
+        "id": "fde",
+        "title": "FDE: delivering with customers"
+      },
+      {
+        "id": "first-use",
+        "title": "Where to start"
+      },
+      {
+        "id": "integration",
+        "title": "Programmatic access"
+      }
+    ]
+  },
+  "aip-overview": {
+    "title": "About AIP",
+    "description": "Configure Agents and connect business systems using the FDE delivery workbench.",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "Suitable delivery scenarios"
+      },
+      {
+        "id": "capabilities",
+        "title": "What the workbench provides"
+      },
+      {
+        "id": "concepts",
+        "title": "Key concepts"
+      },
+      {
+        "id": "workflow",
+        "title": "Configuration and delivery"
+      },
+      {
+        "id": "state",
+        "title": "Enabled state and run state"
+      },
+      {
+        "id": "delivery",
+        "title": "Launching with FDEs"
+      }
+    ]
+  },
+  "aip-quickstart": {
+    "title": "Create your first Agent",
+    "description": "Configure, save, and debug an Agent without external services.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "create",
+        "title": "Create and save"
+      },
+      {
+        "id": "test",
+        "title": "Send a test message"
+      },
+      {
+        "id": "next",
+        "title": "Next steps"
+      }
+    ]
+  },
+  "aip-agents": {
+    "title": "Configure and manage Agents",
+    "description": "Set responsibilities, models, and capabilities, and maintain the active configuration.",
+    "toc": [
+      {
+        "id": "edit",
+        "title": "Edit configuration"
+      },
+      {
+        "id": "save",
+        "title": "Save and collaborate"
+      },
+      {
+        "id": "disable",
+        "title": "Disable and delete"
+      },
+      {
+        "id": "related",
+        "title": "Related tasks"
+      }
+    ]
+  },
+  "aip-skills": {
+    "title": "Manage Skills",
+    "description": "Write, import, and select the skill files used by Agents.",
+    "toc": [
+      {
+        "id": "create",
+        "title": "Create a Skill"
+      },
+      {
+        "id": "import",
+        "title": "Import existing Skills"
+      },
+      {
+        "id": "maintain",
+        "title": "Edit, disable, and delete"
+      }
+    ]
+  },
+  "aip-knowledge": {
+    "title": "Add a knowledge base",
+    "description": "Organize URL, file, and Drive sources; manage knowledge-base membership, indexing, and compiled material.",
+    "toc": [
+      {
+        "id": "create",
+        "title": "Add source material"
+      },
+      {
+        "id": "use",
+        "title": "Use it in an Agent"
+      },
+      {
+        "id": "update",
+        "title": "When source material changes"
+      }
+    ]
+  },
+  "aip-secrets": {
+    "title": "Manage business secrets",
+    "description": "Store credentials and bind them to Agents without exposing real values in examples.",
+    "toc": [
+      {
+        "id": "create",
+        "title": "Create a secret"
+      },
+      {
+        "id": "bind",
+        "title": "Bind it to an Agent"
+      },
+      {
+        "id": "rotate",
+        "title": "Update and delete"
+      }
+    ]
+  },
+  "aip-tools": {
+    "title": "Connect business tools",
+    "description": "Let Agents call HTTP services with explicit inputs and authentication.",
+    "toc": [
+      {
+        "id": "choose",
+        "title": "Choose a tool type"
+      },
+      {
+        "id": "http",
+        "title": "Configure a dynamic HTTP tool"
+      },
+      {
+        "id": "proxy",
+        "title": "Configure an HTTP proxy"
+      },
+      {
+        "id": "troubleshoot",
+        "title": "When calls fail"
+      }
+    ]
+  },
+  "aip-memory": {
+    "title": "Configure long-term memory",
+    "description": "Choose what memory an Agent can read and where new memory is written.",
+    "toc": [
+      {
+        "id": "enable",
+        "title": "Enable memory"
+      },
+      {
+        "id": "scope",
+        "title": "Choose the scope"
+      },
+      {
+        "id": "manage",
+        "title": "Maintain entries"
+      }
+    ]
+  },
+  "aip-debug": {
+    "title": "Debug an Agent",
+    "description": "Test saved configurations, conversation continuity, and tool results.",
+    "toc": [
+      {
+        "id": "start",
+        "title": "Start debugging"
+      },
+      {
+        "id": "check",
+        "title": "Check results"
+      },
+      {
+        "id": "stop",
+        "title": "Stop and reconnect"
+      },
+      {
+        "id": "errors",
+        "title": "Common issues"
+      }
+    ]
+  },
+  "aip-config-transfer": {
+    "title": "Import, export, and copy",
+    "description": "Reuse configurations and recheck resources and credentials after migration.",
+    "toc": [
+      {
+        "id": "import",
+        "title": "Import configuration"
+      },
+      {
+        "id": "copy",
+        "title": "Copy an Agent"
+      },
+      {
+        "id": "export",
+        "title": "Export and hand over"
+      }
+    ]
+  },
+  "task-overview": {
+    "title": "About Task Agent",
+    "description": "Plan, execute, and deliver complete tasks with tools, files, and lasting context.",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "Suitable tasks"
+      },
+      {
+        "id": "workspace",
+        "title": "Continue in the same workspace"
+      },
+      {
+        "id": "continuity",
+        "title": "Reuse context and schedule recurring work"
+      },
+      {
+        "id": "workflow",
+        "title": "Complete a task"
+      },
+      {
+        "id": "api",
+        "title": "Programmatic access"
+      },
+      {
+        "id": "next",
+        "title": "Get started"
+      }
+    ]
+  },
+  "task-quickstart": {
+    "title": "Complete your first task",
+    "description": "Submit a request, check progress, and inspect the final output.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Prepare input"
+      },
+      {
+        "id": "prompt",
+        "title": "Submit the task"
+      },
+      {
+        "id": "plan",
+        "title": "Check progress"
+      },
+      {
+        "id": "result",
+        "title": "Check and download"
+      }
+    ]
+  },
+  "task-conversations": {
+    "title": "Execute tasks and manage conversations",
+    "description": "Add instructions, stop execution, and manage conversation history.",
+    "toc": [
+      {
+        "id": "request",
+        "title": "State the requirements"
+      },
+      {
+        "id": "execute",
+        "title": "Check execution"
+      },
+      {
+        "id": "stop",
+        "title": "Stop and continue"
+      },
+      {
+        "id": "history",
+        "title": "Manage history"
+      }
+    ]
+  },
+  "task-files": {
+    "title": "Upload, view, and download files",
+    "description": "Provide inputs and keep the files created by your tasks.",
+    "toc": [
+      {
+        "id": "upload",
+        "title": "Upload inputs"
+      },
+      {
+        "id": "view",
+        "title": "View generated files"
+      },
+      {
+        "id": "download",
+        "title": "Download results"
+      },
+      {
+        "id": "delete",
+        "title": "Delete files"
+      }
+    ]
+  },
+  "task-capabilities": {
+    "title": "Connect apps and configure capabilities",
+    "description": "Authorize external apps and maintain context across tasks.",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "Connect external apps"
+      },
+      {
+        "id": "memory",
+        "title": "Save long-term memory"
+      },
+      {
+        "id": "methods",
+        "title": "Use built-in skill management"
+      },
+      {
+        "id": "account",
+        "title": "Connect your Codex account"
+      }
+    ]
+  },
+  "task-schedules": {
+    "title": "Create scheduled tasks",
+    "description": "Set recurrence and timezone, then inspect each run's result.",
+    "toc": [
+      {
+        "id": "create",
+        "title": "Create a schedule"
+      },
+      {
+        "id": "cron",
+        "title": "Custom Cron"
+      },
+      {
+        "id": "runs",
+        "title": "Inspect results"
+      },
+      {
+        "id": "pause",
+        "title": "Pause, resume, and delete"
+      }
+    ]
+  },
+  "task-troubleshooting": {
+    "title": "Task Agent troubleshooting",
+    "description": "Check access, connections, task state, and files.",
+    "toc": [
+      {
+        "id": "questions",
+        "title": "Common questions"
+      },
+      {
+        "id": "support",
+        "title": "What to include in a report"
+      }
+    ]
+  },
+  "gtm-overview": {
+    "title": "About GTM",
+    "description": "Use a shared website project for research, visibility analysis, and marketing drafts.",
+    "toc": [
+      {
+        "id": "uses",
+        "title": "Marketing use cases"
+      },
+      {
+        "id": "context",
+        "title": "Shared context for research and content"
+      },
+      {
+        "id": "workspace",
+        "title": "Inside a project"
+      },
+      {
+        "id": "start",
+        "title": "Start with a website"
+      },
+      {
+        "id": "workflow",
+        "title": "Act on analysis"
+      },
+      {
+        "id": "agent",
+        "title": "Operate through Growth Agent"
+      }
+    ]
+  },
+  "gtm-quickstart": {
+    "title": "Create your first GTM project",
+    "description": "Enter a website, wait for initialization, and inspect the first results.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "create",
+        "title": "Create a project"
+      },
+      {
+        "id": "setup",
+        "title": "Wait for initialization"
+      },
+      {
+        "id": "review",
+        "title": "Check results"
+      }
+    ]
+  },
+  "gtm-projects": {
+    "title": "Manage projects and website context",
+    "description": "Switch projects, refresh site information, and manage project settings.",
+    "toc": [
+      {
+        "id": "switch",
+        "title": "Switch and identify projects"
+      },
+      {
+        "id": "refresh",
+        "title": "Refresh website context"
+      },
+      {
+        "id": "files",
+        "title": "Inspect site files"
+      },
+      {
+        "id": "settings",
+        "title": "Rename and delete"
+      }
+    ]
+  },
+  "gtm-company": {
+    "title": "Company analysis and project documents",
+    "description": "Review product, competitor, and marketing context before content tasks.",
+    "toc": [
+      {
+        "id": "intelligence",
+        "title": "Inspect company analysis"
+      },
+      {
+        "id": "documents",
+        "title": "Read project documents"
+      },
+      {
+        "id": "review",
+        "title": "Verify facts before writing"
+      }
+    ]
+  },
+  "gtm-performance": {
+    "title": "SEO and website performance",
+    "description": "Read PageSpeed reports for mobile and desktop.",
+    "toc": [
+      {
+        "id": "run",
+        "title": "Run a check"
+      },
+      {
+        "id": "read",
+        "title": "Read the report"
+      },
+      {
+        "id": "compare",
+        "title": "Recheck after site changes"
+      }
+    ]
+  },
+  "gtm-geo": {
+    "title": "AI brand mentions",
+    "description": "Inspect buyer questions and whether model answers mention your brand.",
+    "toc": [
+      {
+        "id": "prompts",
+        "title": "Review buyer questions"
+      },
+      {
+        "id": "run",
+        "title": "Run mention analysis"
+      },
+      {
+        "id": "read",
+        "title": "Inspect answers"
+      }
+    ]
+  },
+  "gtm-traffic": {
+    "title": "Connect Google Analytics",
+    "description": "Authorize an account, choose a GA property, and inspect traffic reports.",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "Connect an account"
+      },
+      {
+        "id": "property",
+        "title": "Choose a property"
+      },
+      {
+        "id": "sync",
+        "title": "Sync and inspect"
+      }
+    ]
+  },
+  "gtm-x": {
+    "title": "Generate and publish X drafts",
+    "description": "Create posts, review previews, and finish publishing on X.",
+    "toc": [
+      {
+        "id": "generate",
+        "title": "Generate drafts"
+      },
+      {
+        "id": "review",
+        "title": "Review the content"
+      },
+      {
+        "id": "publish",
+        "title": "Publish on X"
+      }
+    ]
+  },
+  "gtm-articles": {
+    "title": "Generate article drafts",
+    "description": "Set style, language, and audience, then review and copy Markdown.",
+    "toc": [
+      {
+        "id": "configure",
+        "title": "Set article requirements"
+      },
+      {
+        "id": "generate",
+        "title": "Wait for the draft"
+      },
+      {
+        "id": "review",
+        "title": "Review and reuse"
+      }
+    ]
+  },
+  "gtm-growth-agent": {
+    "title": "Use Growth Agent",
+    "description": "Read project context or start supported background operations in conversation.",
+    "toc": [
+      {
+        "id": "ask",
+        "title": "Ask about the current project"
+      },
+      {
+        "id": "operations",
+        "title": "Start operations in conversation"
+      },
+      {
+        "id": "status",
+        "title": "Replies and background results"
+      }
+    ]
+  },
+  "gtm-troubleshooting": {
+    "title": "Run status and troubleshooting",
+    "description": "Check queueing, dependencies, and results without treating unfinished work as missing data.",
+    "toc": [
+      {
+        "id": "statuses",
+        "title": "Read run status"
+      },
+      {
+        "id": "questions",
+        "title": "Common questions"
+      },
+      {
+        "id": "help",
+        "title": "Report an issue"
+      }
+    ]
+  },
+  "billing": {
+    "title": "Plans and usage",
+    "description": "Check access, consumption, and billing for the current Profile.",
+    "toc": [
+      {
+        "id": "plan",
+        "title": "Check product access"
+      },
+      {
+        "id": "usage",
+        "title": "Inspect usage"
+      },
+      {
+        "id": "team",
+        "title": "Team seats"
+      },
+      {
+        "id": "renew",
+        "title": "Renewal and cancellation"
+      }
+    ]
+  },
+  "aip-api": {
+    "title": "Webhook HTTP integration",
+    "description": "Invoke an Agent from your server, continue conversations, read replies, and stop execution.",
+    "toc": [
+      {
+        "id": "auth",
+        "title": "Prepare the invocation URL"
+      },
+      {
+        "id": "first",
+        "title": "Send the first message"
+      },
+      {
+        "id": "stream",
+        "title": "Receive streamed replies"
+      },
+      {
+        "id": "continue",
+        "title": "Continue the conversation"
+      },
+      {
+        "id": "stop",
+        "title": "Stop generation"
+      },
+      {
+        "id": "fields",
+        "title": "Request fields"
+      }
+    ]
+  },
+  "aip-api-quickstart": {
+    "title": "API quickstart",
+    "description": "Create an AIP key, call a saved Agent, read replies, and access authorized business resources.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Prepare the URL and key"
+      },
+      {
+        "id": "send",
+        "title": "Submit your first task"
+      },
+      {
+        "id": "read",
+        "title": "Read execution progress"
+      },
+      {
+        "id": "profile",
+        "title": "Use a Profile API key"
+      },
+      {
+        "id": "next",
+        "title": "Continue integration"
+      }
+    ]
+  },
+  "aip-api-events": {
+    "title": "Conversation events and SSE",
+    "description": "Poll single-Agent conversation events or stream ordinary task events with a Profile API key.",
+    "toc": [
+      {
+        "id": "agent",
+        "title": "Read single-Agent conversation events"
+      },
+      {
+        "id": "sse",
+        "title": "Connect to the stream"
+      },
+      {
+        "id": "frames",
+        "title": "SSE frame format"
+      },
+      {
+        "id": "reconnect",
+        "title": "Resume and replay"
+      },
+      {
+        "id": "poll",
+        "title": "Read events as JSON"
+      },
+      {
+        "id": "envelope",
+        "title": "Event v2 and event types"
+      }
+    ]
+  },
+  "aip-api-reference": {
+    "title": "API reference",
+    "description": "Explore AIP public API authentication, Agent conversations, and business resource endpoints.",
+    "toc": [
+      {
+        "id": "openapi",
+        "title": "OpenAPI JSON"
+      },
+      {
+        "id": "wechat-accounts",
+        "title": "Discover WeChat accounts"
+      }
+    ]
+  },
+  "mcp": {
+    "title": "MCP integration",
+    "description": "Connect external Agent clients to AIP tools with a Public API Key.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Prepare a key and permissions"
+      },
+      {
+        "id": "connect",
+        "title": "Configure an MCP client"
+      },
+      {
+        "id": "verify",
+        "title": "Verify and read guides"
+      },
+      {
+        "id": "wechat-accounts",
+        "title": "Discover WeChat accounts"
+      },
+      {
+        "id": "use",
+        "title": "Start working with your Agent"
+      },
+      {
+        "id": "results",
+        "title": "Results and limits"
+      },
+      {
+        "id": "troubleshoot",
+        "title": "Connection and call failures"
+      }
+    ]
+  },
+  "aip-slack": {
+    "title": "Connect Slack",
+    "description": "Bring your Agent into Slack to ask questions, work with files, and collaborate with your team in channels or direct messages.",
+    "subgroup": "Channel integrations",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "create-app",
+        "title": "Create a Slack App"
+      },
+      {
+        "id": "install",
+        "title": "Install in your workspace"
+      },
+      {
+        "id": "connect",
+        "title": "Create the channel in AIP"
+      },
+      {
+        "id": "events",
+        "title": "Verify the callback and save events"
+      },
+      {
+        "id": "test",
+        "title": "Select an Agent and test"
+      },
+      {
+        "id": "reply-rules",
+        "title": "Configure reply triggers"
+      },
+      {
+        "id": "operation-progress",
+        "title": "Show operation progress"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "Troubleshooting"
+      }
+    ]
+  },
+  "aip-whatsapp": {
+    "title": "Connect WhatsApp",
+    "description": "Let customers ask questions, share files, and get replies from your Agent in WhatsApp.",
+    "subgroup": "Channel integrations",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "account",
+        "title": "Prepare account authorization"
+      },
+      {
+        "id": "connect",
+        "title": "Create the channel in AIP"
+      },
+      {
+        "id": "webhook",
+        "title": "Configure the message callback"
+      },
+      {
+        "id": "identifiers",
+        "title": "Save account details"
+      },
+      {
+        "id": "credentials",
+        "title": "Get an Outbound API key"
+      },
+      {
+        "id": "test",
+        "title": "Associate an Agent and test"
+      },
+      {
+        "id": "app",
+        "title": "Existing Meta connections"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "Troubleshooting"
+      }
+    ]
+  },
+  "aip-wechat-kf": {
+    "title": "Connect WeChat Customer Service",
+    "description": "Connect your Agent to WeChat Customer Service to answer customers in WeChat.",
+    "subgroup": "Channel integrations",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "app",
+        "title": "Prepare the WeCom app"
+      },
+      {
+        "id": "callback-values",
+        "title": "Prepare callback credentials"
+      },
+      {
+        "id": "connect",
+        "title": "Create the AIP channel"
+      },
+      {
+        "id": "domain",
+        "title": "Verify the domain and trusted IPs"
+      },
+      {
+        "id": "callback",
+        "title": "Save callback settings"
+      },
+      {
+        "id": "authorize",
+        "title": "Authorize customer service accounts"
+      },
+      {
+        "id": "verify",
+        "title": "Finish installation in AIP"
+      },
+      {
+        "id": "test",
+        "title": "Test replies in WeChat"
+      },
+      {
+        "id": "troubleshooting",
+        "title": "Troubleshooting"
+      }
+    ]
+  }
+}

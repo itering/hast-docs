@@ -1,0 +1,29 @@
+import { TaskAgentApiReference } from "../../../src/components/docs/task-agent-api-reference";
+
+<h2 id="openapi">OpenAPI JSON</h2>
+
+AIP Public API uses keys created in the workbench. Single-Agent conversation keys call `/agent/*` using the saved Agent configuration; Profile API keys access resources belonging to the current business identity according to their permissions. Start with the [API quickstart](aip-api-quickstart) and read [conversation events and SSE](aip-api-events) for result handling.
+
+The definitions below come from the Backplane OpenAPI snapshot and group parameters, request bodies, and responses by resource.
+
+<TaskAgentApiReference locale="en" />
+
+<h2 id="wechat-accounts">Discover WeChat customer service accounts</h2>
+
+After creating a WeChat channel draft and completing WeCom authorization, call `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts` with a Profile API key granting `channels:write`. Write includes read. Single-Agent conversation keys cannot use this endpoint.
+
+Request body (replace the Secret placeholder only through protected client arguments, never prompts or logs):
+
+```json
+{"corp_secret":"<APPLICATION_SECRET>"}
+```
+
+Successful response (`200`):
+
+```json
+{"accounts":[{"open_kfid":"wk-example","name":"Customer support","manage_privilege":true}]}
+```
+
+Select by name from accounts with `manage_privilege: true`. One manageable account may be preselected; several require a user choice. An empty list is valid. Discovery does not save the Secret or change bindings. Confirm setup with `PATCH /api/public/v1/channels/{connection_id}/wechat-kf`, sending the same `corp_secret` and selected `open_kfid`; the server rechecks management permission.
+
+For `400/422 wechat_credentials_invalid`, check the application Secret and company ID. For `422 wechat_permission_denied`, authorize the application for customer-service APIs. For `422 wechat_ip_not_allowed`, configure trusted outbound IPs. Retry `422/502 wechat_accounts_unavailable`. Check API-key authentication/scopes for `401/403`, channel ownership for `404`, and channel account initialization for `409`.
