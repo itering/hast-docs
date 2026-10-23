@@ -3,6 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 
 const origin = new URL(process.env.NEXT_PUBLIC_DOCS_URL ?? 'http://localhost:3219').origin;
+const production = process.env.NEXT_PUBLIC_DOCS_ENV === 'production';
+if (production) assert.equal(origin, 'https://docs.hast.so', 'Use the public docs origin for a production export.');
 const urls: string[] = [];
 for (const locale of ['en', 'ja', 'zh-CN']) {
   const source = (await readdir(`content/docs/${locale}`)).filter(name => name.endsWith('.mdx'));
@@ -16,8 +18,12 @@ for (const locale of ['en', 'ja', 'zh-CN']) {
   }
 }
 await writeFile('out/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url => `<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
-await writeFile('out/robots.txt', 'User-agent: *\nDisallow: /\n');
-await writeFile('out/index.html', '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta http-equiv="refresh" content="0;url=/en/docs/overview"><title>Hast Docs</title><a href="/en/docs/overview">Read Hast Docs</a></html>\n');
+await writeFile('out/robots.txt', production ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n` : 'User-agent: *\nDisallow: /\n');
+await writeFile('out/index.html', `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="${production ? 'index,follow' : 'noindex,nofollow'}"><meta http-equiv="refresh" content="0;url=/en/docs/overview"><title>Hast Docs</title><a href="/en/docs/overview">Read Hast Docs</a></html>\n`);
+const vercel = JSON.parse(await readFile('vercel.json', 'utf8'));
+if (production) vercel.headers = vercel.headers.filter((rule: { headers: { key: string }[] }) => !rule.headers.some(header => header.key.toLowerCase() === 'x-robots-tag'));
+await writeFile('out/vercel.json', JSON.stringify(vercel, null, 2) + '\n');
 const source = process.env.GITHUB_SHA ?? execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-await writeFile('out/release.json', JSON.stringify({ source, environment: 'staging', pages: urls.length, languages: ['en','ja','zh-CN'] }) + '\n');
-console.log(`Verified ${urls.length} exported documentation pages; wrote staging metadata.`);
+const environment = production ? 'production' : 'staging';
+await writeFile('out/release.json', JSON.stringify({ source, environment, pages: urls.length, languages: ['en','ja','zh-CN'] }) + '\n');
+console.log(`Verified ${urls.length} exported documentation pages; wrote ${environment} metadata.`);
