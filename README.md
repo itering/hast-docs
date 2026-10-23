@@ -56,8 +56,7 @@ NEXT_PUBLIC_DOCS_ENV=production \
 NEXT_PUBLIC_DOCS_URL=https://docs.hast.so \
 NEXT_PUBLIC_SITE_URL=https://hast.so \
 NEXT_PUBLIC_AIP_URL=https://aip.hast.so pnpm build
-vercel link out --project hast-docs --scope itering --yes
-vercel deploy out --prod --scope itering --yes
+vercel deploy out --prod --project hast-docs --scope itering --yes
 ```
 
 The export includes its Vercel configuration. A production export enables search
