@@ -1,0 +1,36 @@
+name: Check docs
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, Linux, X64, itering-ci]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check docs
+        run: pnpm check
+      - name: Test docs
+        run: pnpm test
+      - name: Build staging docs
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_DOCS_URL: https://docs-stg.hast.so
+          NEXT_PUBLIC_SITE_URL: https://stg.hast.so
+          NEXT_PUBLIC_AIP_URL: https://aip-stg.hast.so
