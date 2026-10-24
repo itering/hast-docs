@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, itering-ci]
     environment: staging
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -29,10 +29,10 @@ jobs:
           dist_path: out
           vercel_json_path: vercel.json
           project_name: hast-docs
-          alias_domain: hast-docs-stg
+          alias_domain: hast-docs-stg,docs-stg.hast.so
           preview_output: true
           enable_cache: false
         env:
-          NEXT_PUBLIC_DOCS_URL: https://hast-docs-stg.vercel.app
+          NEXT_PUBLIC_DOCS_URL: https://docs-stg.hast.so
           NEXT_PUBLIC_SITE_URL: https://stg.hast.so
           NEXT_PUBLIC_AIP_URL: https://aip-stg.hast.so
