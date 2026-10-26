@@ -3,7 +3,15 @@
 准备一个[已启用的 Agent](aip-quickstart)，以及 Slack 工作区的 App 安装权限。
 
 <Note>
-每个渠道请使用独立的 Slack App，避免覆盖已有渠道的[消息回调](https://docs.slack.dev/apis/events-api/using-http-request-urls/)。STG 与生产也应使用不同 App：同一个 App 只有一个 Events Request URL，将同一 Bot Token 填入另一个环境不会改变消息去向。`Verified` 只表示当前 URL 验证成功，还需核对它属于目标环境和渠道。
+如果 Slack App 由你自行管理，每个 App 只能配置一个 Events Request URL。独立路由的频道以及 STG/生产应使用不同 App，避免覆盖已有渠道的[消息回调](https://docs.slack.dev/apis/events-api/using-http-request-urls/)；在另一个环境复用同一 Bot Token 不会改变事件接收地址。`Verified` 只表示当前 URL 验证成功，还需核对它属于目标环境和频道。
+</Note>
+
+<h2 id="shared-app">使用共享 HAST Slack App（如有）</h2>
+
+如果 AIP 为当前 Agent 提供共享 HAST Slack App，可在每个 Slack 工作区安装一次；同一工作区的其他 Agent 可以复用该安装。为每个 Agent 设置独立的 `@handle` 并选择允许它回复的频道。handle 在工作区内必须唯一，并使用小写字母、数字、连字符或下划线。多个 Agent 可以共用一个频道：提及目标 Agent 的 `@handle` 即可将消息路由到它，回复会留在该 Agent 的线程中。每个 Agent 的独立 handle 需要 Slack 套餐支持用户组；如果当前套餐不支持，请改用独立 Bot。私有频道需先在 Slack 的“频道详情”→“集成”→“添加应用”中添加 HAST。
+
+<Note>
+保存配置不代表消息已送达。在已选择的频道中提及该 Agent 的 `@handle` 并确认实际回复。如果当前环境没有共享 App 选项，请按下方自动创建或自主管理 App 的步骤操作。
 </Note>
 
 <h2 id="automatic">自动创建 Slack App</h2>
@@ -19,7 +27,7 @@
 
 <h2 id="manual-setup">使用已有 App 或手动配置</h2>
 
-已有 Bot 或需要手动安装时，按下面步骤配置。每条独立渠道使用独立 App。
+已有 Bot 或要配置自己管理的 Slack App 时，按下面步骤操作。此流程中每条独立渠道使用独立 App。
 
 <Steps titleSize="h2">
 
@@ -152,7 +160,7 @@
 
 `User Token Scopes` 留空。
 
-Thinking Steps 使用上述已有的 `chat:write` 权限来[创建和更新流式消息](https://docs.slack.dev/reference/methods/chat.startStream/)，完成后用同一权限[删除 Bot 自己的临时步骤消息](https://docs.slack.dev/reference/methods/chat.delete/)。无需新增 scope 或事件订阅；完整 JSON 已包含所需权限。旧 App 若缺少权限，补齐后重新安装到工作区，并在 AIP 更新该 App 的 Bot Token。
+对于按此清单配置的自建 App，Thinking Steps 使用已有的 `chat:write` 权限来[创建和更新流式消息](https://docs.slack.dev/reference/methods/chat.startStream/)，完成后用同一权限[删除 Bot 自己的临时步骤消息](https://docs.slack.dev/reference/methods/chat.delete/)。无需新增 scope 或事件订阅；完整 JSON 已包含所需权限。较早的自建 App 若缺少权限，补齐后重新安装到工作区，并在 AIP 更新该 App 的 Bot Token。
 
 <Note>
 在 `Bot Token Scopes` 中核对上表 22 项权限，`User Token Scopes` 留空。修改后需重新安装；若工作区要求审批，先提交申请。
@@ -302,9 +310,11 @@ Bot 加入频道后，@Bot 或匹配任一免 @ 规则即可触发回复。自�
 
 <h2 id="operation-progress">显示操作进度</h2>
 
-在渠道设置中开启或关闭“显示详细操作进度”，每个渠道独立保存，默认开启。开启后，Thinking Steps 显示真实工具操作和 Agent 实际输出的公开进展文字；不展示原始 reasoning，也不会额外生成进展说明。最终回复送达后，临时步骤消息会删除。
+如果当前渠道提供“处理状态展示”设置，可分别控制状态表情、详细操作进度（包括工作状态）和生成中的回复预览；这些展示项默认开启。“静默模式”会同时关闭三项，但最终回复和转发消息仍会送达。各项可以单独调整，平台仅展示自身支持的反馈。
 
-关闭后，后续请求只保留最终回复，以及 Agent 实际产生的 plan。若当前 Token 缺少流式权限或 Token 类型不支持，系统跳过 Thinking Steps，继续发送普通回复。Token 失效需重新连接渠道；限流和临时故障会重试，不能当作缺少权限处理。
+如果 Slack 回复触发规则中提供“显示详细操作进度”，该设置会控制操作预览、计划卡片和工作状态。设置按频道分别保存，默认开启。开启后，Thinking Steps 会展示真实工具操作及 Agent 输出的公开进展文字，不展示原始 reasoning，也不会额外生成说明。最终回复发送后，AIP 会删除临时步骤消息。关闭后，操作预览、计划卡片和工作状态会隐藏，但最终回复仍会发送。
+
+如果 Token 缺少流式权限或类型不受支持，系统跳过 Thinking Steps，继续发送普通回复。Token 失效需重新连接渠道；限流和临时故障会重试，不能当作缺少权限处理。
 
 <h2 id="troubleshooting">常见问题</h2>
 
@@ -326,7 +336,7 @@ Bot 加入频道后，@Bot 或匹配任一免 @ 规则即可触发回复。自�
 
 <Accordion title="新渠道接入后，旧渠道收不到消息">
 
-检查是否复用了同一个 Slack App 并替换了 Events Request URL。将旧 App 恢复为原回调，为新渠道创建独立 App。
+如果使用自己管理的 App，检查其 Events Request URL 是否被替换。恢复旧回调，并为新频道使用另一个 App。如果使用共享 HAST Slack App，检查目标 Agent 的设置是否仍选择了旧频道，再在旧频道中提及目标 Agent 的 `@handle` 并确认实际回复。
 
 </Accordion>
 
