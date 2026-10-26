@@ -2,7 +2,15 @@
 
 [Create and enable an Agent](aip-quickstart) in AIP. You need permission to install apps in the target Slack workspace. If approval is required, ask a workspace administrator to approve the installation. Keep AIP and the Slack App settings open.
 
-Each Slack App has one Events Request URL. Create a separate App if an existing one serves another channel, including separate Apps for STG and production. Entering the same Bot Token in another environment does not change where events are sent. `Verified` confirms the configured URL responded correctly; also check that it belongs to the intended environment and channel. See [Slack's HTTP callback documentation](https://docs.slack.dev/apis/events-api/using-http-request-urls/).
+For Slack Apps you manage yourself, each App has one Events Request URL. Use separate Apps for independently routed channels and for STG and production; entering the same Bot Token in another environment does not change where events are sent. `Verified` confirms the configured URL responded correctly; also check that it belongs to the intended environment and channel. See [Slack's HTTP callback documentation](https://docs.slack.dev/apis/events-api/using-http-request-urls/).
+
+<h2 id="shared-app">Use the shared HAST Slack App when available</h2>
+
+If your AIP workspace offers the shared HAST Slack App for an Agent, install it once per Slack workspace. Other Agents in that workspace can reuse the installation. Give each Agent a unique `@handle` and choose the channels where it can respond. Handles must be unique in the workspace and use lowercase letters, numbers, hyphens, or underscores. Multiple Agents can share a channel: mention the intended Agent's handle to route the request, and replies continue in that Agent's thread. Agent handles require a Slack plan that supports user groups; if your workspace plan does not, use a separate bot. For a private channel, add HAST from Slack → Channel details → Integrations → Add apps before selecting it.
+
+<Note>
+A saved configuration does not confirm message delivery. Mention the Agent's `@handle` in a selected channel and verify an actual reply. If the shared-app option is unavailable, use the automatic-creation or self-managed-App setup below.
+</Note>
 
 <h2 id="automatic">Create a Slack App automatically</h2>
 
@@ -17,7 +25,7 @@ Continue the same setup instead of creating another App. Cancellation clears tem
 
 <h2 id="manual-setup">Use an existing App or configure manually</h2>
 
-For an existing bot or manual installation, use the following steps. Each independent channel needs its own App.
+For an existing bot or a Slack App you manage yourself, use the following steps. In this setup, use one App per independent channel.
 
 <Steps titleSize="h2">
 
@@ -148,7 +156,7 @@ Open `OAuth & Permissions`, add the 22 scopes below under `Bot Token Scopes`, th
 
 Leave `User Token Scopes` empty.
 
-Thinking Steps uses the existing `chat:write` scope to [create and update streamed messages](https://docs.slack.dev/reference/methods/chat.startStream/) and [delete the Bot's own temporary steps message](https://docs.slack.dev/reference/methods/chat.delete/) after completion. No additional scope or event subscription is needed; the complete JSON already includes the required permissions. If an older App lacks a scope, add it, reinstall the App in the workspace, and update its Bot Token in AIP.
+For a self-managed App configured from this manifest, Thinking Steps uses the existing `chat:write` scope to [create and update streamed messages](https://docs.slack.dev/reference/methods/chat.startStream/) and [delete the Bot's own temporary steps message](https://docs.slack.dev/reference/methods/chat.delete/) after completion. No additional scope or event subscription is needed; the complete JSON already includes the required permissions. If an older self-managed App lacks a scope, add it, reinstall the App in the workspace, and update its Bot Token in AIP.
 
 <Note>
 Check all 22 scopes above under `Bot Token Scopes` and leave `User Token Scopes` empty. Reinstall after changing scopes; submit an approval request if required by your workspace.
@@ -274,9 +282,11 @@ To find a Channel ID, click the channel name in Slack, open `About`, and copy `C
 
 <h2 id="operation-progress">Show operation progress</h2>
 
-Turn "Show detailed operation progress" on or off in channel settings. Each channel saves its own setting, enabled by default. Thinking Steps shows actual tool operations and public progress text the Agent emits. It does not display raw reasoning or generate extra narration. The temporary steps message is deleted after the final reply is delivered.
+If the channel has **Processing feedback** settings, use them to control status reactions, detailed operation progress (including working status), and previews while replies are generated. The options are on by default; **Silent mode** hides all three, but final replies and forwarded messages are still delivered. You can adjust each option separately, and each platform shows only the feedback it supports.
 
-When disabled, subsequent requests retain only the final reply and any plan the Agent actually produces. If the Token lacks streaming permission or its type is unsupported, Thinking Steps is skipped and an ordinary reply is still sent. An invalid Token requires reconnecting the channel. Rate limits and temporary failures are retried, not treated as missing permissions.
+If your Slack reply-trigger settings include **Show detailed activity**, it controls operation previews, plan cards, and working status. The setting is saved per channel and is on by default. When on, Thinking Steps shows actual tool operations and public progress text the Agent emits; it does not display raw reasoning or add narration. AIP removes the temporary steps message after the final reply is sent. When off, operation previews, plan cards, and working status are hidden; the final reply is still sent.
+
+If the Token lacks streaming permission or its type is unsupported, Thinking Steps is skipped and an ordinary reply is still sent. An invalid Token requires reconnecting the channel. Rate limits and temporary failures are retried, not treated as missing permissions.
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 
@@ -298,7 +308,7 @@ If it still does not reply, give an administrator the channel name and send time
 
 <Accordion title="An older channel stopped receiving messages">
 
-Check whether the same Slack App was reused and its Events Request URL replaced. Restore the old callback and create a separate App for the new channel.
+For an App you manage yourself, check whether its Events Request URL was replaced. Restore the old callback and use a separate App for the new channel. If you use the shared HAST Slack App, check that the old channel is still selected for the intended Agent, then mention its `@handle` and verify an actual reply.
 
 </Accordion>
 
