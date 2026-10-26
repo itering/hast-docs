@@ -334,6 +334,10 @@
     "description": "Authorize external apps and maintain context across tasks.",
     "toc": [
       {
+        "id": "auto-model",
+        "title": "Choose Auto"
+      },
+      {
         "id": "connect",
         "title": "Connect external apps"
       },

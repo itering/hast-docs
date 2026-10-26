@@ -657,6 +657,10 @@ export const docsPages: DocsPageInfo[] = [
     "group": "Task Agent",
     "toc": [
       {
+        "id": "auto-model",
+        "title": "选择 Auto 模型"
+      },
+      {
         "id": "connect",
         "title": "连接外部应用"
       },
