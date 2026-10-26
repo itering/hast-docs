@@ -346,6 +346,10 @@
         "title": "Use built-in skill management"
       },
       {
+        "id": "port-sharing",
+        "title": "Share a temporary web preview"
+      },
+      {
         "id": "account",
         "title": "Connect your Codex account"
       }

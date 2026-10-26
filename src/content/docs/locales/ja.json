@@ -346,6 +346,10 @@
         "title": "製品内のスキル管理"
       },
       {
+        "id": "port-sharing",
+        "title": "一時的な Web プレビューを共有"
+      },
+      {
         "id": "account",
         "title": "自分の Codex アカウントを接続"
       }

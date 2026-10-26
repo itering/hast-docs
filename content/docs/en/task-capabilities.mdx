@@ -24,6 +24,24 @@ Save edits. Deleted entries are not injected into later runs, but editing memory
 
 Skills in the capabilities area manage working methods for task execution. Open an entry to read `SKILL.md` and enable or disable it. Create personal Skills by supplying a name, description, and Markdown content.
 
+<h2 id="port-sharing">Share a temporary web preview</h2>
+
+In deployments with temporary port sharing enabled, ask the Agent to share a web page or API running in its sandbox. HTTP, WebSocket, and SSE are supported. For example: “Start this project's web server and share a link for five minutes.” The service must be running before the link is created.
+
+Anyone holding the complete link can access the service without signing in to Hast. Open the full link, including the part after `#`, and share it only with the intended recipients. Opening it does not keep the sandbox running or wake a paused sandbox.
+
+The lifetime must be specified when creating a link and cannot exceed ten minutes. Expiry, revocation, sandbox pause, idle reclamation, or restart permanently invalidates the link. Resuming does not restore it; ask the Agent to start the service again if needed and create a new link.
+
+An Agent using Helper inside the sandbox can create, inspect, and revoke links with:
+
+```sh
+hast-helper port-forward create '{"port":3000,"ttl_seconds":300}'
+hast-helper port-forward list '{}'
+hast-helper port-forward revoke '{"id":"<forward-id>"}'
+```
+
+`ttl_seconds` is required and must be an integer from 1 through 600. Use the returned `result.url` unchanged. Internal runtime and browser-control ports cannot be shared. If the command reports that sharing is unavailable or denied, ask the deployment operator or Agent owner to check whether the feature and required permissions are enabled.
+
 <h2 id="account">Connect your Codex account</h2>
 
 If the UI offers Codex account connection, start it, open the verification page, and enter the displayed device code. Return to Hast and check the connection state.

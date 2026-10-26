@@ -25,6 +25,24 @@
 能力区的“技能”用于管理 Task Agent 执行时使用的工作方法。打开条目可以查看 `SKILL.md`，选择启用或停用；个人技能可以通过“创建技能”填写名称、描述和 Markdown 内容。
 
 
+<h2 id="port-sharing">分享临时网页预览</h2>
+
+在已启用临时端口分享的环境中，可以让 Agent 分享 Sandbox 中运行的网页或 API，支持 HTTP、WebSocket 和 SSE。例如：“启动这个项目的 Web 服务，给我一个五分钟有效的访问链接。”创建链接前，服务需要已经启动。
+
+任何持有完整链接的人都能访问服务，无需登录 Hast。打开时保留完整链接，包括 `#` 后面的部分；只转发给预期的接收者。访问链接不会让 Sandbox 保持运行，也不会唤醒已暂停的 Sandbox。
+
+创建时必须指定有效期，最长十分钟。到期、主动撤销、Sandbox 暂停、空闲回收或重启后，链接永久失效，恢复运行也不能复用。仍需访问时，让 Agent 按需重新启动服务并创建新链接。
+
+Agent 在 Sandbox 内使用 Helper 时，可以创建、查看和撤销链接：
+
+```sh
+hast-helper port-forward create '{"port":3000,"ttl_seconds":300}'
+hast-helper port-forward list '{}'
+hast-helper port-forward revoke '{"id":"<forward-id>"}'
+```
+
+`ttl_seconds` 为必填整数，范围为 1–600。原样使用返回的 `result.url`。内部 Runtime 和浏览器控制端口不能分享。若命令提示功能不可用或权限不足，请部署维护者或 Agent 所有者检查功能与所需权限是否已启用。
+
 <h2 id="account">连接自己的 Codex 账号</h2>
 
 如果界面提供 Codex 账号连接入口，可发起连接，打开验证页面并输入显示的设备码。完成后回到 Hast 检查连接状态。
