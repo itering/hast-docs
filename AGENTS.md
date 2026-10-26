@@ -15,4 +15,4 @@ Read `README.md` and `MAINTENANCE.md` before editing.
   local checks pass and the reviewed PR head still matches. Use an imperative
   merge message. Do not bypass repository protection or enable auto-merge.
 - Confirm the merge commit is on `main` and the Staging deployment reports that
-  commit in `release.json`. Do not deploy to production.
+  commit in `release.json`. Daily maintenance must stop at Staging. For an accepted stable product release, follow `RELEASES.md`; request only the fixed workflow and do not use deployment credentials directly.
