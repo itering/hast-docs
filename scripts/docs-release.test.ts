@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { validateSource, validateStagingRun, validateStagingAcceptance, waitForPublicRevision } from './docs-release';
+import { validateSource, validateStagingRun, validateStagingAcceptance, waitForPublicRevision, verifyPublicPage } from './docs-release';
 const source = 'a'.repeat(40);
 const run = { id: 12, head_sha: source, event: 'push', head_branch: 'main',
   path: '.github/workflows/deploy-stg.yml', status: 'completed', conclusion: 'success',
@@ -82,4 +82,18 @@ test('stale source, run, or environment cannot pass the bounded revision check',
       async ms => { time += ms; }), /did not converge/u);
     assert.equal(time, 60_000);
   }
+});
+
+test('acceptance uses the documentation entry while the site root redirects by design', async () => {
+  const { readFileSync } = await import('node:fs');
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
+  const entry = config.redirects.find((rule: { source: string }) => rule.source === '/').destination;
+  const calls: string[] = [];
+  await verifyPublicPage('https://docs.example', async input => {
+    const url = String(input); calls.push(url);
+    return url === `https://docs.example${entry}` ?
+      new Response('<h1>Docs</h1>', { headers: { 'Content-Type': 'text/html' } }) :
+      new Response(null, { status: 307, headers: { Location: entry } });
+  });
+  assert.deepEqual(calls, [`https://docs.example${entry}`]);
 });
