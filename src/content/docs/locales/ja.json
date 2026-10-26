@@ -334,6 +334,10 @@
     "description": "外部アプリを認証し、タスク間で使う背景情報を管理します。",
     "toc": [
       {
+        "id": "auto-model",
+        "title": "Auto を選ぶ"
+      },
+      {
         "id": "connect",
         "title": "外部アプリを接続"
       },
