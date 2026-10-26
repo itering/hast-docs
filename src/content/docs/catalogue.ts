@@ -669,6 +669,10 @@ export const docsPages: DocsPageInfo[] = [
         "title": "使用产品内的技能"
       },
       {
+        "id": "port-sharing",
+        "title": "分享临时网页预览"
+      },
+      {
         "id": "account",
         "title": "连接自己的 Codex 账号"
       }
