@@ -12,5 +12,3 @@ jobs:
     with:
       target: staging
       source_sha: ${{ github.sha }}
-    secrets:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

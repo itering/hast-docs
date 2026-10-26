@@ -40,6 +40,7 @@ test('both environments use the same deploy implementation and serialize by envi
   assert.match(workflow, /cancel-in-progress: false\n  queue: max/u);
   assert.ok(workflow.indexOf('scripts/docs-release.ts authorize') < workflow.indexOf('vercel_token:'));
   assert.match(workflow, /scripts\/docs-release.ts accept/u);
+  assert.match(workflow, /environment: \$\{\{ inputs.target \}\}/u);
 });
 
 test('a legacy build or skipped acceptance is not deployment proof', () => {
