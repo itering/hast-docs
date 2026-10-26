@@ -33,8 +33,10 @@ test('stamp records the selected commit, not the workflow helper commit', async 
 
 test('both environments use the same deploy implementation and serialize by environment', async () => {
   const { readFileSync } = await import('node:fs');
-  for (const file of ['deploy-stg.yml', 'deploy-prd.yml']) {
-    assert.match(readFileSync(`.github/workflows/${file}`, 'utf8'), /uses: \.\/\.github\/workflows\/deploy-docs\.yml/u);
+  for (const file of ['deploy-stg.yml', 'deploy-prd.yml', 'product-release.yml']) {
+    const caller = readFileSync(`.github/workflows/${file}`, 'utf8');
+    assert.match(caller, /uses: \.\/\.github\/workflows\/deploy-docs\.yml/u);
+    assert.match(caller, /VERCEL_TOKEN: \$\{\{ secrets.VERCEL_TOKEN \}\}/u);
   }
   const workflow = readFileSync('.github/workflows/deploy-docs.yml', 'utf8');
   assert.match(workflow, /cancel-in-progress: false\n  queue: max/u);

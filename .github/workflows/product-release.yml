@@ -85,6 +85,8 @@ jobs:
       source_sha: ${{ needs.plan.outputs.source_sha }}
       staging_run_id: ${{ needs.plan.outputs.staging_run_id }}
       product_release: ${{ needs.plan.outputs.request }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   record:
     environment: staging
     needs: [plan, tag, deploy]

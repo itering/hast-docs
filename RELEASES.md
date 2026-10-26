@@ -17,8 +17,12 @@ A daily pass cannot request production publication.
 
 The product repository sends an authenticated HAST webhook after its Production
 release acceptance. Hast uses a published stable GitHub Release: the product
-release guide reserves publication for completed functional acceptance. PubFi
-uses a successful signed-product `Deploy Production` run and its exact
+release guide reserves publication for completed functional acceptance. While the existing legacy Site release lane is active, a successful
+stable-tag `Deploy Production` run can also request docs. Its `Deploy Site` job
+must have run successfully and the tag must still match its exact source.
+Skipped Site jobs and independent manual Web runs do not request publication.
+This evidence covers the selected Site release, not acceptance of every platform
+component. PubFi uses a successful signed-product `Deploy Production` run and its exact
 `docs-release-intent` artifact. Independent Web or Visibility releases do not
 publish product docs. RC and component tags still reach the existing release-note
 intake, but do not request Docs Production.
@@ -70,7 +74,7 @@ One native GitHub Actions queue serializes product-docs releases. Successful
 replays skip an already-published binding. An older product event cannot roll
 back a newer recorded publication. A failed deployment leaves the tag fixed;
 re-run the failed workflow. A failed Agent handoff can also be rerun with the
-same request identity. Do not create timers, daemons, platform endpoints, new
+same release identity and a new explicit delivery attempt. The Agent reuses its release receipt. Do not create timers, daemons, platform endpoints, new
 GitHub credentials, or a separate release database for this path.
 
 ## Qualification and recovery
