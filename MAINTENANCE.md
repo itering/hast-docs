@@ -26,7 +26,7 @@ retain detailed private source notes outside this repository.
 7. For an authorized mechanical correction, merge with an exact head match and
    an imperative commit message. Confirm its merge commit is on main.
 8. Verify the Staging deployment and its source commit. Report failed or pending
-   deployment separately from a successful merge. Never promote production.
+   deployment separately from a successful merge. Daily maintenance stops at Staging. An accepted stable product release uses the narrow publication handoff in [RELEASES.md](RELEASES.md).
 
 ## Runtime
 

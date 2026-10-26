@@ -45,28 +45,21 @@ Do not put generated output inside the content tree.
 ## Deployment
 
 A push to `main` runs the checks and deploys only Staging. The deployment writes
-`release.json` with the exact source commit. Staging is excluded from search
-indexing. This repository has no production deployment workflow at present.
+`release.json` with the exact source commit and run. Staging is excluded from
+search indexing. An accepted stable product release invokes `Publish product
+docs`, which publishes one compatible docs commit after its exact Staging run
+passes. See [release ownership and recovery](RELEASES.md).
 
-Production releases require separate operator authorization. After the checks
-pass on the exact `main` commit, export and deploy only the static documentation:
+The separate `Deploy docs production` manual workflow remains available for an
+explicitly authorized correction. It requires a full main source SHA and its
+successful Staging push run. Both paths use the same build and deployment
+implementation. A production export enables search indexing and uses
+`https://docs.hast.so` for canonical URLs and the sitemap.
 
-```sh
-NEXT_PUBLIC_DOCS_ENV=production \
-NEXT_PUBLIC_DOCS_URL=https://docs.hast.so \
-NEXT_PUBLIC_SITE_URL=https://hast.so \
-NEXT_PUBLIC_AIP_URL=https://aip.hast.so pnpm build
-vercel deploy out --prod --project hast-docs --scope itering --yes
-```
-
-The export includes its Vercel configuration. A production export enables search
-indexing and uses `https://docs.hast.so` for canonical URLs and the sitemap.
-Check `release.json`, all three languages, search, and legacy redirects after
-deployment. This procedure publishes only the `hast-docs` Vercel project.
-
-Existing `/{locale}/docs/{slug}` paths and legacy `task-api-*` paths are retained.
-The main Hast website keeps its production docs until a separate production
-cutover is approved. It can redirect Staging traffic to this repository's site.
+These workflows publish only the `hast-docs` Vercel project. Existing
+`/{locale}/docs/{slug}` and legacy `task-api-*` paths remain valid. The main Hast
+website keeps its marketing, customer stories and legal content; its old docs
+URLs redirect to the separate docs site.
 
 ## License
 
@@ -75,3 +68,8 @@ Prose and documentation images use [CC BY 4.0](LICENSE-DOCS.md). Code uses
 Hast names and logos identify the product; the license grants no trademark rights.
 
 See [the maintenance guide](MAINTENANCE.md) for automated contributions.
+
+## Agent ownership and releases
+
+See [RELEASES.md](RELEASES.md) for daily Staging maintenance, stable product Docs
+Production publication, recovery, and the two Agent responsibilities.
