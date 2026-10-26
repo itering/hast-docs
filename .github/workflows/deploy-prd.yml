@@ -20,3 +20,5 @@ jobs:
       target: production
       source_sha: ${{ inputs.source_sha }}
       staging_run_id: ${{ inputs.staging_run_id }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
