@@ -18,6 +18,10 @@ export HAST_API_KEY='<你的单 Agent 对话密钥>'
 
 <Warning>每次调用都通过 `Authorization: Bearer` 发送密钥。密钥只能保存在服务端，不要放入浏览器代码或公开仓库。撤销密钥会同时停止它的 API 与 MCP 访问。</Warning>
 
+<h2 id="key-rotation">轮换 API 密钥</h2>
+
+在 <ApiKeyLink /> 中切换到该密钥所属的 Profile，选择“轮换密钥”。轮换前请确认可以更新所有使用该密钥的集成，因为旧值会立即失效，没有宽限期。密钥名称、权限和 Agent 绑定保持不变，新值仅显示一次；完成后请复制新值并替换所有旧值。
+
 <h2 id="send">发送第一条任务</h2>
 
 ```bash

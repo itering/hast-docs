@@ -18,6 +18,10 @@ export HAST_API_KEY='<YOUR_SINGLE_AGENT_KEY>'
 
 <Warning>Send the key in `Authorization: Bearer` on every call. Keep it on the server, never in browser code or public repositories. Revoking a key stops both its API and MCP access.</Warning>
 
+<h2 id="key-rotation">Rotate an API key</h2>
+
+In <ApiKeyLink locale="en" />, switch to the Profile that owns the key and choose **Rotate key**. Before rotating, make sure you can update every integration that uses the key: the old value stops working immediately, with no grace period. The key's name, permissions, and Agent binding stay the same; the new value is shown only once. After rotation, copy it and replace the old value everywhere.
+
 <h2 id="send">Submit your first task</h2>
 
 ```bash
