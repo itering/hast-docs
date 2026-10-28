@@ -19,6 +19,15 @@ If CRM or secrets are missing, use the matching “Manage in a new tab” link. 
 
 If you are unsure which model to choose, use Auto. See [Choose Auto](task-capabilities#auto-model) for candidates, the default, and billing behavior.
 
+<h2 id="assistant">Use the configuration assistant</h2>
+
+When available in your workspace, open the configuration assistant to request changes to Agents and related resources. Permission mode is set for the current conversation:
+
+- **Wait for my approval**: important changes need your approval. Review pending changes before approving them, then check the results.
+- **Full access**: this conversation can directly change, delete, and run resources you can manage. Use it only when appropriate. The assistant cannot restore a deleted resource.
+
+Enter secret values through the secure form, not in chat. The assistant edits saved configuration, not an unsaved editor draft. After it finishes, reload the editor and reconcile any draft, then verify the result in a new debug session.
+
 <h2 id="save">Save and collaborate</h2>
 
 Saving updates the current configuration. There is no configuration history or rollback interface; concurrent edits use the last successful save. Export a copy before important prompt or tool changes.
