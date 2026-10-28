@@ -4415,6 +4415,36 @@
     },
     "/api/public/v1/webhooks": {
       "get": {
+        "parameters": [
+          {
+            "description": "Page size (1-100, default 20)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Zero-based result offset",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "One-based page number",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page size (1-100); takes precedence over limit",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "type": "integer"
+          }
+        ],
         "produces": [
           "application/json"
         ],
@@ -7901,6 +7931,12 @@
         "logo": {
           "type": "string"
         },
+        "pending_authorizations": {
+          "items": {
+            "$ref": "#/definitions/api.taskAgentConnectorAuthorization"
+          },
+          "type": "array"
+        },
         "provider": {
           "example": "github",
           "type": "string"
@@ -7914,6 +7950,24 @@
         },
         "status": {
           "example": "connected",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "api.taskAgentConnectorAuthorization": {
+      "properties": {
+        "auth_url": {
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "status": {
           "type": "string"
         }
       },
@@ -9000,7 +9054,7 @@
           "type": "array"
         },
         "source": {
-          "example": "apps/fde/hast-fde",
+          "example": "integrations/support-agent",
           "type": "string"
         }
       },
