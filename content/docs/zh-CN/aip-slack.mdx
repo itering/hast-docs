@@ -71,6 +71,7 @@
         "channels:history",
         "channels:read",
         "chat:write",
+        "chat:write.customize",
         "emoji:read",
         "files:read",
         "files:write",
@@ -145,12 +146,13 @@
 
 <Step title="安装到工作区" id="install" stepNumber={2}>
 
-进入 `OAuth & Permissions`，在 `Bot Token Scopes` 中添加下表的 22 项权限，再点击 `Install to Workspace`。
+进入 `OAuth & Permissions`，在 `Bot Token Scopes` 中添加下表的 23 项权限，再点击 `Install to Workspace`。
 
 | 用途 | 权限 |
 | --- | --- |
 | 提及与 Agent | `app_mentions:read`, `assistant:write` |
 | 频道与消息 | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| 消息头像 | `chat:write.customize` |
 | 私聊 | `im:history`, `im:read`, `im:write` |
 | 多人私聊 | `mpim:history`, `mpim:read`, `mpim:write` |
 | 附件 | `files:read`, `files:write` |
@@ -160,10 +162,12 @@
 
 `User Token Scopes` 留空。
 
+`chat:write.customize` 允许 Hast 为消息设置生成头像。独立 Bot 已有自定义 Slack 头像时保留原头像，仅使用默认图标的 Bot 才补充生成头像；共享 App 的不同 Agent 使用各自的头像。已有 App 需在 `Bot Token Scopes` 补充此权限，并重新安装到工作区；若 Slack 签发了新 Bot Token，再到 AIP 更新。
+
 对于按此清单配置的自建 App，Thinking Steps 使用已有的 `chat:write` 权限来[创建和更新流式消息](https://docs.slack.dev/reference/methods/chat.startStream/)，完成后用同一权限[删除 Bot 自己的临时步骤消息](https://docs.slack.dev/reference/methods/chat.delete/)。无需新增 scope 或事件订阅；完整 JSON 已包含所需权限。较早的自建 App 若缺少权限，补齐后重新安装到工作区，并在 AIP 更新该 App 的 Bot Token。
 
 <Note>
-在 `Bot Token Scopes` 中核对上表 22 项权限，`User Token Scopes` 留空。修改后需重新安装；若工作区要求审批，先提交申请。
+在 `Bot Token Scopes` 中核对上表 23 项权限，`User Token Scopes` 留空。修改后需重新安装；若工作区要求审批，先提交申请。 下方截图为旧版权限列表，还需补充 `chat:write.customize`。
 </Note>
 
 <a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">

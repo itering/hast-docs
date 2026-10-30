@@ -69,6 +69,7 @@ Choose `From a manifest`, select your workspace, switch to JSON, and paste the f
         "channels:history",
         "channels:read",
         "chat:write",
+        "chat:write.customize",
         "emoji:read",
         "files:read",
         "files:write",
@@ -141,12 +142,13 @@ Review the app details and permissions, then click `Create`. Open `App Manifest`
 
 <Step title="Install in your workspace" id="install" stepNumber={2}>
 
-Open `OAuth & Permissions`, add the 22 scopes below under `Bot Token Scopes`, then click `Install to Workspace`.
+Open `OAuth & Permissions`, add the 23 scopes below under `Bot Token Scopes`, then click `Install to Workspace`.
 
 | Purpose | Scopes |
 | --- | --- |
 | Mentions and Agent | `app_mentions:read`, `assistant:write` |
 | Channels and messages | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| Message avatars | `chat:write.customize` |
 | Direct messages | `im:history`, `im:read`, `im:write` |
 | Group direct messages | `mpim:history`, `mpim:read`, `mpim:write` |
 | Files | `files:read`, `files:write` |
@@ -156,10 +158,12 @@ Open `OAuth & Permissions`, add the 22 scopes below under `Bot Token Scopes`, th
 
 Leave `User Token Scopes` empty.
 
+The `chat:write.customize` scope lets Hast supply generated message avatars. An independent Bot with a custom Slack avatar keeps that avatar; only Bots using the default icon receive a generated avatar. Shared App handles use separate Agent avatars. For an existing App, add this scope under `Bot Token Scopes`, reinstall it in the workspace, and update its Bot Token in AIP if Slack issues a new one.
+
 For a self-managed App configured from this manifest, Thinking Steps uses the existing `chat:write` scope to [create and update streamed messages](https://docs.slack.dev/reference/methods/chat.startStream/) and [delete the Bot's own temporary steps message](https://docs.slack.dev/reference/methods/chat.delete/) after completion. No additional scope or event subscription is needed; the complete JSON already includes the required permissions. If an older self-managed App lacks a scope, add it, reinstall the App in the workspace, and update its Bot Token in AIP.
 
 <Note>
-Check all 22 scopes above under `Bot Token Scopes` and leave `User Token Scopes` empty. Reinstall after changing scopes; submit an approval request if required by your workspace.
+Check all 23 scopes above under `Bot Token Scopes` and leave `User Token Scopes` empty. Reinstall after changing scopes; submit an approval request if required by your workspace. The screenshot below shows the earlier scope list; also add `chat:write.customize`.
 </Note>
 
 <a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
