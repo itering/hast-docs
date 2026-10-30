@@ -69,6 +69,7 @@ AIP の「チャネル」で Slack を追加し、自動作成を選んで名前
         "channels:history",
         "channels:read",
         "chat:write",
+        "chat:write.customize",
         "emoji:read",
         "files:read",
         "files:write",
@@ -141,12 +142,13 @@ AIP の「チャネル」で Slack を追加し、自動作成を選んで名前
 
 <Step title="ワークスペースにインストールする" id="install" stepNumber={2}>
 
-`OAuth & Permissions` を開き、`Bot Token Scopes` に以下の 22 項目を追加して `Install to Workspace` をクリックします。
+`OAuth & Permissions` を開き、`Bot Token Scopes` に以下の 23 項目を追加して `Install to Workspace` をクリックします。
 
 | 用途 | 権限 |
 | --- | --- |
 | メンションと Agent | `app_mentions:read`, `assistant:write` |
 | チャンネルとメッセージ | `channels:history`, `channels:read`, `groups:history`, `groups:read`, `chat:write` |
+| メッセージのアバター | `chat:write.customize` |
 | ダイレクトメッセージ | `im:history`, `im:read`, `im:write` |
 | グループダイレクトメッセージ | `mpim:history`, `mpim:read`, `mpim:write` |
 | 添付ファイル | `files:read`, `files:write` |
@@ -156,10 +158,12 @@ AIP の「チャネル」で Slack を追加し、自動作成を選んで名前
 
 `User Token Scopes` は空のままにします。
 
+`chat:write.customize` により、Hast はメッセージに生成アバターを設定できます。独立した Bot にカスタム Slack アバターがある場合はそのまま使用し、標準アイコンの Bot にのみ生成アバターを追加します。共有 App の各 Agent は個別のアバターを使用します。既存の App では `Bot Token Scopes` にこの権限を追加してワークスペースに再インストールし、新しい Bot Token が発行された場合は AIP でも更新してください。
+
 このマニフェストで自分で設定する App では、Thinking Steps は既存の `chat:write` 権限で[ストリーミングメッセージを作成・更新](https://docs.slack.dev/reference/methods/chat.startStream/)し、完了後に[Bot 自身の一時的なステップメッセージを削除](https://docs.slack.dev/reference/methods/chat.delete/)します。追加の scope やイベント購読は不要で、上記の完全な JSON に必要な権限が含まれています。以前の自主管理 App に権限が不足している場合は追加してワークスペースに再インストールし、AIP の Bot Token も更新してください。
 
 <Note>
-`Bot Token Scopes` で上記の 22 項目を確認し、`User Token Scopes` は空にします。変更後は再インストールし、ワークスペースで承認が必要な場合は申請してください。
+`Bot Token Scopes` で上記の 23 項目を確認し、`User Token Scopes` は空にします。変更後は再インストールし、ワークスペースで承認が必要な場合は申請してください。 下のスクリーンショットは以前の権限一覧です。`chat:write.customize` も追加してください。
 </Note>
 
 <a href="/docs/channels/slack/bot-token-scopes.webp" target="_blank" rel="noreferrer" className="cursor-pointer">
