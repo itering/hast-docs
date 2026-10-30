@@ -51,9 +51,9 @@ curl --fail-with-body \
 
 单 Agent 对话使用 JSON 轮询，不提供 SSE 路径。可以通过 `GET /agent/sessions` 查找该 Agent 的历史对话，再读取对应事件。
 
-<h2 id="profile">使用 Profile API key</h2>
+<h2 id="profile">使用 Profile API 密钥</h2>
 
-需要按功能访问当前业务身份的资源时，在 <ApiKeyLink /> 创建“Profile API key”，按需授权：
+需要按功能访问当前业务身份的资源时，在 <ApiKeyLink /> 创建“Profile API 密钥”，按需授权：
 
 | 用途 | 权限与入口 |
 | --- | --- |
@@ -62,13 +62,13 @@ curl --fail-with-body \
 | 管理知识库、渠道、CRM 或定时任务 | 对应资源的读写权限，见 [API 参考](aip-api-reference) |
 | 提交普通任务并读取事件 | `prompts:write` 和 `sessions:read`，`POST /prompts` 与 `/sessions/{id}/events` |
 
-写入权限包含对应读取权限。Profile key 的 `/prompts` 创建普通任务会话，不会自动应用某个已保存的 AIP Agent 配置；调用已配置的 Agent 时使用上表中的 `/webhooks/{hook_id}/invoke`，或使用本页的单 Agent 对话流程。
+写入权限包含对应读取权限。Profile API 密钥的 `/prompts` 创建普通任务会话，不会自动应用某个已保存的 AIP Agent 配置；调用已配置的 Agent 时使用上表中的 `/webhooks/{hook_id}/invoke`，或使用本页的单 Agent 对话流程。
 
-普通任务可通过 `/sessions/{id}/events/stream` 接收 SSE，见 [SSE 接入](aip-api-events#sse)。Profile key 与单 Agent 对话 key 的接口范围不同，不能混用 `/agent/*` 和普通任务路径。
+普通任务可通过 `/sessions/{id}/events/stream` 接收 SSE，见 [SSE 接入](aip-api-events#sse)。Profile API 密钥与单 Agent 对话密钥的接口范围不同，不能混用 `/agent/*` 和普通任务路径。
 
 <h2 id="automatic-channels">通过 API 或 MCP 自动创建渠道</h2>
 
-此流程使用具有 `channels:write` 的 Profile API key；只读查询需要 `channels:read`。单 Agent 对话密钥不提供渠道管理能力。下表路径均接在 `$HAST_API_BASE` 后面。
+此流程使用具有 `channels:write` 的 Profile API 密钥；只读查询需要 `channels:read`。单 Agent 对话密钥不提供渠道管理能力。下表路径均接在 `$HAST_API_BASE` 后面。
 
 | 操作 | REST API | MCP 工具 |
 | --- | --- | --- |

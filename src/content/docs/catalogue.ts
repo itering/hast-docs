@@ -488,7 +488,7 @@ export const docsPages: DocsPageInfo[] = [
       },
       {
         "id": "profile",
-        "title": "使用 Profile API key"
+        "title": "使用 Profile API 密钥"
       },
       {
         "id": "next",
@@ -499,7 +499,7 @@ export const docsPages: DocsPageInfo[] = [
   {
     "slug": "aip-api-events",
     "title": "会话事件与 SSE",
-    "description": "轮询单 Agent 对话事件，或使用 Profile API key 连接普通任务的 SSE。",
+    "description": "轮询单 Agent 对话事件，或使用 Profile API 密钥连接普通任务的 SSE。",
     "group": "AIP",
     "subgroup": "AIP API",
     "toc": [

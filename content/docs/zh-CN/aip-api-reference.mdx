@@ -2,7 +2,7 @@ import { TaskAgentApiReference } from "../../../src/components/docs/task-agent-a
 
 <h2 id="openapi">OpenAPI JSON</h2>
 
-AIP Public API 使用工作台中创建的 API 密钥。单 Agent 对话 key 调用 `/agent/*`，使用已保存的 Agent 配置；Profile API key 按权限访问当前业务身份的资源。开始调用前请阅读 [API 入门](aip-api-quickstart)，会话结果处理见 [会话事件与 SSE](aip-api-events)。
+AIP Public API 使用工作台中创建的 API 密钥。单 Agent 对话密钥调用 `/agent/*`，使用已保存的 Agent 配置；Profile API 密钥按权限访问当前业务身份的资源。开始调用前请阅读 [API 入门](aip-api-quickstart)，会话结果处理见 [会话事件与 SSE](aip-api-events)。
 
 下方接口定义来自 Backplane OpenAPI 快照，按资源分组展示参数、请求体和响应结构。
 
@@ -10,7 +10,7 @@ AIP Public API 使用工作台中创建的 API 密钥。单 Agent 对话 key 调
 
 <h2 id="wechat-accounts">获取微信客服账号</h2>
 
-创建微信客服渠道草稿并完成企业微信授权后，使用带 `channels:write` 的 Profile API key 调用 `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts`。写入权限包含读取；单 Agent 对话 key 无法使用此接口。
+创建微信客服渠道草稿并完成企业微信授权后，使用带 `channels:write` 的 Profile API 密钥调用 `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts`。写入权限包含读取；单 Agent 对话密钥无法使用此接口。
 
 请求体（Secret 占位符只通过客户端安全参数替换，不要写入提示词或日志）：
 

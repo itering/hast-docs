@@ -683,7 +683,7 @@
       },
       {
         "id": "profile",
-        "title": "Profile API key を使う"
+        "title": "Profile API キーを使う"
       },
       {
         "id": "next",
@@ -693,7 +693,7 @@
   },
   "aip-api-events": {
     "title": "会話イベントと SSE",
-    "description": "単一 Agent の会話イベントを取得し、Profile API key で通常タスクの SSE に接続します。",
+    "description": "単一 Agent の会話イベントを取得し、Profile API キーで通常タスクの SSE に接続します。",
     "toc": [
       {
         "id": "agent",
