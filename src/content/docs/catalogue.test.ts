@@ -75,3 +75,19 @@ describe("zh-CN product terminology", () => {
     expect(source("aip-secrets")).not.toContain("密钥");
   });
 });
+
+describe.each([
+  ["zh-CN", "Profile API 密钥", /Profile (?:API key|key)|工作区 API key/],
+  ["en", "Profile API key", /Workspace API key|Profile keys?\b/],
+  ["ja", "Profile API キー", /Profile (?:API key|key|キー)|ワークスペース API キー/],
+] as const)("%s API key terminology", (locale, name, obsolete) => {
+  it("matches the creation option across the API and MCP guides", () => {
+    for (const slug of ["aip-api-quickstart", "aip-api-events", "aip-api-reference", "mcp", "task-files", "task-overview"]) {
+      const body = source(slug, locale);
+      expect(body, slug).toContain(name);
+      expect(body, slug).not.toMatch(obsolete);
+    }
+    const page = getDocsPages(locale).find((entry) => entry.slug === "aip-api-quickstart");
+    expect(page?.toc.find((heading) => heading.id === "profile")?.title).toContain(name);
+  });
+});

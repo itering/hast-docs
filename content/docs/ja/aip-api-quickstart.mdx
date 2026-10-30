@@ -51,9 +51,9 @@ curl --fail-with-body \
 
 単一 Agent の会話では JSON ポーリングを使用し、SSE パスはありません。`GET /agent/sessions` でその Agent の会話履歴を探し、各会話のイベントを取得できます。
 
-<h2 id="profile">Profile API key を使う</h2>
+<h2 id="profile">Profile API キーを使う</h2>
 
-現在の業務 ID に属するリソースへ機能別にアクセスするには、<ApiKeyLink locale="ja" />で Profile API key を作成し、必要な権限を選びます。
+現在の業務 ID に属するリソースへ機能別にアクセスするには、<ApiKeyLink locale="ja" />で Profile API キーを作成し、必要な権限を選びます。
 
 | 用途 | 権限とエンドポイント |
 | --- | --- |
@@ -62,13 +62,13 @@ curl --fail-with-body \
 | ナレッジベース、チャネル、CRM、スケジュールの管理 | 対応するリソース権限。[API リファレンス](aip-api-reference)を参照 |
 | 通常タスクの送信とイベント取得 | `prompts:write` と `sessions:read`、`POST /prompts` と `/sessions/{id}/events` |
 
-書き込み権限には対応する読み取り権限が含まれます。Profile key の `/prompts` は通常タスクのセッションを作成し、保存済み AIP Agent の設定を自動では適用しません。設定済み Agent を呼び出す場合は `/webhooks/{hook_id}/invoke` または上記の単一 Agent の手順を使います。
+書き込み権限には対応する読み取り権限が含まれます。Profile API キーの `/prompts` は通常タスクのセッションを作成し、保存済み AIP Agent の設定を自動では適用しません。設定済み Agent を呼び出す場合は `/webhooks/{hook_id}/invoke` または上記の単一 Agent の手順を使います。
 
-通常タスクの SSE は `/sessions/{id}/events/stream` で受信できます。[SSE 接続](aip-api-events#sse)を参照してください。Profile key と単一 Agent のキーではアクセス範囲が異なり、`/agent/*` と通常タスクのパスを相互に置き換えることはできません。
+通常タスクの SSE は `/sessions/{id}/events/stream` で受信できます。[SSE 接続](aip-api-events#sse)を参照してください。Profile API キーと単一 Agent のキーではアクセス範囲が異なり、`/agent/*` と通常タスクのパスを相互に置き換えることはできません。
 
 <h2 id="automatic-channels">API／MCP でチャネルを自動作成する</h2>
 
-`channels:write` を持つ Profile API key を使います。参照には `channels:read` が必要です。単一 Agent の会話キーではチャネルを管理できません。以下は `$HAST_API_BASE` からの相対パスです。
+`channels:write` を持つ Profile API キーを使います。参照には `channels:read` が必要です。単一 Agent の会話キーではチャネルを管理できません。以下は `$HAST_API_BASE` からの相対パスです。
 
 | 操作 | REST API | MCP ツール |
 | --- | --- | --- |

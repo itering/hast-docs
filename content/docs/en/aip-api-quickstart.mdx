@@ -62,9 +62,9 @@ To access resources belonging to the current business identity, create a Profile
 | Manage knowledge bases, channels, CRM, or schedules | Corresponding resource permissions; see the [API reference](aip-api-reference) |
 | Submit an ordinary task and read events | `prompts:write` and `sessions:read`, `POST /prompts` and `/sessions/{id}/events` |
 
-Write permissions include the corresponding read permission. A Profile key's `/prompts` endpoint creates ordinary task sessions without automatically applying a saved AIP Agent configuration. To call a configured Agent, use `/webhooks/{hook_id}/invoke` or the single-Agent flow above.
+Write permissions include the corresponding read permission. A Profile API key's `/prompts` endpoint creates ordinary task sessions without automatically applying a saved AIP Agent configuration. To call a configured Agent, use `/webhooks/{hook_id}/invoke` or the single-Agent flow above.
 
-Ordinary tasks support SSE at `/sessions/{id}/events/stream`; see [SSE integration](aip-api-events#sse). Profile keys and single-Agent keys have different endpoint access: `/agent/*` and ordinary task paths are not interchangeable.
+Ordinary tasks support SSE at `/sessions/{id}/events/stream`; see [SSE integration](aip-api-events#sse). Profile API keys and single-Agent keys have different endpoint access: `/agent/*` and ordinary task paths are not interchangeable.
 
 <h2 id="automatic-channels">Create channels through API or MCP</h2>
 

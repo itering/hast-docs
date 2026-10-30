@@ -2,7 +2,7 @@ import { TaskAgentApiReference } from "../../../src/components/docs/task-agent-a
 
 <h2 id="openapi">OpenAPI JSON</h2>
 
-AIP Public API はワークベンチで作成したキーを使用します。単一 Agent の会話キーは保存済み設定で `/agent/*` を呼び出し、Profile API key は権限に応じて現在の業務 ID のリソースにアクセスします。まず [API クイックスタート](aip-api-quickstart)を読み、結果の処理は[会話イベントと SSE](aip-api-events)を参照してください。
+AIP Public API はワークベンチで作成したキーを使用します。単一 Agent の会話キーは保存済み設定で `/agent/*` を呼び出し、Profile API キーは権限に応じて現在の業務 ID のリソースにアクセスします。まず [API クイックスタート](aip-api-quickstart)を読み、結果の処理は[会話イベントと SSE](aip-api-events)を参照してください。
 
 以下の定義は Backplane OpenAPI スナップショットに基づき、引数、本文、応答をリソース別に表示します。
 
@@ -10,7 +10,7 @@ AIP Public API はワークベンチで作成したキーを使用します。�
 
 <h2 id="wechat-accounts">WeChat カスタマーサービスのアカウントを取得</h2>
 
-WeChat チャネルの下書きを作成し、WeCom 側の認可を完了した後、`channels:write` を持つ Profile API key で `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts` を呼び出します。書き込み権限は読み取りを含みます。単一 Agent の会話キーでは利用できません。
+WeChat チャネルの下書きを作成し、WeCom 側の認可を完了した後、`channels:write` を持つ Profile API キーで `POST /api/public/v1/channels/{connection_id}/wechat-kf/accounts` を呼び出します。書き込み権限は読み取りを含みます。単一 Agent の会話キーでは利用できません。
 
 リクエスト本文（Secret のプレースホルダーはクライアントの保護された引数で置き換え、プロンプトやログには記載しないでください）：
 
