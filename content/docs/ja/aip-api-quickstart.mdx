@@ -66,6 +66,8 @@ curl --fail-with-body \
 
 通常タスクの SSE は `/sessions/{id}/events/stream` で受信できます。[SSE 接続](aip-api-events#sse)を参照してください。Profile key と単一 Agent のキーではアクセス範囲が異なり、`/agent/*` と通常タスクのパスを相互に置き換えることはできません。
 
+Profile API key の権限だけでは実行できない操作があります。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management`、`assistant-sessions` の各操作には、キーと同じ Workspace に属する、キー作成者本人の現在の AIP サインインセッションも必要です。各操作に指定された API キー権限を付与してください。セッションは通常の認可や既存のロール・メンバーシップ確認の代わりにはなりません。REST と MCP の両方に同じ要件が適用されます。
+
 <h2 id="automatic-channels">API／MCP でチャネルを自動作成する</h2>
 
 `channels:write` を持つ Profile API key を使います。参照には `channels:read` が必要です。単一 Agent の会話キーではチャネルを管理できません。以下は `$HAST_API_BASE` からの相対パスです。

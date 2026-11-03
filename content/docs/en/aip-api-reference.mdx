@@ -6,6 +6,8 @@ AIP Public API uses keys created in the workbench. Single-Agent conversation key
 
 The definitions below come from the Backplane OpenAPI snapshot and group parameters, request bodies, and responses by resource.
 
+Some session-bound Profile API operations are not included in this snapshot. For these operations, the specific key scope remains necessary but is not sufficient: calls also require the key creator's current signed-in AIP session in the same Workspace. Existing role and membership checks still apply. See the [API quickstart](aip-api-quickstart) for the affected permission families and details.
+
 <TaskAgentApiReference locale="en" />
 
 <h2 id="wechat-accounts">Discover WeChat customer service accounts</h2>
