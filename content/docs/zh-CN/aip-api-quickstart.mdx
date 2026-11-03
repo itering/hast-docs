@@ -66,6 +66,8 @@ curl --fail-with-body \
 
 普通任务可通过 `/sessions/{id}/events/stream` 接收 SSE，见 [SSE 接入](aip-api-events#sse)。Profile key 与单 Agent 对话 key 的接口范围不同，不能混用 `/agent/*` 和普通任务路径。
 
+仅有 Profile API key 的权限范围不足以执行部分操作。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management` 和 `assistant-sessions` 相关操作还要求密钥创建者当前登录的 AIP 会话，且该会话属于与密钥相同的 Workspace。请为每项操作授予其明确要求的 API 密钥权限；会话不会取代该操作的常规授权，也不会绕过现有角色及成员资格检查。REST 和 MCP 均适用此要求。
+
 <h2 id="automatic-channels">通过 API 或 MCP 自动创建渠道</h2>
 
 此流程使用具有 `channels:write` 的 Profile API key；只读查询需要 `channels:read`。单 Agent 对话密钥不提供渠道管理能力。下表路径均接在 `$HAST_API_BASE` 后面。
