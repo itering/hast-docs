@@ -86,12 +86,20 @@
         "title": "設定を編集"
       },
       {
+        "id": "assistant",
+        "title": "設定アシスタントを使う"
+      },
+      {
         "id": "save",
         "title": "保存と共同編集"
       },
       {
         "id": "disable",
         "title": "無効化と削除"
+      },
+      {
+        "id": "access",
+        "title": "Agent の権限"
       },
       {
         "id": "related",

@@ -86,12 +86,20 @@
         "title": "Edit configuration"
       },
       {
+        "id": "assistant",
+        "title": "Use the configuration assistant"
+      },
+      {
         "id": "save",
         "title": "Save and collaborate"
       },
       {
         "id": "disable",
         "title": "Disable and delete"
+      },
+      {
+        "id": "access",
+        "title": "Manage Agent access"
       },
       {
         "id": "related",
