@@ -35,3 +35,46 @@ agent-wechat のネイティブ API は Bearer Token を使用します。Basic 
 既存サービスの接続解除は Hast の同期のみ停止します。チャネルを削除しても外部のコンテナ、ボリューム、ログイン情報は削除しません。取り込んだナレッジや添付ファイルは既定で保持され、明示的に削除を選んだ場合だけ削除されます。バックアップや更新ではデータと認証情報を保管し、ボリューム削除コマンドに注意してください。
 
 未処理バッチ数は上流の処理待ちを示し、同数のメッセージ消失を意味しません。イベント履歴が期限切れの場合、Hast は上流で読み取れる履歴を再取得します。上流に残っていないデータの復旧は保証できません。
+
+<h2 id="managed-proxy">Hast ホスティングと任意のプロキシ</h2>
+
+Hast ホスティングを選択すると、直接インスタンスを作成するか、HTTP・HTTPS・SOCKS5 プロキシを設定できます。方式、IP/ホスト名、ポート、必要に応じてユーザー名とパスワードを入力します。ホスト欄に URL スキームは不要です。
+
+プロキシは任意です。未設定の場合はホストサーバーのネットワークと出口 IP を使います。独自の出口 IP を使う場合や WeChat に接続できない場合に設定してください。ログイン認証やアカウント制限の回避を保証するものではありません。HTTP プロキシまでの接続は暗号化されません。この接続を暗号化するには HTTPS を選択してください。
+
+「プロキシを確認」で Hast Server が出口 IP と応答時間を確認します。設定した場合は確認成功後に作成でき、作成時にも再確認します。成功はサーバーの接続確認であり、WeChat ログイン成功の保証ではありません。送信元 IP 制限がある場合はインスタンス環境の出口 IP も許可してください。DNS と UDP はホストのネットワークを使い、現在のプロキシは IPv4 TCP を転送します。
+
+準備完了後に QR コードを読み取り、スマートフォンで承認します。プロキシ設定は作成時に保存され、一時停止・再開後も維持されます。実行中のインスタンスのプロキシ変更には対応していません。この機能の公開により既存ログインが再起動されることはありません。初回ログイン未完了のまま期限が切れるとインスタンスを削除し、再作成時は保存済みプロキシ設定を引き継ぎます。チャネル削除時はホストされたインスタンスとプロキシ資源を削除します。同期済みナレッジは削除画面の選択に従います。
+
+<h2 id="api-mcp">API と MCP</h2>
+
+公開 API の接頭辞は `/api/public/v1` です。Profile API key を使用します。構成・会話一覧には `channels:read`、作成・プロキシ確認・更新・再試行・ログイン状態と QR の取得には `channels:write` が必要です。読み取り権限だけではログイン QR を取得できません。
+
+```json
+{
+  "request_id": "1b42bf80-5683-4b6f-815a-5b680395ced5",
+  "name": "Personal WeChat archive",
+  "mode": "managed",
+  "proxy": {
+    "protocol": "https",
+    "host": "proxy.example.com",
+    "port": 8443
+  }
+}
+```
+
+| REST | MCP |
+| --- | --- |
+| `GET /channels/wechat_personal/config` | `get_channels_wechat_personal_config` |
+| `POST /channels/wechat_personal/proxy/check` | `post_channels_wechat_personal_proxy_check` |
+| `POST /channels/wechat_personal/probe` | `post_channels_wechat_personal_probe` |
+| `POST /channels/wechat_personal` | `post_channels_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal` | `get_channels_connection_id_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal/threads` | `get_channels_connection_id_wechat_personal_threads` |
+| `PATCH /channels/{connection_id}/wechat_personal` | `patch_channels_connection_id_wechat_personal` |
+| `POST /channels/{connection_id}/wechat_personal/retry` | `post_channels_connection_id_wechat_personal_retry` |
+| `DELETE /channels/{connection_id}` | `delete_channels_connection_id` |
+| `POST /channels/{connection_id}/reconnect` | `post_channels_connection_id_reconnect` |
+| `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
+
+例は作成リクエストの本文です。直接接続では `proxy` を省略します。プロキシ確認には内側のプロキシオブジェクトを送信し、`exit_ip` と `latency_ms` を取得します。MCP では JSON を `body`、接続 ID を `path`、検索・ページ指定を `query` に入れます。会話一覧は `limit`（1–50）、`cursor`、`search` を受け取り、返された `nextCursor` で次ページを取得します。PATCH の `thread_ids` と `media_enabled` で取り込み対象を保存します。作成・再試行後は状態を確認し、`state=connected` になるまでログイン成功と判断しないでください。既存サービスは `mode=external`、`endpoint`、`account_id`、`credentials` を使い、先に probe でアカウントを取得します。これらの操作は WeChat メッセージを送信しません。
