@@ -4,31 +4,7 @@ import en from "./locales/en.json";
 import ja from "./locales/ja.json";
 
 export const docsPages: DocsPageInfo[] = [
-{
-  "slug": "aip-wechat-personal",
-  "title": "个人微信：自建服务接入",
-  "description": "部署 agent-wechat，扫码登录，并将选定会话只读同步到 Hast。",
-  "subgroup": "渠道接入",
-  "toc": [
-    {
-      "id": "prepare",
-      "title": "开始前"
-    },
-    {
-      "id": "deploy",
-      "title": "部署与登录"
-    },
-    {
-      "id": "connect",
-      "title": "连接 Hast"
-    },
-    {
-      "id": "reconnect",
-      "title": "断线与数据管理"
-    }
-  ],
-  "group": "AIP"
-},
+
   {
     "slug": "overview",
     "title": "认识 Hast",
@@ -451,6 +427,31 @@ export const docsPages: DocsPageInfo[] = [
     ],
     "group": "AIP"
   },
+{
+  "slug": "aip-wechat-personal",
+  "title": "个人微信：自建服务接入",
+  "description": "部署 agent-wechat，扫码登录，并将选定会话只读同步到 Hast。",
+  "subgroup": "渠道接入",
+  "toc": [
+    {
+      "id": "prepare",
+      "title": "开始前"
+    },
+    {
+      "id": "deploy",
+      "title": "部署与登录"
+    },
+    {
+      "id": "connect",
+      "title": "连接 Hast"
+    },
+    {
+      "id": "reconnect",
+      "title": "断线与数据管理"
+    }
+  ],
+  "group": "AIP"
+},
   {
     "slug": "aip-wechat-kf",
     "title": "接入企业微信（微信客服）",
