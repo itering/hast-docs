@@ -1,6 +1,6 @@
 import { TaskAgentEventSchemas } from "../../../src/components/docs/task-agent-api-reference";
 
-AIP の会話イベントは HAST Event v2 を使用します。単一 Agent の会話は JSON ポーリング、Profile API key で送信する通常タスクは SSE にも対応します。[API クイックスタート](aip-api-quickstart)で用途に合うキーを作成してください。
+AIP の会話イベントは HAST Event v2 を使用します。単一 Agent の会話は JSON ポーリング、Profile API キーで送信する通常タスクは SSE にも対応します。[API クイックスタート](aip-api-quickstart)で用途に合うキーを作成してください。
 
 <h2 id="agent">単一 Agent の会話イベントを取得</h2>
 
@@ -19,7 +19,7 @@ curl --fail-with-body \
 
 <h2 id="sse">ストリームへ接続</h2>
 
-以下は `prompts:write` と `sessions:read` を持つ Profile API key 用の手順です。`/prompts` に通常タスクを送信し、応答の `session_id` を `SESSION_ID` に設定して SSE に接続します。このタスクには保存済み Agent の設定は適用されません。その Agent を呼び出すには、上記の単一 Agent API または [Webhook HTTP 連携](aip-api)を使用します。
+以下は `prompts:write` と `sessions:read` を持つ Profile API キー用の手順です。`/prompts` に通常タスクを送信し、応答の `session_id` を `SESSION_ID` に設定して SSE に接続します。このタスクには保存済み Agent の設定は適用されません。その Agent を呼び出すには、上記の単一 Agent API または [Webhook HTTP 連携](aip-api)を使用します。
 
 ```bash
 export HAST_API_KEY='<YOUR_PROFILE_API_KEY>'
@@ -68,7 +68,7 @@ curl -N --fail-with-body \
 
 <h2 id="poll">JSON でイベントを取得</h2>
 
-Profile API key の通常タスクでは、`after` と `limit` を指定して `GET /sessions/{id}/events` を呼び出すこともできます。単一 Agent のキーは上記の `/agent/sessions/{session_id}/events` を使用します。引数は [API リファレンス](aip-api-reference#sessions)を参照してください。
+Profile API キーの通常タスクでは、`after` と `limit` を指定して `GET /sessions/{id}/events` を呼び出すこともできます。単一 Agent のキーは上記の `/agent/sessions/{session_id}/events` を使用します。引数は [API リファレンス](aip-api-reference#sessions)を参照してください。
 
 <h2 id="envelope">Event v2 と種別</h2>
 

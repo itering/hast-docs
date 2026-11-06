@@ -1,6 +1,6 @@
 import { TaskAgentEventSchemas } from "../../../src/components/docs/task-agent-api-reference";
 
-AIP 的会话事件使用 HAST Event v2。单 Agent 对话通过 JSON 轮询读取；Profile API key 提交的普通任务还可以使用 SSE。先按 [API 入门](aip-api-quickstart) 创建适合调用场景的密钥。
+AIP 的会话事件使用 HAST Event v2。单 Agent 对话通过 JSON 轮询读取；Profile API 密钥提交的普通任务还可以使用 SSE。先按 [API 入门](aip-api-quickstart) 创建适合调用场景的密钥。
 
 <h2 id="agent">读取单 Agent 对话事件</h2>
 
@@ -15,11 +15,11 @@ curl --fail-with-body \
 
 将响应中的 `next_after` 作为下次请求的 `after`。`has_more` 为 `true` 时继续翻页，即使 `events` 为空；没有更多事件时稍后再次轮询。此接口只返回用户和 Agent 的完整消息及运行状态，不返回工具轨迹。
 
-按回执的 `request_id` 匹配事件的 `run_id`，直到出现 `run.completed`、`run.failed` 或 `run.interrupted`。`message.completed` 只结束一条消息。单 Agent key 可读取绑定 Agent 的全部历史对话，但不能使用下面的普通任务 SSE 路径。
+按回执的 `request_id` 匹配事件的 `run_id`，直到出现 `run.completed`、`run.failed` 或 `run.interrupted`。`message.completed` 只结束一条消息。单 Agent 对话密钥可读取绑定 Agent 的全部历史对话，但不能使用下面的普通任务 SSE 路径。
 
 <h2 id="sse">连接事件流</h2>
 
-以下流程使用 Profile API key，授予 `prompts:write` 和 `sessions:read`。先向 `/prompts` 提交普通任务，将响应中的 `session_id` 设置为 `SESSION_ID`，再连接 SSE。此任务不使用已保存的 Agent 配置；调用该 Agent 请用上面的单 Agent 对话接口或 [Webhook HTTP 接入](aip-api)。
+以下流程使用 Profile API 密钥，授予 `prompts:write` 和 `sessions:read`。先向 `/prompts` 提交普通任务，将响应中的 `session_id` 设置为 `SESSION_ID`，再连接 SSE。此任务不使用已保存的 Agent 配置；调用该 Agent 请用上面的单 Agent 对话接口或 [Webhook HTTP 接入](aip-api)。
 
 ```bash
 export HAST_API_KEY='<YOUR_PROFILE_API_KEY>'
@@ -72,7 +72,7 @@ curl -N --fail-with-body \
 
 <h2 id="poll">通过 JSON 读取事件</h2>
 
-Profile API key 的普通任务也可以调用 `GET /sessions/{id}/events`，使用 `after` 和 `limit` 读取事件。单 Agent key 使用本页顶部的 `/agent/sessions/{session_id}/events`。参数见 [API 参考](aip-api-reference#sessions)。
+Profile API 密钥的普通任务也可以调用 `GET /sessions/{id}/events`，使用 `after` 和 `limit` 读取事件。单 Agent 对话密钥使用本页顶部的 `/agent/sessions/{session_id}/events`。参数见 [API 参考](aip-api-reference#sessions)。
 
 <h2 id="envelope">Event v2 与事件类型</h2>
 

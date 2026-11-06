@@ -3,7 +3,7 @@
 <h2 id="prepare">准备密钥与权限</h2>
 
 1. 在 AIP 切换到目标业务身份，打开“API 密钥”。
-2. 创建时选择“单 Agent 对话”或“Profile API key”。前者绑定一个 Agent，勾选发送消息会包含读取该 Agent 全部历史对话。后者按功能授权：查看 Agent 配置使用 `webhooks:read`，创建、修改和调用使用 `webhooks:write`；知识库使用 `knowledge-bases:read/write`，CRM 使用 `business-resources:read/write`。写入自动包含对应读取，也适用于已有的写入权限。
+2. 创建时选择“单 Agent 对话”或“Profile API 密钥”。前者绑定一个 Agent，勾选发送消息会包含读取该 Agent 全部历史对话。后者按功能授权：查看 Agent 配置使用 `webhooks:read`，创建、修改和调用使用 `webhooks:write`；知识库使用 `knowledge-bases:read/write`，CRM 使用 `business-resources:read/write`。写入自动包含对应读取，也适用于已有的写入权限。
 3. 确认当前环境的 Backplane 服务地址。生产环境使用 `https://backend.hast.so`；开发或自部署环境请向部署管理员确认地址。
 
 已有密钥可以编辑访问范围和权限，无需更换密钥值；保存后对后续 API 和 MCP 请求生效。除写入包含对应读取外，不会自动授予新增能力。工具列表只显示这把密钥有权使用的工具；找不到工具时，先检查权限、当前业务身份并刷新工具列表。
@@ -35,9 +35,9 @@ Public API Key 是连接凭证。把真实值保存在客户端的安全凭据�
 
 <h2 id="verify">验证连接并读取指南</h2>
 
-单 Agent key 只提供 `post_agent_prompts`、`get_agent_sessions` 和 `get_agent_sessions_session_id_events`；只读 key 不提供发送工具。发送参数为 `{"body":{"prompt":"你好","request_id":"message-1"}}`，续聊时加入返回的 `body.session_id`。接受请求后，使用返回的 `session_id` 读取事件，直到事件 `run_id` 与回执 `request_id` 一致且状态为 `run.completed`、`run.failed` 或 `run.interrupted`。此 key 不提供以下管理指南和配置工具。
+单 Agent 对话密钥只提供 `post_agent_prompts`、`get_agent_sessions` 和 `get_agent_sessions_session_id_events`；只读 key 不提供发送工具。发送参数为 `{"body":{"prompt":"你好","request_id":"message-1"}}`，续聊时加入返回的 `body.session_id`。接受请求后，使用返回的 `session_id` 读取事件，直到事件 `run_id` 与回执 `request_id` 一致且状态为 `run.completed`、`run.failed` 或 `run.interrupted`。此 key 不提供以下管理指南和配置工具。
 
-Profile key 可以让客户端读取资源 `hast://guides/overview`。如果客户端不支持资源，可以调用 `get_guides_topic`，传入以下参数：
+Profile API 密钥可以让客户端读取资源 `hast://guides/overview`。如果客户端不支持资源，可以调用 `get_guides_topic`，传入以下参数：
 
 ```json
 {
@@ -62,7 +62,7 @@ Profile key 可以让客户端读取资源 `hast://guides/overview`。如果客�
 
 <h2 id="wechat-accounts">获取微信客服账号</h2>
 
-先读取 `hast://guides/channels` 完成微信客服草稿和企业微信配置，再使用带 `channels:write` 的 Profile key 调用 `post_channels_connection_id_wechat_kf_accounts`：
+先读取 `hast://guides/channels` 完成微信客服草稿和企业微信配置，再使用带 `channels:write` 的 Profile API 密钥调用 `post_channels_connection_id_wechat_kf_accounts`：
 
 ```json
 {
@@ -71,7 +71,7 @@ Profile key 可以让客户端读取资源 `hast://guides/overview`。如果客�
 }
 ```
 
-真实应用 Secret 只通过客户端安全工具参数传入，不要写入提示词、日志或回执。结果为 `status` 和 `body.accounts`，每项包含 `name`、`open_kfid`、`manage_privilege`。按名称选择有管理权限的账号后，调用 `patch_channels_connection_id_wechat_kf`，保留相同 `path`，在 `body` 传入 `corp_secret` 和选中的 `open_kfid`。获取列表不会保存凭据或绑定账号；单 Agent 对话 key 无法调用这些工具。详细响应与错误见 [API 参考](aip-api-reference#wechat-accounts)。
+真实应用 Secret 只通过客户端安全工具参数传入，不要写入提示词、日志或回执。结果为 `status` 和 `body.accounts`，每项包含 `name`、`open_kfid`、`manage_privilege`。按名称选择有管理权限的账号后，调用 `patch_channels_connection_id_wechat_kf`，保留相同 `path`，在 `body` 传入 `corp_secret` 和选中的 `open_kfid`。获取列表不会保存凭据或绑定账号；单 Agent 对话密钥无法调用这些工具。详细响应与错误见 [API 参考](aip-api-reference#wechat-accounts)。
 
 <h2 id="use">让 Agent 开始工作</h2>
 
@@ -101,7 +101,7 @@ Profile key 可以让客户端读取资源 `hast://guides/overview`。如果客�
 - 写入超时或结果不确定时，先读取当前状态再决定是否重试，避免重复创建资源或执行操作。
 
 
-自动创建 Slack App／Telegram Bot、查询 Agent 运行记录、修改邮箱名称和渠道进度设置均有 MCP 工具，操作顺序见 [API 管理接入](aip-api-quickstart#automatic-channels)。发布后重新获取工具列表；单 Agent 对话 key 不会获得这些管理工具。失败回执还包含脱敏的 `code`、`request_id`、`retryable` 和 `next_step`，请展示可执行的下一步，写入结果不确定时先回读。
+自动创建 Slack App／Telegram Bot、查询 Agent 运行记录、修改邮箱名称和渠道进度设置均有 MCP 工具，操作顺序见 [API 管理接入](aip-api-quickstart#automatic-channels)。发布后重新获取工具列表；单 Agent 对话密钥不会获得这些管理工具。失败回执还包含脱敏的 `code`、`request_id`、`retryable` 和 `next_step`，请展示可执行的下一步，写入结果不确定时先回读。
 
 <h2 id="troubleshoot">连接或调用失败时</h2>
 

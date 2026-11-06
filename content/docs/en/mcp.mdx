@@ -3,7 +3,7 @@ MCP (Model Context Protocol) lets external Agent clients discover and use Hast A
 <h2 id="prepare">Prepare a key and permissions</h2>
 
 1. Switch to the target Profile in AIP and open API keys.
-2. Choose Single Agent conversation or Profile API key. A single-Agent key binds to one Agent; sending messages includes reading all of that Agent's conversation history. Profile keys select capabilities: Agent configuration uses `webhooks:read`; creating, editing, and invoking uses `webhooks:write`. Knowledge uses `knowledge-bases:read/write`; CRM uses `business-resources:read/write`. Write includes the corresponding read permission, including on existing keys.
+2. Choose Single Agent conversation or Profile API key. A single-Agent key binds to one Agent; sending messages includes reading all of that Agent's conversation history. Profile API keys select capabilities: Agent configuration uses `webhooks:read`; creating, editing, and invoking uses `webhooks:write`. Knowledge uses `knowledge-bases:read/write`; CRM uses `business-resources:read/write`. Write includes the corresponding read permission, including on existing keys.
 3. Confirm the Backplane URL for your environment. Production uses `https://backend.hast.so`; ask your deployment administrator for development or self-hosted addresses.
 
 Edit an existing key's access range and permissions without changing its value. Changes apply to subsequent API and MCP requests. Apart from write implying read, new capabilities are not granted automatically. Discovery only shows authorized tools; check permissions and Profile, then refresh the tool list if a tool is missing.
@@ -33,7 +33,7 @@ This is a configuration example; adapt its fields to your client. Use HTTPS outs
 
 Single-Agent keys expose `post_agent_prompts`, `get_agent_sessions`, and `get_agent_sessions_session_id_events`; read-only keys omit the send tool. Send `{"body":{"prompt":"Hello","request_id":"message-1"}}`, adding the returned session ID as `body.session_id` to continue. Poll events for that session until `run_id` matches the receipt's `request_id` and the event is `run.completed`, `run.failed`, or `run.interrupted`. These keys do not expose the following management guides or configuration tools.
 
-For a Profile key, read `hast://guides/overview`. If the client cannot read resources, call `get_guides_topic` with:
+For a Profile API key, read `hast://guides/overview`. If the client cannot read resources, call `get_guides_topic` with:
 
 ```json
 {
@@ -58,7 +58,7 @@ For `get_guides_topic`, use the final segment as `path.topic`, such as `enterpri
 
 <h2 id="wechat-accounts">Discover WeChat customer service accounts</h2>
 
-Read `hast://guides/channels` to create the WeChat draft and finish WeCom configuration, then call `post_channels_connection_id_wechat_kf_accounts` using a Profile key with `channels:write`:
+Read `hast://guides/channels` to create the WeChat draft and finish WeCom configuration, then call `post_channels_connection_id_wechat_kf_accounts` using a Profile API key with `channels:write`:
 
 ```json
 {
