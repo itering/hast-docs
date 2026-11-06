@@ -4,6 +4,7 @@ import en from "./locales/en.json";
 import ja from "./locales/ja.json";
 
 export const docsPages: DocsPageInfo[] = [
+
   {
     "slug": "overview",
     "title": "认识 Hast",
@@ -99,12 +100,20 @@ export const docsPages: DocsPageInfo[] = [
         "title": "编辑配置"
       },
       {
+        "id": "assistant",
+        "title": "使用配置助手"
+      },
+      {
         "id": "save",
         "title": "保存与协作"
       },
       {
         "id": "disable",
         "title": "停用和删除"
+      },
+      {
+        "id": "access",
+        "title": "管理 Agent 权限"
       },
       {
         "id": "related",
@@ -418,6 +427,31 @@ export const docsPages: DocsPageInfo[] = [
     ],
     "group": "AIP"
   },
+{
+  "slug": "aip-wechat-personal",
+  "title": "个人微信：自建服务接入",
+  "description": "部署 agent-wechat，扫码登录，并将选定会话只读同步到 Hast。",
+  "subgroup": "渠道接入",
+  "toc": [
+    {
+      "id": "prepare",
+      "title": "开始前"
+    },
+    {
+      "id": "deploy",
+      "title": "部署与登录"
+    },
+    {
+      "id": "connect",
+      "title": "连接 Hast"
+    },
+    {
+      "id": "reconnect",
+      "title": "断线与数据管理"
+    }
+  ],
+  "group": "AIP"
+},
   {
     "slug": "aip-wechat-kf",
     "title": "接入企业微信（微信客服）",

@@ -1,3 +1,4 @@
+import PersonalWeChatPage, { docsSearchText as PersonalWeChatSearch } from "../../../content/docs/en/aip-wechat-personal.mdx";
 import WeChatKfPage, { docsSearchText as WeChatKfSearch } from "../../../content/docs/en/aip-wechat-kf.mdx";
 import WhatsAppPage, { docsSearchText as WhatsAppSearch } from "../../../content/docs/en/aip-whatsapp.mdx";
 import SlackPage, { docsSearchText as SlackSearch } from "../../../content/docs/en/aip-slack.mdx";
@@ -38,6 +39,7 @@ import Page32, { docsSearchText as Search32 } from "../../../content/docs/en/gtm
 import Page33, { docsSearchText as Search33 } from "../../../content/docs/en/billing.mdx";
 
 export const docsContent = {
+  "aip-wechat-personal": PersonalWeChatPage,
   "aip-whatsapp": WhatsAppPage,
   "aip-wechat-kf": WeChatKfPage,
   "aip-slack": SlackPage,
@@ -79,6 +81,7 @@ export const docsContent = {
 };
 
 export const docsSearchIndex: Record<string, string> = {
+  "aip-wechat-personal": PersonalWeChatSearch,
   "aip-whatsapp": WhatsAppSearch,
   "aip-wechat-kf": WeChatKfSearch,
   "aip-slack": SlackSearch,

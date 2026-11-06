@@ -86,12 +86,20 @@
         "title": "設定を編集"
       },
       {
+        "id": "assistant",
+        "title": "設定アシスタントを使う"
+      },
+      {
         "id": "save",
         "title": "保存と共同編集"
       },
       {
         "id": "disable",
         "title": "無効化と削除"
+      },
+      {
+        "id": "access",
+        "title": "Agent の権限"
       },
       {
         "id": "related",
@@ -899,6 +907,29 @@
       {
         "id": "troubleshooting",
         "title": "よくある問題"
+      }
+    ]
+  },
+  "aip-wechat-personal": {
+    "title": "個人 WeChat：自前サービスの接続",
+    "description": "agent-wechat を構築して QR コードでログインし、選んだ会話を読み取り専用で Hast に同期します。",
+    "subgroup": "チャネル接続",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "準備"
+      },
+      {
+        "id": "deploy",
+        "title": "構築とログイン"
+      },
+      {
+        "id": "connect",
+        "title": "Hast に接続"
+      },
+      {
+        "id": "reconnect",
+        "title": "再ログインとデータ管理"
       }
     ]
   }

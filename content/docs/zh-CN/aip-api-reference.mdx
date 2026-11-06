@@ -6,6 +6,8 @@ AIP Public API 使用工作台中创建的 API 密钥。单 Agent 对话密钥�
 
 下方接口定义来自 Backplane OpenAPI 快照，按资源分组展示参数、请求体和响应结构。
 
+该快照未包含部分需要会话校验的 Profile API 操作。对于这些操作，密钥权限是必要条件，但仅有密钥权限不足以执行；还需要密钥创建者当前登录的 AIP 会话，且属于与密钥相同的 Workspace。现有角色及成员资格检查仍然适用。相关权限族及详情见 [API 入门](aip-api-quickstart)。
+
 <TaskAgentApiReference />
 
 <h2 id="wechat-accounts">获取微信客服账号</h2>

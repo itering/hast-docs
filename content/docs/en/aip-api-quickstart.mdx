@@ -66,6 +66,8 @@ Write permissions include the corresponding read permission. A Profile API key's
 
 Ordinary tasks support SSE at `/sessions/{id}/events/stream`; see [SSE integration](aip-api-events#sse). Profile API keys and single-Agent keys have different endpoint access: `/agent/*` and ordinary task paths are not interchangeable.
 
+A Profile API key's scope is necessary but is not sufficient for some operations. Operations in the `channel-credentials`, `knowledge-sharing`, `connector-permissions`, `connector-approvals`, `workspace-permissions`, `organization-permissions`, `key-management`, and `assistant-sessions` families also require the key creator's current signed-in AIP session, belonging to the same Workspace as the key. Grant the specific API-key scope required by each operation; the session does not replace its normal authorization, including existing role and membership checks. This requirement applies to both REST and MCP.
+
 <h2 id="automatic-channels">Create channels through API or MCP</h2>
 
 Use a Profile API key with `channels:write`; reads require `channels:read`. Single-Agent conversation keys cannot manage channels. Paths below are relative to `$HAST_API_BASE`.

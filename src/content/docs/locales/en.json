@@ -86,12 +86,20 @@
         "title": "Edit configuration"
       },
       {
+        "id": "assistant",
+        "title": "Use the configuration assistant"
+      },
+      {
         "id": "save",
         "title": "Save and collaborate"
       },
       {
         "id": "disable",
         "title": "Disable and delete"
+      },
+      {
+        "id": "access",
+        "title": "Manage Agent access"
       },
       {
         "id": "related",
@@ -899,6 +907,29 @@
       {
         "id": "troubleshooting",
         "title": "Troubleshooting"
+      }
+    ]
+  },
+  "aip-wechat-personal": {
+    "title": "Personal WeChat: self-hosted service",
+    "description": "Deploy agent-wechat, sign in by QR code, and sync selected chats into Hast as read-only Knowledge.",
+    "subgroup": "Channels",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Before you start"
+      },
+      {
+        "id": "deploy",
+        "title": "Deploy and sign in"
+      },
+      {
+        "id": "connect",
+        "title": "Connect Hast"
+      },
+      {
+        "id": "reconnect",
+        "title": "Reconnect and manage data"
       }
     ]
   }
