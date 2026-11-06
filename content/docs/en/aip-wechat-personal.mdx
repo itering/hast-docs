@@ -35,3 +35,46 @@ If the service is unreachable, check its process, network, URL, and credentials 
 For Existing service connections, disconnecting stops Hast synchronization. Deleting the channel does not delete your external container, volume, or login. Imported Knowledge and attachments are retained by default; they are removed only when explicitly requested. Preserve the volume and credentials during backups and upgrades, and avoid commands that remove volumes unintentionally.
 
 Pending batches indicate unfinished upstream processing, not an equivalent count of lost chat messages. When event history expires, Hast backfills history still readable upstream. Data no longer retained upstream cannot be guaranteed recoverable.
+
+<h2 id="managed-proxy">Hast hosting and optional proxy</h2>
+
+Choose Hast hosting to create an instance directly, or configure your HTTP, HTTPS or SOCKS5 proxy first: protocol, IP/hostname, port, and optional username/password. Enter the host without a URL scheme.
+
+A proxy is optional. Without one, WeChat uses the hosted server's network and outbound IP. Use a proxy to select your own outbound IP or when the hosted network cannot reach WeChat. A proxy does not guarantee avoiding login verification or account restrictions. An HTTP proxy connection is not encrypted; choose HTTPS to encrypt the connection to the proxy.
+
+Check proxy queries the outbound IP from Hast Server and shows latency. A configured proxy must pass before creation; the server checks again when creating. Success confirms server connectivity, not WeChat login. If the proxy uses source-IP allowlists, allow the instance environment's outbound IP too. DNS and UDP retain hosted networking; the current proxy forwards IPv4 TCP connections.
+
+Scan the QR code after preparation and approve on your phone. Proxy settings are saved at creation and retained across pause/resume. Changing a running instance's proxy is not supported; this feature does not restart existing logins. An instance that never completes first login is removed after its setup deadline; recreation retains the saved proxy settings. Deleting the channel cleans up hosted instance and proxy resources; indexed knowledge follows your deletion selection.
+
+<h2 id="api-mcp">API and MCP</h2>
+
+Public API prefix: `/api/public/v1`. Use a Profile API key. Configuration and conversation listing require `channels:read`; creation, proxy checks, updates, retries and login-status/QR reads require `channels:write`. Read-only access does not expose login QR codes.
+
+```json
+{
+  "request_id": "1b42bf80-5683-4b6f-815a-5b680395ced5",
+  "name": "Personal WeChat archive",
+  "mode": "managed",
+  "proxy": {
+    "protocol": "https",
+    "host": "proxy.example.com",
+    "port": 8443
+  }
+}
+```
+
+| REST | MCP |
+| --- | --- |
+| `GET /channels/wechat_personal/config` | `get_channels_wechat_personal_config` |
+| `POST /channels/wechat_personal/proxy/check` | `post_channels_wechat_personal_proxy_check` |
+| `POST /channels/wechat_personal/probe` | `post_channels_wechat_personal_probe` |
+| `POST /channels/wechat_personal` | `post_channels_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal` | `get_channels_connection_id_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal/threads` | `get_channels_connection_id_wechat_personal_threads` |
+| `PATCH /channels/{connection_id}/wechat_personal` | `patch_channels_connection_id_wechat_personal` |
+| `POST /channels/{connection_id}/wechat_personal/retry` | `post_channels_connection_id_wechat_personal_retry` |
+| `DELETE /channels/{connection_id}` | `delete_channels_connection_id` |
+| `POST /channels/{connection_id}/reconnect` | `post_channels_connection_id_reconnect` |
+| `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
+
+The example is the create request body. Omit `proxy` for direct egress. Proxy check accepts the inner proxy object and returns `exit_ip` and `latency_ms`. For MCP, put request JSON under `body`, the connection ID under `path`, and pagination/search under `query`. Conversation listing accepts `limit` (1–50), `cursor`, and `search`; use the returned `nextCursor`. PATCH `thread_ids` and `media_enabled` to select ingestion. Poll status after creation or retry; never claim successful login before `state=connected`. Existing-service setup uses `mode=external`, `endpoint`, `account_id`, and `credentials`; probe first. These operations do not send WeChat messages.

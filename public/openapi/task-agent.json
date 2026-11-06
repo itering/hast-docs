@@ -5317,6 +5317,365 @@
           "public-task-agents"
         ]
       }
+    },
+    "/api/public/v1/channels/wechat_personal": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Use a stable request_id UUID. mode=managed provisions Docker or Kubernetes and requires human QR approval; proxy is optional (HTTP, HTTPS, SOCKS5). Omit proxy for direct server egress. Server rechecks supplied proxies before creation. mode=external requires endpoint, account_id and credentials. Read-only knowledge ingestion; no message sending. Proxy settings apply at creation and persist across retry/resume.",
+        "parameters": [
+          {
+            "description": "Configuration; never expose credentials in messages or logs",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/api.createPersonalWeChatRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Create a read-only personal WeChat knowledge channel",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/wechat_personal/config": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Read personal WeChat hosting availability",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/wechat_personal/probe": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Configuration; never expose credentials in messages or logs",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/api.PersonalWeChatProbeRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Discover accounts on an existing agent-wechat service",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/wechat_personal/proxy/check": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Checks HTTPS IP echo through the supplied proxy from Hast Server; returns exit_ip and latency_ms. Does not create an instance or verify WeChat login. Runtime proxies IPv4 TCP only; DNS/UDP use hosted networking. Credentials are not returned.",
+        "parameters": [
+          {
+            "description": "Configuration; never expose credentials in messages or logs",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/personalwechat.ProxyConfig"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/personalwechat.ProxyCheck"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Check an optional managed WeChat proxy from Hast Server",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/{connection_id}/wechat_personal": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Owned personal WeChat channel ID",
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.personalWeChatSession"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Read personal WeChat login status and QR code",
+        "tags": [
+          "public-task-agents"
+        ]
+      },
+      "patch": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Owned personal WeChat channel ID",
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Configuration; never expose credentials in messages or logs",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/api.PersonalWeChatSettingsRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "204": {
+            "description": "Settings saved"
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Update selected conversations, media ingestion or existing-service credentials",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/{connection_id}/wechat_personal/retry": {
+      "post": {
+        "description": "Read status after HTTP 202. Retries login or recreates expired never-connected instances. Resume paused instances with POST /channels/{connection_id}/reconnect. Existing logged-in instances are not replaced.",
+        "parameters": [
+          {
+            "description": "Owned personal WeChat channel ID",
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Retry personal WeChat login",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
+    },
+    "/api/public/v1/channels/{connection_id}/wechat_personal/threads": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Owned personal WeChat channel ID",
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Page size 1-50; default 20",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          },
+          {
+            "description": "Opaque nextCursor from previous page",
+            "in": "query",
+            "name": "cursor",
+            "type": "string"
+          },
+          {
+            "description": "Conversation name or ID; maximum 256 characters",
+            "in": "query",
+            "name": "search",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "PublicBearer": []
+          }
+        ],
+        "summary": "Search and paginate personal WeChat conversations",
+        "tags": [
+          "public-task-agents"
+        ]
+      }
     }
   },
   "definitions": {
@@ -9683,6 +10042,233 @@
         },
         "type": {
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "api.createPersonalWeChatRequest": {
+      "properties": {
+        "account_id": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/personalwechat.Credentials"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "managed",
+            "external"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "proxy": {
+          "$ref": "#/definitions/personalwechat.ProxyConfig"
+        },
+        "request_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode",
+        "name",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "personalwechat.Credentials": {
+      "properties": {
+        "ca": {
+          "type": "string"
+        },
+        "certificate": {
+          "type": "string"
+        },
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "private_key": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "personalwechat.ProxyConfig": {
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "port": {
+          "maximum": 65535,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "http",
+            "https",
+            "socks5"
+          ],
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "host",
+        "port",
+        "protocol"
+      ],
+      "type": "object"
+    },
+    "api.PersonalWeChatProbeRequest": {
+      "properties": {
+        "credentials": {
+          "$ref": "#/definitions/personalwechat.Credentials"
+        },
+        "endpoint": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "type": "object"
+    },
+    "personalwechat.ProxyCheck": {
+      "properties": {
+        "exit_ip": {
+          "type": "string"
+        },
+        "latency_ms": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "api.personalWeChatSession": {
+      "properties": {
+        "account_id": {
+          "type": "string"
+        },
+        "archive_only": {
+          "type": "boolean"
+        },
+        "awaiting_approval": {
+          "type": "boolean"
+        },
+        "backfill_pending": {
+          "type": "boolean"
+        },
+        "connected_at": {
+          "type": "string"
+        },
+        "connection_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "event_recovery_at": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer"
+        },
+        "last_synced_at": {
+          "type": "string"
+        },
+        "login_failure_code": {
+          "type": "string"
+        },
+        "login_state": {
+          "type": "string"
+        },
+        "media_enabled": {
+          "type": "boolean"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "provision_deadline": {
+          "type": "string"
+        },
+        "qr_data": {
+          "type": "string"
+        },
+        "setup_deadline": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "thread_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "upstream_contacts_ready": {
+          "type": "boolean"
+        },
+        "upstream_pending_batches": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "api.PersonalWeChatSettingsRequest": {
+      "properties": {
+        "credentials": {
+          "$ref": "#/definitions/personalwechat.Credentials"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "media_enabled": {
+          "type": "boolean"
+        },
+        "thread_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "type": "object"

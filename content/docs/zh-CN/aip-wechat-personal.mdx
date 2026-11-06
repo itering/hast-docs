@@ -35,3 +35,46 @@ agent-wechat 原生 API 使用 Bearer Token。Basic Auth 或自定义 API Key �
 对于「连接已有服务」，断开只停止 Hast 同步；删除渠道也不会删除你的 Docker 容器、数据卷或微信登录。已经同步的知识和附件默认保留，只有明确选择清理知识时才删除相应内容。备份和升级时保留服务数据卷及其凭证，避免误用删除卷的命令。
 
 「待处理批次」表示上游仍有未完成的数据处理，不等于同等数量的聊天消息丢失。事件历史过期时 Hast 会回填仍可读取的历史；上游已经不再保存的数据无法保证补齐。
+
+<h2 id="managed-proxy">Hast 托管与可选代理</h2>
+
+选择「Hast 托管」后，可直接创建实例，或先填写自己的 HTTP、HTTPS、SOCKS5 代理：协议、IP/域名、端口，以及可选的用户名和密码。无需在地址中重复填写协议。
+
+代理不是必填项。不使用代理时，微信使用托管服务器的网络出口；网络可达时可以直接登录。需要指定自己的出口 IP，或托管网络无法连接微信时，可以尝试代理。代理不能保证避免微信的登录验证或账号限制。HTTP 代理连接本身不加密；如需加密到代理服务器这一段，请选择 HTTPS。
+
+点击「检查代理」，Hast Server 会通过代理查询出口 IP，并显示耗时。填写代理时，检查成功后才能创建；创建时服务端会再次检查。检查成功表示服务器能够使用代理，不保证微信一定登录成功；如果代理有来源 IP 白名单，还需允许实例运行环境的出口。DNS 和 UDP 沿用托管网络，当前代理转发 IPv4 TCP 连接。
+
+实例准备完成后扫码，并在手机确认。代理设置在创建时保存；暂停和恢复沿用原设置。当前不支持给正在运行的实例切换代理；已有登录不会因为此功能发布而重启。未完成首次登录且超时的实例会自动删除，再次创建时沿用保存的代理设置。删除渠道会清理托管实例和代理资源；已同步知识按删除页面的选择处理。
+
+<h2 id="api-mcp">API 与 MCP</h2>
+
+公开 API 前缀为 `/api/public/v1`。使用 Profile API key；读取配置和会话列表需要 `channels:read`，创建、代理检查、更新、重试及读取扫码状态需要 `channels:write`。只读权限不会提供登录二维码。
+
+```json
+{
+  "request_id": "1b42bf80-5683-4b6f-815a-5b680395ced5",
+  "name": "Personal WeChat archive",
+  "mode": "managed",
+  "proxy": {
+    "protocol": "https",
+    "host": "proxy.example.com",
+    "port": 8443
+  }
+}
+```
+
+| REST | MCP |
+| --- | --- |
+| `GET /channels/wechat_personal/config` | `get_channels_wechat_personal_config` |
+| `POST /channels/wechat_personal/proxy/check` | `post_channels_wechat_personal_proxy_check` |
+| `POST /channels/wechat_personal/probe` | `post_channels_wechat_personal_probe` |
+| `POST /channels/wechat_personal` | `post_channels_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal` | `get_channels_connection_id_wechat_personal` |
+| `GET /channels/{connection_id}/wechat_personal/threads` | `get_channels_connection_id_wechat_personal_threads` |
+| `PATCH /channels/{connection_id}/wechat_personal` | `patch_channels_connection_id_wechat_personal` |
+| `POST /channels/{connection_id}/wechat_personal/retry` | `post_channels_connection_id_wechat_personal_retry` |
+| `DELETE /channels/{connection_id}` | `delete_channels_connection_id` |
+| `POST /channels/{connection_id}/reconnect` | `post_channels_connection_id_reconnect` |
+| `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
+
+示例是创建请求体。不使用代理时省略 `proxy`。代理检查直接提交内层代理对象，返回 `exit_ip`、`latency_ms`。MCP 将请求 JSON 放在 `body`、连接 ID 放在 `path`、分页搜索放在 `query`。会话列表接受 `limit`（1–50）、`cursor`、`search`，使用返回的 `nextCursor` 翻页。PATCH `thread_ids`、`media_enabled` 保存采集范围。创建或重试后轮询状态，只有 `state=connected` 才表示已连接。已有服务使用 `mode=external`、`endpoint`、`account_id` 和 `credentials`，先 probe 获取账号。这些操作不会发送微信消息。
