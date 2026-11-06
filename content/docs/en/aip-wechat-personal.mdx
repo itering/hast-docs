@@ -1,0 +1,37 @@
+<h2 id="prepare">Before you start</h2>
+
+This guide applies to deployments offering WeChat → Personal WeChat. Availability depends on your environment; the guide does not announce availability in every production deployment.
+
+Personal WeChat imports selected chats into Knowledge without sending messages or read receipts. It is separate from [WeChat Customer Service](aip-wechat-kf). A new login may not provide the complete history stored on your phone.
+
+<h2 id="deploy">Deploy and sign in</h2>
+
+Install Docker on your own server and start the service using the Docker instructions in the [official agent-wechat installation guide](https://thisnick.github.io/agent-wechat/setup/install/). Keep account data and sessions in a dedicated persistent volume, and pin a verified image version.
+
+Follow [Connect your account](https://thisnick.github.io/agent-wechat/setup/connect/) to create an account, scan its QR code, and confirm on your phone. Give multiple accounts recognizable aliases. Never run two writers against the same account data.
+
+The Hast backend must reach the service URL. Your server's `localhost` cannot be reached as localhost by a remote Hast deployment. Use your own reverse proxy or protected tunnel for HTTP or HTTPS access. Forward authentication headers, disable event-stream buffering, and allow long connections.
+
+Issue a dedicated token scoped to the required account with `read`, adding `media` only for attachment downloads. Do not grant `send`, `read-state`, or administrative scopes. The service administrator may need an account ID when issuing the token; Hast lists accessible accounts automatically.
+
+<h2 id="connect">Connect Hast</h2>
+
+1. Open Channels → Add channel → WeChat → Personal WeChat, then select Existing service.
+2. Enter the service URL. Both HTTP and HTTPS are supported.
+3. Enter the authentication required by your service: Bearer Token, Basic Auth, or API Key / custom headers. `X-API-Key` is one possible header name; use the name configured on your gateway.
+4. Select Load WeChat accounts. A single account is selected automatically; choose one when multiple accounts are available, then create the connection.
+5. Load chats, search by name or ID, browse pages, and select chats. Selections survive pagination and searches. Save the chat selection when finished.
+
+The native agent-wechat API uses Bearer tokens. Basic Auth and custom API keys require a gateway that validates them and forwards authentication accepted by the upstream service. Choosing an option in Hast does not configure that gateway.
+
+Edit service connection settings changes the URL or access credentials. It is not the WeChat sign-in screen.
+
+<h2 id="reconnect">Reconnect and manage data</h2>
+
+If WeChat signs out, return to the machine or Docker container running agent-wechat. Use its original login tool to scan again and confirm on your phone. Contact its administrator if someone else maintains it. Hast detects recovery automatically; do not delete the channel.
+
+If the service is unreachable, check its process, network, URL, and credentials first. A network failure does not necessarily mean WeChat signed out.
+
+For Existing service connections, disconnecting stops Hast synchronization. Deleting the channel does not delete your external container, volume, or login. Imported Knowledge and attachments are retained by default; they are removed only when explicitly requested. Preserve the volume and credentials during backups and upgrades, and avoid commands that remove volumes unintentionally.
+
+Pending batches indicate unfinished upstream processing, not an equivalent count of lost chat messages. When event history expires, Hast backfills history still readable upstream. Data no longer retained upstream cannot be guaranteed recoverable.

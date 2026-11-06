@@ -909,5 +909,28 @@
         "title": "よくある問題"
       }
     ]
+  },
+  "aip-wechat-personal": {
+    "title": "個人 WeChat：自前サービスの接続",
+    "description": "agent-wechat を構築して QR コードでログインし、選んだ会話を読み取り専用で Hast に同期します。",
+    "subgroup": "チャネル接続",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "準備"
+      },
+      {
+        "id": "deploy",
+        "title": "構築とログイン"
+      },
+      {
+        "id": "connect",
+        "title": "Hast に接続"
+      },
+      {
+        "id": "reconnect",
+        "title": "再ログインとデータ管理"
+      }
+    ]
   }
 }
