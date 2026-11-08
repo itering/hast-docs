@@ -26,7 +26,7 @@ When available in your workspace, open the configuration assistant to request ch
 - **Wait for my approval**: important changes need your approval. Review pending changes before approving them, then check the results.
 - **Full access**: this conversation can directly change, delete, and run resources you can manage. Use it only when appropriate. The assistant cannot restore a deleted resource.
 
-Enter secret values through the secure form, not in chat. The assistant edits saved configuration, not an unsaved editor draft. After it finishes, reload the editor and reconcile any draft, then verify the result in a new debug session.
+Enter secret values through the secure form, not in chat. The assistant edits saved configuration, not an unsaved editor draft. After it finishes, reload the editor and reconcile any draft, then verify the result in a new debug session. For supported channel setup, the conversation may show a pairing QR code to scan and approve in the relevant app. Saved raster images may also appear inline with a download link.
 
 <h2 id="save">Save and collaborate</h2>
 
@@ -42,7 +42,7 @@ If a service synchronizes Agent configuration on startup, the next synchronizati
 
 <h2 id="access">Manage Agent access</h2>
 
-In the selected Workspace, open **Agent access** from the workspace management navigation. Review member and connected-source access for each Agent. Open an Agent to search, filter, and page through member, source, and historical access records. Workspace administrators can grant members **View runs** or **Run agent** access, change their access, or revoke it. **Run agent** also requires Workspace Editor access.
+In the selected Workspace, open **Agent access** from the workspace management navigation. Review member and connected-source access for each Agent. Open an Agent to search, filter, and page through member, source, and historical access records. Member access follows Workspace roles: Viewers can read shared content; Editors and Admins can edit and run Agents. Manage Workspace roles in Workspace members. Stored Agent-specific read limits and revocations still apply; inspect them in the member view. Permissions for channels, schedules, and API entrances are managed separately. Private conversations and personal connections keep their own access rules.
 
 Conversation-specific and revoked grants appear in the history. Agents with only historical grants appear in a separate history view; their records remain available. Manage Agent definitions, schedules, and channels in the workspace workbench.
 
