@@ -93,6 +93,8 @@ Profile API キーの権限だけでは実行できない操作があります�
 3. 同じ設定を照会し、`status=complete` になったら `complete` を呼び出して `connection.id` を保存します。初回登録は 201、繰り返しは同じ接続と 200 を返します。Agent との関連付けは自動では行いません。
 4. Agent の既存チャネルを読み、必要な関連付けを残した完全な `connection_ids` を `PUT /webhooks/{hook_id}/channels` で保存します。管理されたテスト送信者からメッセージを送り、実際の返信を確認します。
 
+これらの関連付けの書き込みには `channels:write` ではなく `channel-credentials:write` と、キー作成者の現在のサインインセッションが必要です: `PUT /webhooks/{hook_id}/channels`、`PUT /channels/{connection_id}/binding`、`PUT /webhooks/{hook_id}/slack_app`。保存済みの選択を置き換えずに 1 つのチャネルを追加または復元するには `enable_connection_ids` を送ります。`connection_ids` も指定する場合、有効化する ID はすべてそこに含める必要があります。チャネルを別の Agent に割り当てると、以前の Agent のチャネルと会話の権限は取り消されます。
+
 未完了設定は 30 分で期限切れになります。`failed`、`expired`、`canceled`、`uncertain` では `error_code` と既存の結果を確認し、新しい UUID で Bot を重複作成しないでください。コールバックと戻り先は環境設定、Profile はキーで固定されます。取消は未完了設定の一時認証情報を消去しますが、作成済みの外部 App／Bot は削除しません。完了済み設定には通常のチャネル切断・削除を使います。
 
 <h2 id="agent-management">実行履歴・メール・チャネル設定</h2>

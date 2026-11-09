@@ -93,6 +93,8 @@ Choose `slack` or `telegram`; names allow 35 or 64 characters respectively. The 
 3. Poll the same setup. When `status=complete`, call `complete` and retain `connection.id`. Initial registration returns 201; repeated completion returns the same connection with 200. No Agent is bound automatically.
 4. Read the Agent's existing channels, then save the full desired `connection_ids` through `PUT /webhooks/{hook_id}/channels`. Preserve other intended bindings. Verify a controlled incoming message and the actual channel reply.
 
+These binding writes require `channel-credentials:write` instead of `channels:write`, plus the key creator's current signed-in session: `PUT /webhooks/{hook_id}/channels`, `PUT /channels/{connection_id}/binding`, and `PUT /webhooks/{hook_id}/slack_app`. To add or restore one channel without replacing the saved selection, send `enable_connection_ids`; when `connection_ids` is also present, every enabled ID must be included there. Assigning a channel to another Agent revokes the previous Agent's channel and conversation access.
+
 Incomplete setups expire after 30 minutes. For `failed`, `expired`, `canceled` or `uncertain`, inspect `error_code` and existing effects before proceeding; do not blindly create another bot with a new UUID. The deployment fixes callback and return destinations, and the key fixes the Profile. Cancellation clears incomplete setup credentials without deleting an external App/Bot already created. Completed setups use normal channel disconnect/removal.
 
 <h2 id="agent-management">Run history, email and channel settings</h2>
