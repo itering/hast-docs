@@ -93,6 +93,8 @@ curl --fail-with-body \
 3. 查询同一个 `setup_id`。只有 `status=complete` 后才调用 `complete`；返回的 `connection.id` 是后续绑定的渠道。首次登记返回 201，重复完成返回同一连接和 200，不会自动绑定 Agent。
 4. 读取 Agent 已有渠道，再通过 `PUT /webhooks/{hook_id}/channels` 保存完整的 `connection_ids`，保留其他需要的关联。最后从实际渠道发送受控测试消息并确认回复。
 
+上述关联写入需要 `channel-credentials:write`（而不是 `channels:write`），并需要密钥创建者当前已登录的会话：`PUT /webhooks/{hook_id}/channels`、`PUT /channels/{connection_id}/binding`、`PUT /webhooks/{hook_id}/slack_app`。若要在不替换已保存关联的前提下新增或恢复单个渠道，请传 `enable_connection_ids`；同时传 `connection_ids` 时，每个要启用的 ID 都必须包含在其中。把渠道指派给其他 Agent 会撤销原 Agent 的渠道与会话授权。
+
 配置有效期为 30 分钟。`failed`、`expired`、`canceled`、`uncertain` 时先检查 `error_code` 和既有结果；不要换 UUID 盲目创建另一个 Bot。回调和返回页面由目标环境固定，调用方不能指定其他地址或 Profile。取消仅处理未完成配置并清除临时凭据，不删除已经创建的平台 App／Bot；已完成配置按正常渠道断开、删除流程处理。
 
 <h2 id="agent-management">运行记录、邮箱及渠道设置</h2>
