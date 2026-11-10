@@ -14,6 +14,25 @@
 
 管理操作には、キー作成者の有効な AIP ログイン session と、同じ Workspace の必要なロールも必要です。session は安全な通信設定で渡し、Cookie をツール引数に入れません。操作ごとの要件は [API リファレンス](aip-api-reference)を参照してください。
 
+業務コラボレーションには `collaboration:read/write` とキー作成者の一致するログインが必要です。
+利用可能な `/collaboration/teams`、`/collaboration/handoffs`、
+`/collaboration/work/{workID}` の操作を検出します。これらの業務 API は、個人 Assistant の
+設定、メモリ、保存済み会話、ブリーフィングを公開しません。
+
+実行の証拠は `sessions:read` で `GET /sessions/{id}/trace` または `/result`、
+`schedules:read` で `GET /schedules/{scheduleID}/runs/{runID}/trace` を読みます。
+`has_more` の間は `next_after` をたどります。`metadata=0` は繰り返しの文脈を省きます。
+スケジュールのプレビューは Task を保存・実行しません。許可された実行レビューの POST は
+`model` 評価を追加するだけで、Task の変更や人間による検証にはなりません。
+Secret の詳細読み取りもメタデータのみです。
+
+権限を持つユーザーは `workspace-permissions:read` と一致するログインで
+`/workspaces/{id}/agent-access` を読み、
+`/workspaces/{id}/agent-access/{agentId}/search` を検索できます。
+検索は読み取り専用の POST です。返された Agent ID または `*` を使い、フィルターのスキーマを
+検出します。チャネルの関連付けだけでは有効な実行権限を証明しません。
+ホストされた Assistant が自分の権限を承認・拡張してはいけません。
+
 <h2 id="calls">呼び出し規則</h2>
 
 現在のツールスキーマに従います。MCP の引数は `path`、`query`、`body` に分けます。結果は `status` と `body` を含み、HTTP エラーは `isError` を設定します。ファイル操作は指定された `upload` と `form` を使います。Workspace と Knowledge のアップロード上限は 10 MiB、CRM 添付は提供元の制限に従います。MCP 要求と結果は各 1 GiB が上限です。対応する大きな転送には REST を使います。

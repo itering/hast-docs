@@ -24,6 +24,16 @@ WhatsApp, WeChat Customer Service and Telegram use admission by default. Choose 
 
 Read current Slack installation before replacing trigger rules. `require_mention` and the sender/channel exemption lists work together. Empty arrays remove exemptions; both arrays allow up to 100 unique IDs. Own-bot messages never trigger. Preserve existing exceptions that should remain.
 
+New associations coordinate the execution grant before saving the binding.
+Re-saving an unchanged list does not restore a revoked grant. Binding writes
+require `channel-credentials:write` and the key creator's matching current login.
+An authorized user can explicitly restore a selected source on the same PUT
+route with `{"enable_connection_ids":["OWNED_CONNECTED_CHANNEL"]}` while preserving
+other selections. If execution reports insufficient Workspace permission,
+inspect the Agent access summary and source grants described in the
+[client guide](aip-agent-client#identity). Leave an administrative repair to an
+authorized user; the hosted Assistant cannot elevate itself.
+
 <h2 id="verify">Verify messages and feedback</h2>
 
 Read back the Agent association and installation. Test a permitted incoming message and confirm the completed Agent run, reply in the original conversation and delivery record. Provider acceptance alone does not prove final delivery.

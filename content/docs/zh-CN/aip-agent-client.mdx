@@ -14,6 +14,21 @@ API 密钥决定资源所属的 Profile。请求正文、Cookie 或资源 ID 不
 
 管理操作还要求密钥创建者当前登录的 AIP session，以及同一 Workspace 中的相应角色。通过安全的传输配置提供 session，不要把 Cookie 放进工具参数。每个操作的具体要求见 [API 参考](aip-api-reference)。
 
+业务协作需要 `collaboration:read/write` 和密钥创建者匹配的登录会话。发现可用的
+`/collaboration/teams`、`/collaboration/handoffs` 和 `/collaboration/work/{workID}` 操作。
+这些业务 API 不公开个人 Assistant 的偏好、记忆、已保存会话或简报。
+
+读取执行证据时，使用 `sessions:read` 调用 `GET /sessions/{id}/trace` 或 `/result`，
+或使用 `schedules:read` 调用 `GET /schedules/{scheduleID}/runs/{runID}/trace`。
+`has_more` 为真时继续使用 `next_after`；`metadata=0` 可省略重复上下文。
+排期预览不会保存或运行 Task。对指定运行执行获准的评价 POST，只会追加 `model` 评价，
+不会修改 Task，也不代表人工验证。Secret 详情读取也只返回元数据。
+
+获授权用户可用 `workspace-permissions:read` 和匹配的登录会话，读取
+`/workspaces/{id}/agent-access`，并搜索 `/workspaces/{id}/agent-access/{agentId}/search`。
+搜索是只读 POST。使用返回的 Agent 标识或 `*`，按实时 schema 提供筛选字段。
+渠道已关联不等于执行授权仍然有效。托管 Assistant 不得批准或扩大自己的权限。
+
 <h2 id="calls">调用约定</h2>
 
 以实时工具 schema 为准。MCP 参数分为 `path`、`query`、`body`，不要展开到同一层。结果含 `status` 和 `body`，HTTP 失败设置 `isError`。文件工具使用对应的 `upload`、`form` 字段。Workspace 和 Knowledge 上传最多 10 MiB；CRM 附件受其提供方限制。MCP 单次请求和结果上限为 1 GiB，更大的受支持传输使用 REST。

@@ -14,6 +14,26 @@ Grant only the required scopes. Discover the complete authorized tool list, foll
 
 Administrative operations also require the key creator's current signed-in AIP session and the required role in the same Workspace. Supply that session through protected transport configuration. Never put cookies in tool arguments. See the [API reference](aip-api-reference) for each operation's requirements.
 
+Business collaboration uses `collaboration:read/write` and the key creator's
+matching login. Discover the available `/collaboration/teams`,
+`/collaboration/handoffs`, and `/collaboration/work/{workID}` operations.
+These business APIs do not expose the personal Assistant's preferences,
+memories, saved conversations, or briefings.
+
+For execution evidence, use `GET /sessions/{id}/trace` or `/result` with
+`sessions:read`, or `GET /schedules/{scheduleID}/runs/{runID}/trace` with
+`schedules:read`. Follow `next_after` while `has_more`; `metadata=0` omits repeated
+context. Schedule preview does not save or run a Task. A permitted review POST
+on the exact schedule run appends a `model` assessment; it does not edit the Task
+or establish human verification. Secret detail reads return metadata only.
+
+Authorized users can read `/workspaces/{id}/agent-access` and search
+`/workspaces/{id}/agent-access/{agentId}/search` with `workspace-permissions:read`
+and the matching login. This search is a read-only POST. Use a returned opaque
+Agent ID or `*`, and discover its filter schema. A channel binding alone does
+not prove an active execution grant. The hosted Assistant must not approve or
+expand its own access.
+
 <h2 id="calls">Calling conventions</h2>
 
 Use the live tool schema. MCP arguments use `path`, `query` and `body`. Do not flatten them. Results contain `status` and `body`; HTTP failures set `isError`. File-upload tools use their documented `upload` and `form` fields. Workspace and Knowledge uploads accept at most 10 MiB; CRM attachments follow their own provider limits. MCP requests and results are capped at 1 GiB. Use REST for larger supported transfers.

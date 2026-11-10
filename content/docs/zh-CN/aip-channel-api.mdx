@@ -24,6 +24,13 @@ WhatsApp、微信客服和 Telegram 默认使用准入规则，开放客服前�
 
 替换 Slack 触发规则前读取安装状态。`require_mention` 与发送者、渠道例外列表共同生效。空数组会清除例外，两个数组各最多 100 个唯一 ID。自身 bot 消息不触发，修改时保留仍需要的例外。
 
+新增关联会在保存绑定前协调执行授权。重新保存未变化的列表，不会恢复已撤销的授权。
+绑定写入需要 `channel-credentials:write` 和密钥创建者匹配的当前登录会话。
+获授权用户可在同一 PUT 路径明确提交
+`{"enable_connection_ids":["OWNED_CONNECTED_CHANNEL"]}`，恢复指定来源并保留其他选择。
+如果执行时报告 Workspace 权限不足，应按[客户端指南](aip-agent-client#identity)
+检查 Agent 访问概览和来源授权。管理修复由获授权用户完成，托管 Assistant 不得自行提权。
+
 <h2 id="verify">验证消息与反馈</h2>
 
 回读 Agent 关联和安装状态。用已授权消息验证入站、Agent 完成、原会话中的回复及送达记录。提供方接收请求不等于最终送达。
