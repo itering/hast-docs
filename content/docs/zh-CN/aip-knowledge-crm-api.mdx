@@ -1,0 +1,35 @@
+<h2 id="knowledge">导入知识并授予访问</h2>
+
+文档和网站归 Knowledge collections，客户、商机、任务等结构化数据归 CRM，少量长期指令归记忆。它们的标识和绑定不同，使用具有对应资源权限的 Profile API 密钥。
+
+创建 `/knowledge-collections` 并保留 `base.id`，再通过 `/knowledge-bases` 导入 URL 或文件，在 `base_id` 中传入 collection ID。导入 ID 不等于 collection ID。文件使用 REST multipart 或 MCP `upload`、`form`，解码后最多 10 MiB；URL 使用不带凭证的 HTTPS，保留真实文件扩展名。
+
+通过 `/knowledge-bases/{id}` 查看导入准备，通过 `/knowledge-collections/{id}/index` 查看派生索引。接收、准备完成、可搜索和 Agent 可访问是不同状态。原始材料与可替换索引分别处理。
+
+读取 `/webhooks/{hook_id}/knowledge-collections`，再 PUT 完整目标 `base_ids`，并启用 `knowledge_search`。这需要 collection 与 Agent 的写权限。创建或索引资料不会自动授权 Agent；用确实需要该来源的问题验证回答与原始证据。库中已有资料使用准确 `source_id`、版本和选择范围，不以导入 ID 替代。
+
+通过 collection 成员修改访问关系。导入原件会保留，删除 `/knowledge-bases/{id}` 会返回冲突。编译 Wiki 与 Graph 属于派生导航，验证关系时跟随原始引用并保留发布版本。
+
+<h2 id="crm">发现 CRM schema</h2>
+
+只有业务确实需要时才创建 `/business-resources/crm`，使用稳定 `request_id`，等待 ready；配置结果不确定时先检查，避免重复创建。将 ready ID 写入 Agent 的 `crm_ids`。
+
+读取 `/business-resources/{resource_id}/crm/schema`，以其可写字段、必填值、枚举、关系和类型为准，不猜测姓名或邮箱一定是字符串。列表跟随分页。创建使用 `request_id`、`values`；更新使用最近读取的 `updated_at` 和 `values`。遇到 `409` 重新读取并协调。
+
+关系与文件读取使用返回的 ID。附件通过规定的 CRM 上传接口提交，再按实时可写 schema 绑定返回文件。Backplane 不把 Knowledge 的 10 MiB 上限应用到 CRM 附件，但 CRM 提供方仍可能限制大小或内容。
+
+客户联系人与 CRM 成员不同。分配记录前查询 `/business-resources/{resource_id}/members`。已授权成员创建使用提供方已有注册或加入流程，不返回登录密码，也不建立客户身份。回读实际业务记录。删除未使用的资源配置不等于删除 CRM 业务数据。
+
+<h2 id="memory">选择记忆范围</h2>
+
+少量长期指令或偏好使用 `/memories`。Agent 记忆可用 `scope_type: task_agent` 和其自有 `scope_id`；共享 Webhook 记忆按相应 scope 处理。修改或删除使用 `/memories/by-id/{memoryID}` 避免重名歧义。
+
+单独启用 Agent 的 `memory` 能力并设置读写范围。读范围为 `self`、`webhook`、`all`，写范围为 `self`、`shared`，均保持在 Profile 内。没有明确共享需求时优先隔离客户。保存记忆不代表运行中的 Agent 已加载，应在后续执行中验证。
+
+<h2 id="sharing">共享与验证</h2>
+
+Collection 共享与来源保留、索引和 Agent 绑定相互独立。已授权共享只提供对应搜索与读取权限，不允许修改所有者的原件、成员、索引、编译结果或共享设置。
+
+共享管理需要 `knowledge-sharing:read/write`、匹配的登录 session，以及所有者或管理员角色。使用返回的版本和目标选项；新授权需要 `redistribution_confirmed: true`，版本冲突时重新读取。拿到资源 ID 不能证明有权共享。
+
+交付时区分已导入、可搜索、可访问与已验证。CRM 写入核对实际保存值；知识回答引用原始来源；记忆验证后续 run。参见 [AIP Knowledge](aip-knowledge)、[记忆设置](aip-memory)与 [API 参考](aip-api-reference)。

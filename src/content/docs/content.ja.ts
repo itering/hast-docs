@@ -1,3 +1,9 @@
+import AgentGuide0, { docsSearchText as AgentGuideSearch0 } from "../../../content/docs/ja/aip-agent-client.mdx";
+import AgentGuide1, { docsSearchText as AgentGuideSearch1 } from "../../../content/docs/ja/aip-enterprise-agent.mdx";
+import AgentGuide2, { docsSearchText as AgentGuideSearch2 } from "../../../content/docs/ja/aip-channel-api.mdx";
+import AgentGuide3, { docsSearchText as AgentGuideSearch3 } from "../../../content/docs/ja/aip-whatsapp-api.mdx";
+import AgentGuide4, { docsSearchText as AgentGuideSearch4 } from "../../../content/docs/ja/aip-knowledge-crm-api.mdx";
+import AgentGuide5, { docsSearchText as AgentGuideSearch5 } from "../../../content/docs/ja/aip-connectors.mdx";
 import PersonalWeChatPage, { docsSearchText as PersonalWeChatSearch } from "../../../content/docs/ja/aip-wechat-personal.mdx";
 import WeChatKfPage, { docsSearchText as WeChatKfSearch } from "../../../content/docs/ja/aip-wechat-kf.mdx";
 import WhatsAppPage, { docsSearchText as WhatsAppSearch } from "../../../content/docs/ja/aip-whatsapp.mdx";
@@ -39,6 +45,13 @@ import Page32, { docsSearchText as Search32 } from "../../../content/docs/ja/gtm
 import Page33, { docsSearchText as Search33 } from "../../../content/docs/ja/billing.mdx";
 
 export const docsContent = {
+  "aip-agent-client": AgentGuide0,
+  "aip-enterprise-agent": AgentGuide1,
+  "aip-channel-api": AgentGuide2,
+  "aip-whatsapp-api": AgentGuide3,
+  "aip-knowledge-crm-api": AgentGuide4,
+  "aip-connectors": AgentGuide5,
+
   "aip-wechat-personal": PersonalWeChatPage,
   "aip-whatsapp": WhatsAppPage,
   "aip-wechat-kf": WeChatKfPage,
@@ -81,6 +94,13 @@ export const docsContent = {
 };
 
 export const docsSearchIndex: Record<string, string> = {
+  "aip-agent-client": AgentGuideSearch0,
+  "aip-enterprise-agent": AgentGuideSearch1,
+  "aip-channel-api": AgentGuideSearch2,
+  "aip-whatsapp-api": AgentGuideSearch3,
+  "aip-knowledge-crm-api": AgentGuideSearch4,
+  "aip-connectors": AgentGuideSearch5,
+
   "aip-wechat-personal": PersonalWeChatSearch,
   "aip-whatsapp": WhatsAppSearch,
   "aip-wechat-kf": WeChatKfSearch,

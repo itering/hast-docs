@@ -1,0 +1,33 @@
+<h2 id="discover">Discover the required resources</h2>
+
+Start with the [Agent client guide](aip-agent-client). Record the business purpose, allowed actions, audience, languages, channels, knowledge, CRM needs, escalation rules and schedule timezone. Inspect existing Agents and reuse suitable owned resources.
+
+Read `/models` and `policy_options`; use supported values for the chosen environment. Runtime System Skills provide platform procedures. Keep custom Skills focused on business tasks instead of copying tool catalogs into their prompts. Capabilities and external consent still need separate configuration.
+
+<h2 id="save">Save the Agent</h2>
+
+`POST /webhooks` creates the saved Agent. Use the model returned by the catalog. This minimal example needs no external resource:
+
+```json
+{"title":"Customer support","description":"Answer approved product questions","status":"active","system_prompt":"Use approved knowledge, cite evidence, and escalate unknown cases.","model":"MODEL_FROM_CATALOG","sandbox_mode":"read_only","policies":[],"selected_skills":[],"crm_ids":[]}
+```
+
+Add only the capabilities needed for the task. Shell and browser require a writable sandbox and `network_access`. The platform validates these dependencies before execution. Do not widen permissions to work around a rejection.
+
+Read the saved configuration before editing. Array updates replace the full selection. Preserve unrelated fields and the returned Skill `source`. A Skill bundle update contains its complete file set, including supporting files. Keep a redacted configuration snapshot when needed; do not assume a version-history or rollback feature. Hook invocation identifiers must not appear in public receipts.
+
+<h2 id="bind">Attach knowledge, tools and channels</h2>
+
+Create only the resources the task needs. Store credentials in write-only Secrets and reference their IDs. Follow [Knowledge and CRM](aip-knowledge-crm-api) for collection grants and `crm_ids`; follow [Connectors](aip-connectors) for account authorization and Agent selection.
+
+For custom HTTP tools, use an explicit input schema, allowed destination and Secret bindings. See [business tools](aip-tools) and the live Webhook schema. Keep platform procedure in System Skills and business procedure in the custom Skill.
+
+Follow the [channel guide](aip-channel-api). Read `/webhooks/{hook_id}/channels` and PUT the complete intended `connection_ids` list. This binding enables incoming triggers and replies together. Preserve existing desired connections. Read back the association and provider installation state.
+
+<h2 id="verify">Verify the business result</h2>
+
+Invoke the saved Agent through `/webhooks/{hook_id}/invoke`, or use its single-Agent conversation key as described in [API quickstart](aip-api-quickstart). Keep the returned session and request IDs. Page events until the matching run reaches a terminal state. A final message, accepted provider request and completed run are separate evidence.
+
+Test the actual knowledge answer, permitted CRM operation, Connector action and a controlled channel reply when required. Confirm delivery in the original conversation. Use authorized test recipients.
+
+For a schedule, set `config.webhook_target.hook_id` to the saved Agent, then read back timezone, timing and `next_run_at`. A bare `config.hook_id` does not select the Agent. Read schedule runs to verify execution; `succeeded` in schedule records corresponds to `run.completed` in events. Usage and estimated cost can be partial or unavailable and are not settled billing. Remove temporary resources in dependency order.

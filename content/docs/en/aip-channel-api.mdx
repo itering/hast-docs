@@ -1,0 +1,33 @@
+<h2 id="choose">Choose the channel flow</h2>
+
+A message channel and a Connector account serve different purposes. Read `/channels/setup`, `/channels`, `/channels/agents` and the target Agent before making changes. Use a Profile API key with `channels:read/write`.
+
+For a new Slack app or Telegram bot, follow [automatic channel setup](aip-api-quickstart#automatic-channels). Reuse the same setup ID and request UUID for retries. Provider consent, Slack URL verification and the final `/complete` step are separate. Canceling setup does not delete an external app already created.
+
+For existing credentials, use `POST /channels/setup` with the provider fields returned by the catalog. Website setup uses `website_url`; Slack needs a bot token and signing secret from the same app; Telegram needs its bot token. Email, LINE, SMS and Twilio use their documented provider fields. For an existing inbox, discover `/channels/inboxes` before creating another.
+
+Manual WhatsApp Cloud API uses the [dedicated guide](aip-whatsapp-api). WhatsApp Web is archive-only: it cannot trigger an Agent, reply or receive scheduled sends. Its QR pairing uses `channels:write`, keeps the same connection ID through retries and requires an actual owner scan. Personal WeChat also supplies read-only Knowledge rather than an automatic reply channel.
+
+<h2 id="install">Complete provider installation</h2>
+
+Read `/channels/{connection_id}/installation`. Use its exact callback URL, verification token, widget script or forwarding address. A created connection does not prove installation or consent. Keep credentials, private consent URLs and pairing QR data out of public receipts.
+
+For WeChat Customer Service, first create the draft with `corp_id`, `callback_token` and `encoding_aes_key`. Complete WeCom callback/domain and trusted-IP setup from installation, then discover manageable accounts with `POST /channels/{connection_id}/wechat-kf/accounts` and `corp_secret`. Select an account by its returned name with `manage_privilege: true`. PATCH the same channel with that Secret and `open_kfid`. Discovery alone does not save credentials or bind the account. See [WeChat Customer Service](aip-wechat-kf) and the [MCP example](mcp#wechat-accounts).
+
+For OAuth providers, open the returned consent URL for the owner, complete the same authorization and read back the connection. Report denied, pending or unavailable setup without creating duplicate connections.
+
+<h2 id="bind">Bind the Agent and choose behavior</h2>
+
+Read `/webhooks/{hook_id}/channels`, then PUT the complete desired `connection_ids` list. Preserve other intended connections. One channel can have only one reply Agent; resolve a `409` using the current association. The same binding enables triggers and replies. Knowledge collection access is a separate grant. The legacy `/channels/{connection_id}/binding` route only releases an association and cannot assign a new Agent.
+
+WhatsApp, WeChat Customer Service and Telegram use admission by default. Choose the intended admission behavior before exposing customer service. Channel members and administrators are channel-scoped; Slack uses its own participation model.
+
+Read current Slack installation before replacing trigger rules. `require_mention` and the sender/channel exemption lists work together. Empty arrays remove exemptions; both arrays allow up to 100 unique IDs. Own-bot messages never trigger. Preserve existing exceptions that should remain.
+
+<h2 id="verify">Verify messages and feedback</h2>
+
+Read back the Agent association and installation. Test a permitted incoming message and confirm the completed Agent run, reply in the original conversation and delivery record. Provider acceptance alone does not prove final delivery.
+
+`GET/PATCH /channels/{connection_id}/presentation` controls `show_status_reactions`, `show_tool_progress` and `streaming_replies`. All default to true; omitted fields retain their value. Setting all three to false suppresses progress feedback, not ingestion, triggers or final replies. Use the Agent reply policy for final-reply behavior.
+
+Archived messages, Agent trigger permission, knowledge access and outbound sends are separate capabilities. Use returned attachment download/read metadata rather than inventing URLs. Read disconnect/reconnect effects before acting: retained Knowledge can remain after reception is paused.

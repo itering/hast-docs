@@ -1,0 +1,33 @@
+<h2 id="discover">发现所需资源</h2>
+
+先阅读 [Agent 客户端指南](aip-agent-client)。记录业务目标、允许操作、受众、语言、渠道、知识、CRM 需求、升级处理规则和调度时区。检查现有 Agent，优先复用合适且有权使用的资源。
+
+读取 `/models` 和 `policy_options`，选择当前环境支持的值。Runtime System Skills 提供平台操作方法，自定义 Skill 专注业务任务，不把工具目录复制进提示词。能力配置和外部授权仍需分别完成。
+
+<h2 id="save">保存 Agent</h2>
+
+`POST /webhooks` 创建已保存的 Agent。模型必须来自目录。下面的最小示例不依赖外部资源：
+
+```json
+{"title":"Customer support","description":"Answer approved product questions","status":"active","system_prompt":"Use approved knowledge, cite evidence, and escalate unknown cases.","model":"MODEL_FROM_CATALOG","sandbox_mode":"read_only","policies":[],"selected_skills":[],"crm_ids":[]}
+```
+
+仅增加任务需要的能力。Shell 和浏览器需要可写 sandbox 及 `network_access`，平台会在执行前检查这些依赖。不要为了绕过拒绝而扩大权限。
+
+修改前先读取现有配置。数组更新会替换完整选择，保留无关字段及返回的 Skill `source`。更新 Skill bundle 时提交完整文件集合，包括辅助文件。需要时保留脱敏配置快照，不要假设存在版本历史或自动回滚。公开交付说明中不要放入可用于调用 Hook 的标识。
+
+<h2 id="bind">绑定知识、工具与渠道</h2>
+
+只创建任务需要的资源。凭证存入只写 Secrets 并引用 ID。按 [Knowledge 与 CRM](aip-knowledge-crm-api)配置 collection 授权与 `crm_ids`，按 [Connectors](aip-connectors)完成账号授权及 Agent 选择。
+
+自定义 HTTP 工具使用明确的输入 schema、允许访问的目标和 Secret 绑定，具体见[业务工具](aip-tools)及实时 Webhook schema。平台操作方法保留在 System Skills，业务流程放在自定义 Skill。
+
+按[渠道指南](aip-channel-api)完成配置。读取 `/webhooks/{hook_id}/channels`，用 PUT 提交完整目标 `connection_ids` 列表。该绑定同时开启入站触发和回复，保留仍需要的现有连接，再回读关联和安装状态。
+
+<h2 id="verify">验证业务结果</h2>
+
+通过 `/webhooks/{hook_id}/invoke` 调用已保存的 Agent，或按 [API 快速开始](aip-api-quickstart)使用单 Agent 对话密钥。保留返回的 session 和 request ID，分页读取事件，直到对应 run 结束。最终消息、提供方接收请求和 run 完成是不同证据。
+
+根据任务验证实际知识回答、已授权 CRM 操作、Connector 动作和受控渠道回复；确认原会话中实际收到消息，使用已授权测试接收方。
+
+调度目标写入 `config.webhook_target.hook_id`，回读时区、时间设置和 `next_run_at`；单独的 `config.hook_id` 不会选择 Agent。读取运行记录确认执行，调度记录的 `succeeded` 对应事件的 `run.completed`。用量和估算费用可能不完整或不可用，不等于已结算账单。按依赖顺序清理临时资源。

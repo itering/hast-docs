@@ -31,34 +31,22 @@ Streamable HTTP とカスタム `Authorization` ヘッダーに対応したク�
 
 <h2 id="verify">接続とガイドを確認</h2>
 
-単一 Agent キーのツールは `post_agent_prompts`、`get_agent_sessions`、`get_agent_sessions_session_id_events` のみです。読み取り専用キーには送信ツールがありません。`{"body":{"prompt":"こんにちは","request_id":"message-1"}}` を送信し、継続時は返された会話 ID を `body.session_id` に指定します。会話のイベントを取得し、`run_id` が応答の `request_id` と一致する `run.completed`、`run.failed`、`run.interrupted` を確認します。このキーには以下の管理ガイドや設定ツールはありません。
+Profile API キーでは、クライアントの Web 読み取り機能で公開 [Agent クライアントガイド](aip-agent-client)を直接読みます。接続した MCP サーバーが環境に対応する Docs ドメインを案内します。従来の `hast://guides/*` と `get_guides_topic` は本文ではなく移行リンクを返します。単一 Agent 会話キーは紐付いた Agent の会話に限定されます。
 
-Profile API キーでは `hast://guides/overview` を読み取ります。リソース非対応のクライアントでは `get_guides_topic` に次を渡します。
+Web を読めないクライアントでは、ガイドを自分で開くか対応するクライアントを使います。Agent の既存権限は維持します。目的に応じてガイドを選びます。
 
-```json
-{
-  "path": {
-    "topic": "overview"
-  }
-}
-```
-
-成功するとプラットフォームガイドの本文が返ります。目的に応じて権限、引数、手順を確認してください。
-
-| リソース | 用途 |
+| Guide | Topic |
 | --- | --- |
-| `hast://guides/overview` | 機能、利用主体、権限 |
-| `hast://guides/enterprise-agent` | 企業 Agent の作成と検証 |
-| `hast://guides/channels` | 認証、インストール、バインド、配信 |
-| `hast://guides/whatsapp` | WhatsApp Cloud API の設定 |
-| `hast://guides/knowledge-crm` | ナレッジ、顧客コミュニケーション、CRM |
-| `hast://guides/connectors` | 外部アカウントと認証 |
-
-`get_guides_topic` では最後の部分を `path.topic` に指定します。例は `enterprise-agent` です。
+| [Agent クライアントから AIP を使う](aip-agent-client) | `overview` |
+| [企業 Agent を作成して検証する](aip-enterprise-agent) | `enterprise-agent` |
+| [API または MCP でチャネルを接続する](aip-channel-api) | `channels` |
+| [WhatsApp Cloud API を手動設定する](aip-whatsapp-api) | `whatsapp` |
+| [API で Knowledge、CRM、記憶を使う](aip-knowledge-crm-api) | `knowledge-crm` |
+| [Connector アカウントを認可して使う](aip-connectors) | `connectors` |
 
 <h2 id="wechat-accounts">WeChat カスタマーサービスのアカウントを取得</h2>
 
-`hast://guides/channels` を読み、WeChat の下書きと WeCom の設定を完了してから、`channels:write` を持つ Profile API キーで `post_channels_connection_id_wechat_kf_accounts` を呼び出します：
+[チャネル API ガイド](aip-channel-api) を読み、WeChat の下書きと WeCom の設定を完了してから、`channels:write` を持つ Profile API キーで `post_channels_connection_id_wechat_kf_accounts` を呼び出します：
 
 ```json
 {
@@ -74,7 +62,7 @@ Profile API キーでは `hast://guides/overview` を読み取ります。リソ
 接続後、次のプロンプトを使えます。最後の行に目標、資料、許可する操作を指定してください。
 
 ```text
-接続済みの Hast AIP MCP を使い、最初に hast://guides/overview を読んでください。
+接続済みの Hast AIP MCP を使い、最初に the Agent client guide at the Docs URL advertised by the server を読んでください。
 次に目的に合うガイドを読み、このキーで使えるツールとリソースを確認してください。
 認証情報は表示しないでください。Agent 作成前にモデル、Skills、ナレッジ、接続済みアカウントを確認してください。
 非同期処理では状態とイベントを最終結果まで読み取ってください。
@@ -83,7 +71,7 @@ Profile API キーでは `hast://guides/overview` を読み取ります。リソ
 依頼：現在の Profile の Agent と用途を一覧にしてください。まだ設定は変更しないでください。
 ```
 
-企業 Agent の作成には、対応クライアントの `build_enterprise_agent` プロンプトで `requirements` に要件を渡せます。これは手順を返し、実際の変更は後続のツール呼び出しが行います。
+企業 Agent の作成には、対応クライアントの `build_enterprise_agent` プロンプトで `requirements` に要件を渡せます。要件と Docs リンクを返します。ガイドを読んでからツールを呼び出してください。プロンプト自体は設定を変更しません。
 
 一般的にはリソース確認、Skills・シークレット・ナレッジの準備、Agent 保存、チャネルや外部アカウントの認証、呼び出しとイベント取得の順に進めます。実際の回答、資料参照、業務結果を検証し、配信が必要なら元のチャネルで受信も確認します。
 

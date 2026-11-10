@@ -31,34 +31,22 @@ This is a configuration example; adapt its fields to your client. Use HTTPS outs
 
 <h2 id="verify">Verify and read guides</h2>
 
-Single-Agent keys expose `post_agent_prompts`, `get_agent_sessions`, and `get_agent_sessions_session_id_events`; read-only keys omit the send tool. Send `{"body":{"prompt":"Hello","request_id":"message-1"}}`, adding the returned session ID as `body.session_id` to continue. Poll events for that session until `run_id` matches the receipt's `request_id` and the event is `run.completed`, `run.failed`, or `run.interrupted`. These keys do not expose the following management guides or configuration tools.
+For a Profile API key, read the public [Agent client guide](aip-agent-client) directly with your client's web-reading tool. The connected MCP server advertises its environment's Docs origin. Legacy `hast://guides/*` resources and `get_guides_topic` now return migration links, not guide bodies. Single-Agent conversation keys remain limited to their bound Agent's conversations.
 
-For a Profile API key, read `hast://guides/overview`. If the client cannot read resources, call `get_guides_topic` with:
+If the client cannot read public web pages, open the guide yourself or use a client with that capability. Keep the Agent's existing permissions. Select the guide for your task:
 
-```json
-{
-  "path": {
-    "topic": "overview"
-  }
-}
-```
-
-A successful response contains the platform guide. Read task-specific guides for permissions, parameters, and execution order:
-
-| Resource | Purpose |
+| Guide | Topic |
 | --- | --- |
-| `hast://guides/overview` | Platform capabilities, identity, permissions |
-| `hast://guides/enterprise-agent` | Create and verify an enterprise Agent |
-| `hast://guides/channels` | Authorization, installation, binding, delivery |
-| `hast://guides/whatsapp` | WhatsApp Cloud API setup |
-| `hast://guides/knowledge-crm` | Knowledge bases, CRM and durable memories |
-| `hast://guides/connectors` | External accounts and authorization |
-
-For `get_guides_topic`, use the final segment as `path.topic`, such as `enterprise-agent`.
+| [Hast AIP for Agent clients](aip-agent-client) | `overview` |
+| [Build and verify an enterprise Agent](aip-enterprise-agent) | `enterprise-agent` |
+| [Connect messaging channels through API or MCP](aip-channel-api) | `channels` |
+| [Set up the manual WhatsApp Cloud API](aip-whatsapp-api) | `whatsapp` |
+| [Use Knowledge, CRM and durable memories](aip-knowledge-crm-api) | `knowledge-crm` |
+| [Authorize and use Connector accounts](aip-connectors) | `connectors` |
 
 <h2 id="wechat-accounts">Discover WeChat customer service accounts</h2>
 
-Read `hast://guides/channels` to create the WeChat draft and finish WeCom configuration, then call `post_channels_connection_id_wechat_kf_accounts` using a Profile API key with `channels:write`:
+Read the [channel guide](aip-channel-api) to create the WeChat draft and finish WeCom configuration, then call `post_channels_connection_id_wechat_kf_accounts` using a Profile API key with `channels:write`:
 
 ```json
 {
@@ -74,7 +62,7 @@ Pass the real application Secret only through protected client tool arguments, n
 After connecting the client, send the prompt below. Replace the final line with your goal, available material, and permitted actions.
 
 ```text
-Use the connected Hast AIP MCP. Read hast://guides/overview first,
+Use the connected Hast AIP MCP. Read the Agent client guide at the Docs URL advertised by the connected server first,
 then the relevant guides and discover tools and resources available to this key.
 Never display credentials. Before creating an Agent, check available models, Skills, knowledge bases, and connected accounts.
 For asynchronous work, keep reading state and events until the final outcome.
@@ -83,7 +71,7 @@ Tell me what to do if third-party authorization is needed. Clearly report unfini
 My request: List existing Agents in the current Profile and explain their purposes. Do not change configurations yet.
 ```
 
-For enterprise setup, select the `build_enterprise_agent` prompt in a client that supports it and pass your requirements in `requirements`. It returns guidance; later tool calls perform actual changes.
+For enterprise setup, select the `build_enterprise_agent` prompt in a client that supports it and pass your requirements in `requirements`. It returns your requirements and a Docs link. Read that page before using tools; the prompt does not change configuration.
 
 A typical workflow discovers resources, prepares Skills, secrets, and knowledge, saves Agent configuration, completes channel or account authorization, and invokes the Agent while reading session events. Verify actual replies, knowledge references, and business results. For channel delivery, check receipt in the original channel too.
 

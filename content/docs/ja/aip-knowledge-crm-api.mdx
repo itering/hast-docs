@@ -1,0 +1,35 @@
+<h2 id="knowledge">知識を取り込み利用権限を設定する</h2>
+
+文書と Web サイトは Knowledge collections、顧客・商談・タスクは CRM、小さな永続指示は記憶を使います。ID と関連付けはそれぞれ異なります。必要なリソース権限を持つ Profile API キーを使います。
+
+`/knowledge-collections` を作り `base.id` を保ち、`/knowledge-bases` の `base_id` に渡して URL またはファイルを取り込みます。取り込み ID は collection ID ではありません。ファイルは REST multipart または MCP `upload`、`form` を使い、復号後の上限は 10 MiB です。認証情報のない HTTPS URL と正しい拡張子を使います。
+
+準備状態は `/knowledge-bases/{id}`、派生索引は `/knowledge-collections/{id}/index` で確認します。受け付け、準備完了、検索可能、Agent の利用権限は別です。原本と再作成可能な索引は分けます。
+
+`/webhooks/{hook_id}/knowledge-collections` を読み、完全な `base_ids` を PUT し、`knowledge_search` を有効にします。collection と Agent の書き込み権限が必要です。取り込みや索引作成だけでは権限は付与されません。必要な資料に基づく質問で回答と原本を検証します。既存ソースは正しい `source_id`、バージョン、選択範囲を使います。
+
+アクセスは collection のメンバーで変更します。取り込み原本は保持され、`/knowledge-bases/{id}` の削除は競合を返します。コンパイル済み Wiki と Graph は派生ナビゲーションです。関係の確認では原本参照と公開バージョンを保ちます。
+
+<h2 id="crm">CRM スキーマを確認する</h2>
+
+業務で必要な場合だけ `/business-resources/crm` を作ります。安定した `request_id` を使い ready を待ち、不確実な結果は新規作成前に調べます。準備済み ID を Agent の `crm_ids` に設定します。
+
+`/business-resources/{resource_id}/crm/schema` の書き込み可能フィールド、必須値、列挙、関係、型に従います。名前やメールが文字列とは限りません。作成は `request_id` と `values`、更新は直前の `updated_at` と `values` を使い、`409` では再読込します。リストはページを最後まで取得します。
+
+関係とファイルは返された ID で読みます。添付は CRM の指定アップロード API を使い、返されたファイルを現在の書き込みスキーマで関連付けます。Backplane は CRM 添付に Knowledge の 10 MiB 制限を適用しませんが、提供元の制限は残ります。
+
+顧客連絡先と CRM メンバーは別です。割り当て前に `/business-resources/{resource_id}/members` を確認します。許可された作成は既存の登録・参加フローを使い、ログインパスワードを返しません。業務記録を再確認します。未使用のリソース設定の削除は CRM 業務データの削除ではありません。
+
+<h2 id="memory">記憶の範囲を選ぶ</h2>
+
+小さな永続指示や好みは `/memories` を使います。Agent 記憶は `scope_type: task_agent` と所有する `scope_id`、共有 Webhook 記憶は対応する scope を使います。編集・削除は `/memories/by-id/{memoryID}` で曖昧さを避けます。
+
+Agent の `memory` 機能と読み書き範囲を別に設定します。読み取りは `self`、`webhook`、`all`、書き込みは `self`、`shared` で、すべて Profile 内です。意図的な共有以外は顧客を分離します。保存しただけでは実行中の読み込みを証明できず、次の実行で確認します。
+
+<h2 id="sharing">共有と検証</h2>
+
+collection の共有、原本保持、索引、Agent 関連付けは別です。共有された collection は許可された検索と読み取りだけを提供し、所有者の原本、メンバー、索引、コンパイル、共有設定を変更できません。
+
+共有管理には `knowledge-sharing:read/write`、対応するログイン session、所有者または管理者ロールが必要です。返されたバージョンと共有先を使います。新規許可には `redistribution_confirmed: true` が必要で、競合時は再読込します。リソース ID は共有権限の証明ではありません。
+
+取り込み済み、検索可能、利用可能、検証済みを区別します。CRM は保存値、知識回答は原本、記憶は後続 run を確認します。[AIP Knowledge](aip-knowledge)、[記憶設定](aip-memory)、[API リファレンス](aip-api-reference)も参照してください。

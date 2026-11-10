@@ -1,0 +1,29 @@
+<h2 id="discover">Discover applications and accounts</h2>
+
+A Connector authorizes an external app's tools. It does not create a messaging channel. AIP Connections can hold several accounts for the same provider. Each account starts private until its owner shares it.
+
+Use `connectors:read` to inspect `/connectors/catalog?search=...&limit=20`, `/connectors/status` and `/connectors/accounts`. Follow catalog cursors. Use the exact returned provider slug and read provider-verified readiness. A pending local row is not a usable connection. Verified identity labels distinguish accounts; an unavailable identity must stay explicit. An owner-supplied name is separate from provider identity.
+
+<h2 id="authorize">Complete provider consent</h2>
+
+Use `connectors:write` and `POST /connectors/{provider}/oauth/authorize`. MCP arguments use `path.provider`. Open the returned private `auth_url` for the intended owner and app permissions. Do not send the Hast API key to the provider. Read back status and accounts after the callback.
+
+A denied, pending, expired or failed authorization needs resolution. If the client cannot open consent, provide the appropriate private UI flow and continue independent work. Do not copy another Profile's account or report a manual account reference as connected.
+
+`422 connector_auth_config_required` means the toolkit lacks configured provider authentication. Ask the administrator to configure the supported auth method for that toolkit, then retry. The failed request did not connect an account.
+
+<h2 id="use">Select the account for each action</h2>
+
+Personal account sharing requires owner consent, Workspace approval and an Organization app policy covering the selected tools. App approval alone does not share an account. Use the returned sharing and account-selection options; a resource ID does not grant access.
+
+At each human conversation run, eligible accounts are pinned under current grants. The user's narrower selection persists in the conversation. Use `connector connected` or the native account list and pass the local `connector_account_ref_id` when several accounts are available. Confirm the intended account and action when ambiguous. Read the account identity reported with the result.
+
+The platform can execute verified read-only actions automatically within current grants. Writes and unverified actions require the existing authenticated review. A tool-name prefix or HTTP method alone does not prove read-only behavior. Review binds exact account, operation, arguments and tool version. Do not retry an uncertain write before inspecting the provider result. Scheduled and channel runs follow their own grants.
+
+Use the native `connector` tool when available. External-account management stays in Connections and its management API. Custom HTTP tools use explicit destination rules and Secrets instead of Connector OAuth. Raw proxy execution is not a way around account or tool grants.
+
+<h2 id="disconnect">Maintain or disconnect an account</h2>
+
+Read `/connectors/accounts/{id}` before changing supported status or metadata. Those updates cannot replace the provider identity or create consent; use a new authorization to connect a different external account.
+
+`DELETE /connectors/accounts/{id}` disconnects the provider account and removes the local reference. Read back its absence and status before reporting success. A provider error can prevent the operation. Keep other accounts and their grants unchanged. See the [API reference](aip-api-reference) for current fields and [business tools](aip-tools) for custom services.

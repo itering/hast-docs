@@ -2731,7 +2731,7 @@
             "PublicBearer": []
           }
         ],
-        "summary": "Discover Agent-facing Hast AIP guides",
+        "summary": "Discover public documentation links for Agents",
         "tags": [
           "public-task-agents"
         ]
@@ -2765,7 +2765,7 @@
             "PublicBearer": []
           }
         ],
-        "summary": "Read a detailed Hast AIP guide for Agents",
+        "summary": "Read the migration link for an Agent guide",
         "tags": [
           "public-task-agents"
         ]

@@ -35,34 +35,22 @@ Public API Key 是连接凭证。把真实值保存在客户端的安全凭据�
 
 <h2 id="verify">验证连接并读取指南</h2>
 
-单 Agent 对话密钥只提供 `post_agent_prompts`、`get_agent_sessions` 和 `get_agent_sessions_session_id_events`；只读 key 不提供发送工具。发送参数为 `{"body":{"prompt":"你好","request_id":"message-1"}}`，续聊时加入返回的 `body.session_id`。接受请求后，使用返回的 `session_id` 读取事件，直到事件 `run_id` 与回执 `request_id` 一致且状态为 `run.completed`、`run.failed` 或 `run.interrupted`。此 key 不提供以下管理指南和配置工具。
+使用 Profile API 密钥时，通过客户端网页读取工具直接阅读公开的 [Agent 客户端指南](aip-agent-client)。连接的 MCP 服务器会提供对应环境的 Docs 域名。旧的 `hast://guides/*` 和 `get_guides_topic` 现在只返回迁移链接，不再提供正文。单 Agent 对话密钥仍只访问绑定 Agent 的对话。
 
-Profile API 密钥可以让客户端读取资源 `hast://guides/overview`。如果客户端不支持资源，可以调用 `get_guides_topic`，传入以下参数：
+客户端不能读取公开网页时，可以自行打开指南，或使用具备读取能力的客户端。保持 Agent 原有权限。按任务选择指南：
 
-```json
-{
-  "path": {
-    "topic": "overview"
-  }
-}
-```
-
-成功后应得到平台指南正文。接着按任务读取对应资源，了解所需权限、参数和执行顺序：
-
-| 资源 | 用途 |
+| Guide | Topic |
 | --- | --- |
-| `hast://guides/overview` | 平台能力、身份与权限 |
-| `hast://guides/enterprise-agent` | 创建并验证企业 Agent |
-| `hast://guides/channels` | 渠道授权、安装、绑定与消息投递 |
-| `hast://guides/whatsapp` | WhatsApp Cloud API 配置 |
-| `hast://guides/knowledge-crm` | 知识库、CRM 与持久记忆 |
-| `hast://guides/connectors` | 外部账号连接和授权 |
-
-这些资源也可以通过 `get_guides_topic` 读取，只需把 `path.topic` 换成资源地址最后一段，例如 `enterprise-agent`。
+| [通过 Agent 客户端使用 AIP](aip-agent-client) | `overview` |
+| [创建并验证企业 Agent](aip-enterprise-agent) | `enterprise-agent` |
+| [通过 API 或 MCP 连接消息渠道](aip-channel-api) | `channels` |
+| [手动配置 WhatsApp Cloud API](aip-whatsapp-api) | `whatsapp` |
+| [通过 API 使用 Knowledge、CRM 与记忆](aip-knowledge-crm-api) | `knowledge-crm` |
+| [授权并使用 Connector 账号](aip-connectors) | `connectors` |
 
 <h2 id="wechat-accounts">获取微信客服账号</h2>
 
-先读取 `hast://guides/channels` 完成微信客服草稿和企业微信配置，再使用带 `channels:write` 的 Profile API 密钥调用 `post_channels_connection_id_wechat_kf_accounts`：
+先读取 [渠道 API 指南](aip-channel-api) 完成微信客服草稿和企业微信配置，再使用带 `channels:write` 的 Profile API 密钥调用 `post_channels_connection_id_wechat_kf_accounts`：
 
 ```json
 {
@@ -78,7 +66,7 @@ Profile API 密钥可以让客户端读取资源 `hast://guides/overview`。如�
 完成客户端配置后，可以发送以下提示词。把业务目标、已有资料和允许执行的操作补充到最后一行。
 
 ```text
-请使用已连接的 Hast AIP MCP，先读取 hast://guides/overview，
+请使用已连接的 Hast AIP MCP，先读取 the Agent client guide at the Docs URL advertised by the server，
 再根据我的需求读取对应指南，并发现当前密钥可用的工具和资源。
 不要显示任何凭证。创建 Agent 前先核对可选模型、已有 Skills、知识库和已连接账号。
 执行异步任务后继续读取状态和事件，直到得到最终结果。
@@ -87,7 +75,7 @@ Profile API 密钥可以让客户端读取资源 `hast://guides/overview`。如�
 我的需求：列出当前业务身份下已有的 Agent，并说明各自用途，暂不修改配置。
 ```
 
-需要创建企业 Agent 时，可使用客户端提供的 `build_enterprise_agent` 提示词，并在 `requirements` 中填写业务需求。它返回操作指导，实际创建和修改仍由后续工具调用执行。
+需要创建企业 Agent 时，可使用客户端提供的 `build_enterprise_agent` 提示词，并在 `requirements` 中填写业务需求。它返回业务需求和 Docs 链接。先读取对应指南，再调用工具；该提示词本身不会修改配置。
 
 常见交付流程是先发现资源，再准备 Skill、机密和知识库，保存 Agent 配置，完成渠道或外部账号授权，最后调用 Agent 并读取会话事件。验收时检查实际回复、知识引用和业务操作结果；如需渠道投递，还要在原渠道确认收到消息。
 

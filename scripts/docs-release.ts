@@ -49,13 +49,19 @@ export async function waitForPublicRevision(
   throw new Error('The public docs revision did not converge within 60 seconds');
 }
 
-export async function verifyPublicPage(origin: string, fetchFn: typeof fetch = fetch) {
+export async function verifyPublicPage(origin: string, target: 'staging' | 'production', fetchFn: typeof fetch = fetch) {
   // The site root intentionally redirects to its locale-specific documentation entry.
   const page = await fetchFn(`${origin}/en/docs/overview`, {
     redirect: 'error', signal: AbortSignal.timeout(30_000),
   });
   assert.equal(page.status, 200);
   assert.match(page.headers.get('content-type') ?? '', /text\/html/u);
+  const robots = page.headers.get('x-robots-tag') ?? '';
+  if (target === 'production') {
+    assert.doesNotMatch(robots, /\b(?:noindex|nofollow|none)\b/iu, 'production Docs must permit indexing and link discovery');
+  } else {
+    assert.match(robots, /\b(?:noindex|none)\b/iu, 'Staging Docs must remain excluded from indexing');
+  }
 }
 
 export async function main() {
@@ -109,7 +115,7 @@ export async function main() {
   } else if (command === 'accept') {
     await waitForPublicRevision(origin, { source, run: process.env.GITHUB_RUN_ID ?? '', target,
       ...(release ? { product_release: binding(release) } : {}) });
-    await verifyPublicPage(origin);
+    await verifyPublicPage(origin, target);
     appendFileSync(process.env.GITHUB_STEP_SUMMARY ?? '',
       `- Deployed: ${process.env.DOCS_DEPLOYMENT_LINKS || origin}\n- Exact public revision and documentation entry: passed\n`);
   } else { throw new Error('expected authorize, stamp, or accept'); }
