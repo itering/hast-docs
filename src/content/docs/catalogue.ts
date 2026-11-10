@@ -4,7 +4,6 @@ import en from "./locales/en.json";
 import ja from "./locales/ja.json";
 
 export const docsPages: DocsPageInfo[] = [
-
   {
     "slug": "overview",
     "title": "认识 Hast",
@@ -338,6 +337,156 @@ export const docsPages: DocsPageInfo[] = [
     ]
   },
   {
+    "slug": "aip-agent-client",
+    "title": "通过 Agent 客户端使用 AIP",
+    "description": "连接 Agent 客户端，确认权限，并按实时 API 契约操作。",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "连接并发现能力"
+      },
+      {
+        "id": "identity",
+        "title": "身份和权限"
+      },
+      {
+        "id": "calls",
+        "title": "调用约定"
+      },
+      {
+        "id": "verify",
+        "title": "确认结果"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
+    "slug": "aip-enterprise-agent",
+    "title": "创建并验证企业 Agent",
+    "description": "通过 Public API 或 MCP 配置资源，并验证实际业务结果。",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "发现所需资源"
+      },
+      {
+        "id": "save",
+        "title": "保存 Agent"
+      },
+      {
+        "id": "bind",
+        "title": "绑定知识、工具与渠道"
+      },
+      {
+        "id": "verify",
+        "title": "验证业务结果"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
+    "slug": "aip-channel-api",
+    "title": "通过 API 或 MCP 连接消息渠道",
+    "description": "创建渠道、完成提供方安装、绑定 Agent，并验证实际送达。",
+    "toc": [
+      {
+        "id": "choose",
+        "title": "选择渠道流程"
+      },
+      {
+        "id": "install",
+        "title": "完成提供方安装"
+      },
+      {
+        "id": "bind",
+        "title": "绑定 Agent 并选择行为"
+      },
+      {
+        "id": "verify",
+        "title": "验证消息与反馈"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
+    "slug": "aip-whatsapp-api",
+    "title": "手动配置 WhatsApp Cloud API",
+    "description": "通过 REST 或 MCP 接入现有 Meta WhatsApp Business 账号。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "准备 Meta 账号"
+      },
+      {
+        "id": "create",
+        "title": "创建自有连接"
+      },
+      {
+        "id": "callback",
+        "title": "配置并验证回调"
+      },
+      {
+        "id": "verify",
+        "title": "绑定、测试和维护"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
+    "slug": "aip-knowledge-crm-api",
+    "title": "通过 API 使用 Knowledge、CRM 与记忆",
+    "description": "选择正确的数据归属，授予访问权限，并核对原始证据。",
+    "toc": [
+      {
+        "id": "knowledge",
+        "title": "导入知识并授予访问"
+      },
+      {
+        "id": "crm",
+        "title": "发现 CRM schema"
+      },
+      {
+        "id": "memory",
+        "title": "选择记忆范围"
+      },
+      {
+        "id": "sharing",
+        "title": "共享与验证"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
+    "slug": "aip-connectors",
+    "title": "授权并使用 Connector 账号",
+    "description": "连接外部账号，选择允许使用的工具，并核对每次操作。",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "发现应用和账号"
+      },
+      {
+        "id": "authorize",
+        "title": "完成提供方授权"
+      },
+      {
+        "id": "use",
+        "title": "为每个动作选择账号"
+      },
+      {
+        "id": "disconnect",
+        "title": "维护或断开账号"
+      }
+    ],
+    "group": "AIP",
+    "subgroup": "AIP API"
+  },
+  {
     "slug": "aip-slack",
     "title": "接入 Slack",
     "description": "将 Agent 加入 Slack，在频道或私聊中提问、处理文件，与团队一起使用。",
@@ -427,31 +576,31 @@ export const docsPages: DocsPageInfo[] = [
     ],
     "group": "AIP"
   },
-{
-  "slug": "aip-wechat-personal",
-  "title": "个人微信：自建服务接入",
-  "description": "部署 agent-wechat，扫码登录，并将选定会话只读同步到 Hast。",
-  "subgroup": "渠道接入",
-  "toc": [
-    {
-      "id": "prepare",
-      "title": "开始前"
-    },
-    {
-      "id": "deploy",
-      "title": "部署与登录"
-    },
-    {
-      "id": "connect",
-      "title": "连接 Hast"
-    },
-    {
-      "id": "reconnect",
-      "title": "断线与数据管理"
-    }
-  ],
-  "group": "AIP"
-},
+  {
+    "slug": "aip-wechat-personal",
+    "title": "个人微信：自建服务接入",
+    "description": "部署 agent-wechat，扫码登录，并将选定会话只读同步到 Hast。",
+    "subgroup": "渠道接入",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "开始前"
+      },
+      {
+        "id": "deploy",
+        "title": "部署与登录"
+      },
+      {
+        "id": "connect",
+        "title": "连接 Hast"
+      },
+      {
+        "id": "reconnect",
+        "title": "断线与数据管理"
+      }
+    ],
+    "group": "AIP"
+  },
   {
     "slug": "aip-wechat-kf",
     "title": "接入企业微信（微信客服）",

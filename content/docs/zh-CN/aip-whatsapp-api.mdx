@@ -1,0 +1,33 @@
+<h2 id="prepare">准备 Meta 账号</h2>
+
+这里介绍手动 Meta Cloud API 流程。当前 AIP WhatsApp 向导使用 Business Coexistence，见 [AIP WhatsApp](aip-whatsapp)。手动流程不会开启共存，也不同于 WhatsApp Web 或 Twilio。
+
+准备同一 Meta App 的 access token 和 App Secret、WABA ID、phone-number ID，以及已注册的企业号码。phone-number ID 不是显示的电话号码。为 system user 分配正确的 WABA 和 App 资产，token 需要 `whatsapp_business_messaging`、`whatsapp_business_management` 及相应资产访问权。使用已知到期时间的服务凭证，并在到期前轮换。
+
+App Secret 验证回调签名，webhook verify token 则由稍后的 Hast 安装响应提供，三种凭证用途不同；App ID 不是 App Secret。提供方当前要求见 [Meta access-token 文档](https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens/)。MCP 不能授予 Meta 权限或代替所有者登录。
+
+<h2 id="create">创建自有连接</h2>
+
+使用具有 `channels:read/write` 的 Profile API 密钥。调用 `POST /channels/whatsapp`，或 MCP `post_channels_whatsapp`，把请求放在 `body` 中：
+
+```json
+{"name":"Business WhatsApp","phone_number":"+15551234567","phone_number_id":"META_PHONE_NUMBER_ID","business_account_id":"META_WABA_ID","token_secret_value":"<ACCESS_TOKEN>","app_secret_value":"<APP_SECRET>","require_admission":true}
+```
+
+真实凭证只通过受保护请求提交。服务将内联值写入只写 Secrets。也可以使用有权访问的 `token_secret_id` 和 `app_secret_id`，同一字段不能同时提供 ID 和值。回读返回的 connection ID；不会额外创建 Hast API 密钥。
+
+<h2 id="callback">配置并验证回调</h2>
+
+读取 `/channels/{connection_id}/installation`，在同一个 Meta App 中，用准确的 `callback_url` 和 `verify_token` 完成 WhatsApp Business Account webhook 验证，并订阅 `messages`。
+
+App 级 webhook 设置与 WABA 订阅是不同步骤。检查目标 App 已订阅目标 WABA。若 App 服务多个 WABA，应保留其他 WABA 的正常路由。callback override 对整个 WABA 生效，不只影响一个号码。使用受支持 Graph API 版本，检查返回的 App ID 及存在的 override。
+
+回调验证成功不能证明账号具备消息资格，也不能证明入站处理或回复送达。
+
+<h2 id="verify">绑定、测试和维护</h2>
+
+通过 `/webhooks/{hook_id}/channels` 绑定，并保留完整目标连接列表。明确选择准入规则，默认启用。由已授权发送者发起会话，验证入站事件、Agent run、原 WhatsApp 会话中的回复及送达状态。
+
+轮换时 PATCH `/channels/{connection_id}/whatsapp`，使用原连接的号码与 WABA ID，以及新的 token ID 或值。更换签名 Secret 时提供对应字段；省略两个 App Secret 字段会保留原值。部分配置失败时先检查现有连接，避免重复创建。
+
+回调已验证却没有回复时，依次检查 WABA/App 订阅、号码配对、准入、Agent 绑定、Agent 状态和发送记录。Meta 的消息窗口、接收方与模板规则仍然适用。说明具体未完成步骤，不重复重试已被拒绝的发送。

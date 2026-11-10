@@ -1,0 +1,33 @@
+<h2 id="prepare">Prepare the Meta account</h2>
+
+This is the manual Meta Cloud API flow. The current AIP WhatsApp wizard uses Business Coexistence; see [WhatsApp in AIP](aip-whatsapp). Manual setup does not enable coexistence and is separate from WhatsApp Web and Twilio.
+
+Prepare the same Meta app's access token and App Secret, the WABA ID and phone-number ID, and a registered business phone number. A phone-number ID is not the displayed number. Assign the correct WABA and app assets to the system user. The token needs `whatsapp_business_messaging` and `whatsapp_business_management`, plus access to those assets. Use a service credential with known expiry; rotate it before expiry.
+
+The App Secret verifies callback signatures. The webhook verify token comes later from Hast installation. These three credentials have different purposes. An App ID is not an App Secret. Follow [Meta access-token documentation](https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens/) for current provider requirements. MCP cannot grant Meta permissions or complete the owner's login.
+
+<h2 id="create">Create the owned connection</h2>
+
+Use a Profile API key with `channels:read/write`. Call `POST /channels/whatsapp`, or MCP `post_channels_whatsapp` with the request under `body`:
+
+```json
+{"name":"Business WhatsApp","phone_number":"+15551234567","phone_number_id":"META_PHONE_NUMBER_ID","business_account_id":"META_WABA_ID","token_secret_value":"<ACCESS_TOKEN>","app_secret_value":"<APP_SECRET>","require_admission":true}
+```
+
+Pass real credentials only in the protected request. The service stores inline values as write-only Secrets. You can instead supply owned `token_secret_id` and `app_secret_id`; do not provide an ID and value for the same field. Read back the returned connection ID. No additional Hast API key is created.
+
+<h2 id="callback">Configure and verify callbacks</h2>
+
+Read `/channels/{connection_id}/installation`. In the same Meta app, use its exact `callback_url` and `verify_token` for WhatsApp Business Account webhook verification, then subscribe to `messages`.
+
+App-level webhook configuration and WABA subscription are separate. Check that the intended app is subscribed to the intended WABA. If the app serves other WABAs, preserve their working routing. A callback override applies to the WABA, not one phone number. Use the supported Graph API version and verify the returned app ID and override when present.
+
+A callback verification response does not prove messaging eligibility, incoming message processing or reply delivery.
+
+<h2 id="verify">Bind, test and maintain</h2>
+
+Bind through `/webhooks/{hook_id}/channels`, preserving the full intended connection list. Choose admission deliberately; it defaults to enabled. Use an authorized sender to start a conversation and verify the inbound event, Agent run, reply in the original WhatsApp conversation and delivery status.
+
+Rotate the same owned connection with `PATCH /channels/{connection_id}/whatsapp`, its phone/WABA IDs and the replacement token ID or value. Supply App Secret fields when changing that signing secret; omit both to retain it. Inspect existing channels before retrying a partial setup.
+
+When a verified callback produces no reply, check WABA/app subscription, phone pairing, admission, Agent binding, Agent state and send records. Meta's messaging window and recipient/template rules still apply. Report the exact incomplete step rather than repeatedly retrying a rejected send.

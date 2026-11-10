@@ -1,0 +1,33 @@
+<h2 id="discover">必要なリソースを確認する</h2>
+
+[Agent クライアントガイド](aip-agent-client)から始めます。業務目的、許可する操作、対象者、言語、チャネル、知識、CRM、引き継ぎ規則、実行時刻のタイムゾーンを整理します。既存の Agent を調べ、利用権限のある適切なリソースを再利用します。
+
+`/models` と `policy_options` を読み、対象環境が対応する値を選びます。Runtime System Skills がプラットフォーム手順を提供します。カスタム Skill は業務に集中し、ツール一覧をプロンプトへ複製しません。機能の設定と外部の同意は別に行います。
+
+<h2 id="save">Agent を保存する</h2>
+
+`POST /webhooks` で保存済み Agent を作ります。モデルはカタログから選びます。最小例は外部リソースを必要としません。
+
+```json
+{"title":"Customer support","description":"Answer approved product questions","status":"active","system_prompt":"Use approved knowledge, cite evidence, and escalate unknown cases.","model":"MODEL_FROM_CATALOG","sandbox_mode":"read_only","policies":[],"selected_skills":[],"crm_ids":[]}
+```
+
+必要な機能だけを追加します。Shell とブラウザーは書き込み可能な sandbox と `network_access` が必要で、実行前に依存関係が検証されます。拒否を回避するため権限を広げません。
+
+編集前に現在の設定を読みます。配列の更新は選択全体を置き換えます。無関係なフィールドと Skill の `source` を保ちます。Skill bundle は補助ファイルも含む完全な集合で更新します。必要なら認証情報を除いた設定スナップショットを保ち、履歴や自動ロールバックを前提にしません。Hook 呼び出し識別子を公開報告に含めません。
+
+<h2 id="bind">知識、ツール、チャネルを関連付ける</h2>
+
+必要なリソースだけを作ります。認証情報は書き込み専用 Secrets に保存し、ID を参照します。collection の権限と `crm_ids` は [Knowledge と CRM](aip-knowledge-crm-api)、アカウント認可と Agent 選択は [Connectors](aip-connectors)に従います。
+
+カスタム HTTP ツールには、明確な入力スキーマ、許可された宛先、Secret の関連付けを使います。[業務ツール](aip-tools)と現在の Webhook スキーマを参照します。プラットフォーム手順は System Skills、業務手順はカスタム Skill に置きます。
+
+[チャネルガイド](aip-channel-api)に従います。`/webhooks/{hook_id}/channels` を読み、完全な `connection_ids` を PUT します。この関連付けは受信トリガーと返信を一緒に有効にします。必要な既存接続を保ち、関連付けとインストール状態を再確認します。
+
+<h2 id="verify">業務結果を確認する</h2>
+
+`/webhooks/{hook_id}/invoke`、または [API クイックスタート](aip-api-quickstart)の単一 Agent キーで呼び出します。session と request ID を保ち、対応する run が終了するまでイベントを取得します。最終メッセージ、提供元の受け付け、run の完了は別の証拠です。
+
+必要に応じ、知識回答、許可された CRM 操作、Connector 操作、管理されたチャネル返信を検証します。許可されたテスト受信者を使い、元の会話で実際の配信を確認します。
+
+スケジュールの対象は `config.webhook_target.hook_id` に設定し、タイムゾーン、時刻、`next_run_at` を確認します。`config.hook_id` だけでは Agent を選べません。実行記録の `succeeded` はイベントの `run.completed` に対応します。使用量と推定費用は不完全な場合があり、確定請求ではありません。一時リソースは依存順に削除します。

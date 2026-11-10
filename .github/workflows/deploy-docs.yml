@@ -80,7 +80,7 @@ jobs:
             corepack pnpm build
             node ../authority/scripts/docs-release.ts stamp
           dist_path: out
-          vercel_json_path: vercel.json
+          vercel_json_path: out/vercel.json
           preview_output: true
           project_name: hast-docs
           prod_mode: ${{ inputs.target == 'production' && 'true' || '' }}

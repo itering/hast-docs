@@ -1,0 +1,35 @@
+<h2 id="knowledge">Import and grant Knowledge access</h2>
+
+Documents and websites belong in Knowledge collections; structured customers, opportunities and tasks belong in CRM; small durable instructions belong in memories. These resources have different identifiers and bindings. Use a Profile API key with the required resource scopes.
+
+Create `/knowledge-collections`, retain its `base.id`, then import a URL or file through `/knowledge-bases` with that ID in `base_id`. An import ID is not a collection ID. File upload uses multipart REST or MCP `upload` and `form` and has a 10 MiB decoded limit. Use HTTPS URLs without credentials and preserve the real file extension.
+
+Read `/knowledge-bases/{id}` for import preparation and `/knowledge-collections/{id}/index` for derived indexing. Acceptance, successful preparation, search readiness and Agent access are separate states. Keep originals separate from replaceable indexes.
+
+Read `/webhooks/{hook_id}/knowledge-collections`, then PUT the complete intended `base_ids` and enable `knowledge_search`. This needs collection and Agent write permissions. Creating or indexing material alone does not grant the Agent access. Verify with a question that needs that source and inspect its original evidence. Existing library sources use their exact `source_id`, version and selection scope; do not substitute an import ID.
+
+Use collection members to change access. Imported originals remain retained: deleting an import through `/knowledge-bases/{id}` returns a conflict. Compiled Wiki and Graph are derived navigation. Follow original source references and publication versions when checking a relationship.
+
+<h2 id="crm">Discover the CRM schema</h2>
+
+Provision `/business-resources/crm` only when the task needs it. Use a stable `request_id`, wait for readiness and inspect an uncertain provisioning result before creating another resource. Bind its ready ID in the Agent's `crm_ids`.
+
+Read `/business-resources/{resource_id}/crm/schema`. Its writable fields, required values, enums, relationships and types are authoritative. Do not guess that a name or email is a string. Follow pagination when listing records. Creates use `request_id` and `values`; updates use the last `updated_at` plus `values`. On a `409`, reread and reconcile.
+
+Use the returned relation and file IDs for reads. Upload attachments through the documented CRM attachment route, then link the returned file using the live writable schema. Backplane does not impose the Knowledge 10 MiB limit on CRM attachments; the CRM provider can still reject size or content.
+
+Customer contacts and CRM members are different entities. Discover `/business-resources/{resource_id}/members` before assigning records. Authorized member creation uses the existing provider registration/join flow and does not provide a login password or establish customer identity. Read back the resulting business record. Removing unused resource configuration does not delete the CRM's business data.
+
+<h2 id="memory">Choose memory scope</h2>
+
+Use `/memories` for a small durable instruction or preference. Agent memory can use `scope_type: task_agent` and its owned `scope_id`; shared Webhook memory uses its documented scope. Use `/memories/by-id/{memoryID}` for unambiguous edits and deletion.
+
+Enable the Agent's `memory` capability and choose read/write scope separately. Read scope can be `self`, `webhook` or `all`; write scope can be `self` or `shared`. All remain inside the Profile. Prefer customer isolation unless sharing is intended. A saved memory does not prove that a running Agent loaded it; verify a subsequent execution.
+
+<h2 id="sharing">Sharing and verification</h2>
+
+Collection sharing is separate from source retention, indexing and Agent binding. An authorized shared collection permits its granted search and reads; it does not permit changing the owner's originals, members, index, compilation or shares.
+
+Sharing administration requires `knowledge-sharing:read/write`, the matching signed-in session and the required owner or administrator role. Use the returned version and target options. A new grant requires `redistribution_confirmed: true`; on a version conflict, reread. Do not infer sharing permission from a returned resource ID.
+
+For each result distinguish imported, searchable, accessible and verified. For CRM writes, inspect the stored values; for knowledge answers, cite the original source; for memories, check a later run. See [Knowledge in AIP](aip-knowledge), [memory settings](aip-memory) and the [API reference](aip-api-reference).

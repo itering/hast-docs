@@ -1,0 +1,41 @@
+<h2 id="choose">チャネルの方式を選ぶ</h2>
+
+メッセージチャネルと Connector アカウントは役割が異なります。変更前に `/channels/setup`、`/channels`、`/channels/agents` と対象 Agent を読み、`channels:read/write` を持つ Profile API キーを使います。
+
+新しい Slack アプリや Telegram Bot は[自動チャネル設定](aip-api-quickstart#automatic-channels)を使えます。再試行は同じ setup ID と要求 UUID を保ちます。同意、Slack URL 検証、最後の `/complete` は別の手順です。setup のキャンセルは作成済みの外部アプリを削除しません。
+
+既存の認証情報は `POST /channels/setup` とカタログのフィールドを使います。Web サイトは `website_url`、Slack は同じアプリの bot token と signing secret、Telegram は bot token が必要です。Email、LINE、SMS、Twilio は公開スキーマに従います。既存 inbox は `/channels/inboxes` で探してから追加します。
+
+手動 WhatsApp Cloud API は[専用ガイド](aip-whatsapp-api)を使います。WhatsApp Web はアーカイブ専用で、Agent 起動、返信、定期送信には使えません。QR ペアリングは `channels:write` と所有者のスキャンが必要で、再試行も同じ connection ID を使います。個人 WeChat も自動返信ではなく読み取り専用 Knowledge ソースです。
+
+<h2 id="install">提供元の設定を完了する</h2>
+
+`/channels/{connection_id}/installation` を読み、返された callback URL、検証 token、widget script、転送先をそのまま使います。接続の作成は設定や同意の完了を証明しません。認証情報、非公開の同意 URL、QR データを公開報告へ入れません。
+
+WeChat カスタマーサービスは `corp_id`、`callback_token`、`encoding_aes_key` で下書きを作ります。案内された callback、ドメイン、信頼 IP を設定し、`corp_secret` で `POST /channels/{connection_id}/wechat-kf/accounts` を呼びます。名前と `manage_privilege: true` で選び、同じチャネルを Secret と `open_kfid` で PATCH します。発見だけでは認証情報の保存や関連付けは行われません。[WeChat カスタマーサービス](aip-wechat-kf)と [MCP の例](mcp#wechat-accounts)を参照してください。
+
+OAuth は所有者が返された URL で同じ認可を完了し、接続を再確認します。拒否、未完了、利用不能を明示し、重複接続を作りません。
+
+<h2 id="bind">Agent と動作を設定する</h2>
+
+`/webhooks/{hook_id}/channels` を読み、完全な `connection_ids` を PUT します。必要な既存接続を保ちます。返信 Agent はチャネルごとに一つで、`409` は現在の関連付けから解決します。同じ関連付けが起動と返信を有効にし、Knowledge collection の権限は別です。従来の `/channels/{connection_id}/binding` は関連付けの解除専用です。
+
+WhatsApp、WeChat カスタマーサービス、Telegram は標準で参加規則を使います。公開前に動作を選んでください。メンバーと管理者はチャネル単位で、Slack は独自の参加モデルを使います。
+
+Slack の起動規則を置き換える前に現在の設定を読みます。`require_mention` と送信者・チャネルの例外は一緒に働きます。空配列は例外を削除し、各配列の上限は一意な ID 100 個です。自分の bot のメッセージは起動せず、必要な既存例外は保持します。
+
+新しい関連付けでは、保存前に実行権限を調整します。同じリストを再保存しても、取り消された
+権限は復元されません。関連付けの書き込みには `channel-credentials:write` とキー作成者の
+一致する現在のログインが必要です。権限を持つユーザーは同じ PUT で
+`{"enable_connection_ids":["OWNED_CONNECTED_CHANNEL"]}` を指定し、他の選択を保ったまま
+対象ソースを明示的に復元できます。実行時に Workspace 権限不足が出た場合は、
+[クライアントガイド](aip-agent-client#identity) に従って Agent のアクセス概要とソース権限を
+確認します。管理上の修復は権限を持つユーザーに任せます。Assistant は自分の権限を拡張できません。
+
+<h2 id="verify">メッセージと進捗表示を確認する</h2>
+
+関連付けと設定を再確認します。許可されたメッセージで受信、Agent 完了、元の会話の返信、配信記録を確認します。提供元の受け付けだけでは最終配信を証明できません。
+
+`GET/PATCH /channels/{connection_id}/presentation` は `show_status_reactions`、`show_tool_progress`、`streaming_replies` を制御します。標準はすべて true で、省略した値は維持されます。すべて false にしても受信、起動、最終返信は変わりません。最終返信には Agent の返信ポリシーを使います。
+
+アーカイブ、起動、知識への権限、送信は別の機能です。添付の読み取りや取得は返されたメタデータを使い、URL を推測しません。切断・再接続前に影響を確認します。受信を止めても保持済み Knowledge は残る場合があります。

@@ -932,5 +932,137 @@
         "title": "再ログインとデータ管理"
       }
     ]
+  },
+  "aip-agent-client": {
+    "title": "Agent クライアントから AIP を使う",
+    "description": "接続、権限、実際の API スキーマに基づく操作を説明します。",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "接続と機能の確認"
+      },
+      {
+        "id": "identity",
+        "title": "ID と権限"
+      },
+      {
+        "id": "calls",
+        "title": "呼び出し規則"
+      },
+      {
+        "id": "verify",
+        "title": "結果の確認"
+      }
+    ]
+  },
+  "aip-enterprise-agent": {
+    "title": "企業 Agent を作成して検証する",
+    "description": "Public API または MCP でリソースを設定し、業務結果を確認します。",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "必要なリソースを確認する"
+      },
+      {
+        "id": "save",
+        "title": "Agent を保存する"
+      },
+      {
+        "id": "bind",
+        "title": "知識、ツール、チャネルを関連付ける"
+      },
+      {
+        "id": "verify",
+        "title": "業務結果を確認する"
+      }
+    ]
+  },
+  "aip-channel-api": {
+    "title": "API または MCP でチャネルを接続する",
+    "description": "チャネル作成、提供元の設定、Agent の関連付け、配信を確認します。",
+    "toc": [
+      {
+        "id": "choose",
+        "title": "チャネルの方式を選ぶ"
+      },
+      {
+        "id": "install",
+        "title": "提供元の設定を完了する"
+      },
+      {
+        "id": "bind",
+        "title": "Agent と動作を設定する"
+      },
+      {
+        "id": "verify",
+        "title": "メッセージと進捗表示を確認する"
+      }
+    ]
+  },
+  "aip-whatsapp-api": {
+    "title": "WhatsApp Cloud API を手動設定する",
+    "description": "REST または MCP から既存の Meta WhatsApp Business を接続します。",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Meta アカウントを準備する"
+      },
+      {
+        "id": "create",
+        "title": "所有する接続を作成する"
+      },
+      {
+        "id": "callback",
+        "title": "callback を設定して検証する"
+      },
+      {
+        "id": "verify",
+        "title": "関連付けと配信を確認する"
+      }
+    ]
+  },
+  "aip-knowledge-crm-api": {
+    "title": "API で Knowledge、CRM、記憶を使う",
+    "description": "データの管理元と権限を選び、元の証拠を確認します。",
+    "toc": [
+      {
+        "id": "knowledge",
+        "title": "知識を取り込み利用権限を設定する"
+      },
+      {
+        "id": "crm",
+        "title": "CRM スキーマを確認する"
+      },
+      {
+        "id": "memory",
+        "title": "記憶の範囲を選ぶ"
+      },
+      {
+        "id": "sharing",
+        "title": "共有と検証"
+      }
+    ]
+  },
+  "aip-connectors": {
+    "title": "Connector アカウントを認可して使う",
+    "description": "外部アカウントと利用可能なツールを選び、操作結果を確認します。",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "アプリとアカウントを確認する"
+      },
+      {
+        "id": "authorize",
+        "title": "提供元の同意を完了する"
+      },
+      {
+        "id": "use",
+        "title": "操作するアカウントを選ぶ"
+      },
+      {
+        "id": "disconnect",
+        "title": "アカウントを更新・切断する"
+      }
+    ]
   }
 }

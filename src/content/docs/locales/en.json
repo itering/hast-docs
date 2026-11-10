@@ -932,5 +932,137 @@
         "title": "Reconnect and manage data"
       }
     ]
+  },
+  "aip-agent-client": {
+    "title": "Hast AIP for Agent clients",
+    "description": "Connect an Agent client, discover permissions and use live API contracts.",
+    "toc": [
+      {
+        "id": "connect",
+        "title": "Connect and discover"
+      },
+      {
+        "id": "identity",
+        "title": "Identity and permissions"
+      },
+      {
+        "id": "calls",
+        "title": "Calling conventions"
+      },
+      {
+        "id": "verify",
+        "title": "Verify outcomes"
+      }
+    ]
+  },
+  "aip-enterprise-agent": {
+    "title": "Build and verify an enterprise Agent",
+    "description": "Configure resources and prove the result through the Public API or MCP.",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "Discover the required resources"
+      },
+      {
+        "id": "save",
+        "title": "Save the Agent"
+      },
+      {
+        "id": "bind",
+        "title": "Attach knowledge, tools and channels"
+      },
+      {
+        "id": "verify",
+        "title": "Verify the business result"
+      }
+    ]
+  },
+  "aip-channel-api": {
+    "title": "Connect messaging channels through API or MCP",
+    "description": "Create a channel, finish provider setup, bind an Agent and verify delivery.",
+    "toc": [
+      {
+        "id": "choose",
+        "title": "Choose the channel flow"
+      },
+      {
+        "id": "install",
+        "title": "Complete provider installation"
+      },
+      {
+        "id": "bind",
+        "title": "Bind the Agent and choose behavior"
+      },
+      {
+        "id": "verify",
+        "title": "Verify messages and feedback"
+      }
+    ]
+  },
+  "aip-whatsapp-api": {
+    "title": "Set up the manual WhatsApp Cloud API",
+    "description": "Connect an existing Meta WhatsApp Business account through REST or MCP.",
+    "toc": [
+      {
+        "id": "prepare",
+        "title": "Prepare the Meta account"
+      },
+      {
+        "id": "create",
+        "title": "Create the owned connection"
+      },
+      {
+        "id": "callback",
+        "title": "Configure and verify callbacks"
+      },
+      {
+        "id": "verify",
+        "title": "Bind, test and maintain"
+      }
+    ]
+  },
+  "aip-knowledge-crm-api": {
+    "title": "Use Knowledge, CRM and durable memories",
+    "description": "Choose the data owner, grant access and verify the original evidence.",
+    "toc": [
+      {
+        "id": "knowledge",
+        "title": "Import and grant Knowledge access"
+      },
+      {
+        "id": "crm",
+        "title": "Discover the CRM schema"
+      },
+      {
+        "id": "memory",
+        "title": "Choose memory scope"
+      },
+      {
+        "id": "sharing",
+        "title": "Sharing and verification"
+      }
+    ]
+  },
+  "aip-connectors": {
+    "title": "Authorize and use Connector accounts",
+    "description": "Connect an external account, select its allowed tools and verify each action.",
+    "toc": [
+      {
+        "id": "discover",
+        "title": "Discover applications and accounts"
+      },
+      {
+        "id": "authorize",
+        "title": "Complete provider consent"
+      },
+      {
+        "id": "use",
+        "title": "Select the account for each action"
+      },
+      {
+        "id": "disconnect",
+        "title": "Maintain or disconnect an account"
+      }
+    ]
   }
 }

@@ -1,0 +1,33 @@
+<h2 id="prepare">Meta アカウントを準備する</h2>
+
+これは手動の Meta Cloud API フローです。現在の AIP ウィザードは Business Coexistence を使います。[AIP の WhatsApp](aip-whatsapp)を参照してください。手動設定は共存を有効にせず、WhatsApp Web や Twilio とも異なります。
+
+同じ Meta アプリの access token、App Secret、WABA ID、phone-number ID、登録済み事業用番号を準備します。phone-number ID は表示される電話番号ではありません。system user に正しい WABA とアプリ資産を割り当てます。token は `whatsapp_business_messaging`、`whatsapp_business_management` と資産への権限が必要です。有効期限が分かるサービス認証情報を使い、期限前に更新します。
+
+App Secret は署名を検証し、webhook verify token は後で Hast の設定応答から取得します。三つの値は役割が異なり、App ID は App Secret ではありません。最新の提供元要件は [Meta access-token 文書](https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens/)に従います。MCP は Meta 権限や所有者ログインを代行できません。
+
+<h2 id="create">所有する接続を作成する</h2>
+
+`channels:read/write` のある Profile API キーを使います。`POST /channels/whatsapp`、または MCP `post_channels_whatsapp` の `body` で送ります。
+
+```json
+{"name":"Business WhatsApp","phone_number":"+15551234567","phone_number_id":"META_PHONE_NUMBER_ID","business_account_id":"META_WABA_ID","token_secret_value":"<ACCESS_TOKEN>","app_secret_value":"<APP_SECRET>","require_admission":true}
+```
+
+実際の認証情報は保護された要求だけで送ります。サービスはインライン値を書き込み専用 Secrets に保存します。所有する `token_secret_id` と `app_secret_id` も使えますが、同じ値に ID と値を両方渡しません。返された connection ID を確認します。追加の Hast API キーは作成されません。
+
+<h2 id="callback">callback を設定して検証する</h2>
+
+`/channels/{connection_id}/installation` を読み、同じ Meta アプリの WhatsApp Business Account webhook に正確な `callback_url` と `verify_token` を設定し、`messages` を購読します。
+
+アプリ単位の webhook 設定と WABA 購読は別です。対象アプリが対象 WABA を購読していることを確認します。複数 WABA を扱う場合は、他の正常な経路を維持します。callback override は電話番号単位ではなく WABA 全体に適用されます。対応する Graph API バージョンを使い、App ID と override を確認します。
+
+callback 検証だけでは、メッセージ送信資格、受信処理、返信配信を証明できません。
+
+<h2 id="verify">関連付けと配信を確認する</h2>
+
+`/webhooks/{hook_id}/channels` で関連付け、完全な接続一覧を保ちます。参加規則は標準で有効です。許可された送信者から開始し、受信イベント、Agent run、元の WhatsApp 会話の返信、配信状態を確認します。
+
+更新は同じ接続の `PATCH /channels/{connection_id}/whatsapp` を使い、番号・WABA ID と新しい token ID または値を送ります。署名 Secret の変更時は App Secret を指定し、両方省略すれば保持されます。部分的な失敗では既存接続を調べてから再試行します。
+
+返信がない場合は WABA/アプリ購読、番号、参加規則、関連付け、Agent 状態、送信記録を順に確認します。Meta の送信時間、宛先、テンプレート規則も適用されます。拒否された送信を繰り返さず、未完了の手順を報告します。

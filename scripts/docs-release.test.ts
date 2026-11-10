@@ -60,6 +60,7 @@ test('the deployment action resolves artifacts relative to its source working di
   assert.match(workflow, /workdir: source/u);
   assert.match(workflow, /dist_path: out/u);
   assert.doesNotMatch(workflow, /dist_path: source\/out/u);
+  assert.match(workflow, /vercel_json_path: out\/vercel\.json/u);
 });
 
 
@@ -89,11 +90,24 @@ test('acceptance uses the documentation entry while the site root redirects by d
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
   const entry = config.redirects.find((rule: { source: string }) => rule.source === '/').destination;
   const calls: string[] = [];
-  await verifyPublicPage('https://docs.example', async input => {
+  await verifyPublicPage('https://docs.example', 'production', async input => {
     const url = String(input); calls.push(url);
     return url === `https://docs.example${entry}` ?
       new Response('<h1>Docs</h1>', { headers: { 'Content-Type': 'text/html' } }) :
       new Response(null, { status: 307, headers: { Location: entry } });
   });
   assert.deepEqual(calls, [`https://docs.example${entry}`]);
+});
+
+
+test('publication acceptance rejects blocked Production and indexable Staging', async () => {
+  const page = (robots?: string) => async () => new Response('<h1>Docs</h1>', {
+    headers: { 'Content-Type': 'text/html', ...(robots ? { 'X-Robots-Tag': robots } : {}) },
+  });
+  await verifyPublicPage('https://docs.example', 'production', page());
+  await verifyPublicPage('https://docs.example', 'staging', page('noindex, nofollow'));
+  for (const robots of ['noindex, nofollow', 'none', 'googlebot: noindex']) {
+    await assert.rejects(verifyPublicPage('https://docs.example', 'production', page(robots)), /must permit indexing/u);
+  }
+  await assert.rejects(verifyPublicPage('https://docs.example', 'staging', page()), /excluded from indexing/u);
 });
