@@ -69,7 +69,7 @@ Hast names and logos identify the product; the license grants no trademark right
 
 See [the maintenance guide](MAINTENANCE.md) for automated contributions.
 
-## Agent ownership and releases
+## Product publication
 
-See [RELEASES.md](RELEASES.md) for daily Staging maintenance, stable product Docs
-Production publication, recovery, and the two Agent responsibilities.
+See [RELEASES.md](RELEASES.md) for the exact-version publication request,
+acceptance checks and result event contract.
