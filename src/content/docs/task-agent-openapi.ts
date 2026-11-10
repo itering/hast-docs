@@ -9,6 +9,7 @@ export type Operation = {
   parameters?: Schema[];
   responses: Record<string, Schema>;
   security?: Record<string, string[]>[];
+  "x-hast-user-session"?: boolean;
 };
 export const taskAgentSpec = snapshot as unknown as {
   swagger: string;
@@ -45,6 +46,7 @@ export function expandSchema(value: unknown, seen: string[] = []): unknown {
 export const taskAgentApiGroups = [
   ["agent", "Agent 对话"], ["guides", "接入指南"], ["models", "模型"],
   ["webhooks", "Agent 配置"], ["schedules", "定时任务"], ["knowledge-bases", "知识库"],
+  ["workspaces", "Workspace 权限"], ["collaboration", "Agent 协作"],
   ["business-resources", "CRM"], ["chat_memory_projects", "记忆项目"],
   ["prompts", "Prompt"], ["sessions", "会话与事件"], ["skills", "技能"],
   ["channels", "渠道"], ["memories", "记忆"], ["files", "文件"], ["connectors", "连接器"], ["secrets", "机密"],

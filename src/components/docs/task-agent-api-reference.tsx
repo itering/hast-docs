@@ -31,6 +31,7 @@ export function TaskAgentApiReference({ locale = "zh-CN" }: { locale?: AppLocale
         <summary className="cursor-pointer"><strong>{operation.method.toUpperCase()}</strong> <code>{operation.path}</code><span>{operation.summary}</span></summary>
         <div className={styles.body}>
           {operation.description && <p>{operation.description}</p>}
+          {operation["x-hast-user-session"] && <p>{t.userSession}</p>}
           <p>{t.request}: {operation.consumes?.join(", ") || t.unspecified}; {t.response}: {operation.produces?.join(", ") || t.responseDefault}.</p>
           <p><strong>{t.parameters}</strong></p>
           {operation.parameters?.length ? operation.parameters.map((parameter, index) => <div key={index}>

@@ -66,7 +66,22 @@ Write permissions include the corresponding read permission. A Profile API key's
 
 Ordinary tasks support SSE at `/sessions/{id}/events/stream`; see [SSE integration](aip-api-events#sse). Profile API keys and single-Agent keys have different endpoint access: `/agent/*` and ordinary task paths are not interchangeable.
 
-A Profile API key's scope is necessary but is not sufficient for some operations. Operations in the `channel-credentials`, `knowledge-sharing`, `connector-permissions`, `connector-approvals`, `workspace-permissions`, `organization-permissions`, `key-management`, and `assistant-sessions` families also require the key creator's current signed-in AIP session, belonging to the same Workspace as the key. Grant the specific API-key scope required by each operation; the session does not replace its normal authorization, including existing role and membership checks. This requirement applies to both REST and MCP.
+A Profile API key's scope is necessary but is not sufficient for some operations. Operations in the `channel-credentials`, `knowledge-sharing`, `connector-permissions`, `connector-approvals`, `workspace-permissions`, `organization-permissions`, `key-management`, `assistant-sessions`, and `collaboration` families also require the key creator's current signed-in AIP session, belonging to the same Workspace as the key. Grant the specific API-key scope required by each operation; the session does not replace its normal authorization, including existing role and membership checks. This requirement applies to both REST and MCP.
+
+The following business operations depend on the connected server version. Their presence in the documentation snapshot does not establish production availability. Paths are relative to `$HAST_API_BASE`.
+
+| Task | API and required scope |
+| --- | --- |
+| Inspect Agent access | `GET /workspaces/{id}/agent-access` and read-only `POST /workspaces/{id}/agent-access/{agentId}/search`; `workspace-permissions:read` plus the matching login |
+| Inspect execution and results | `/sessions/{id}/trace` and `/sessions/{id}/result` with `sessions:read`; `/schedules/{scheduleID}/runs/{runID}/trace` with `schedules:read` |
+| Preview scheduling | `GET /schedules/preview` with `schedules:read`; no Task is saved or executed |
+| Assess a saved run | `POST /schedules/{scheduleID}/runs/{runID}/reviews` with `schedules:write` and Workspace write access; assessments are labeled `model`, not human verification, and cannot edit instructions |
+| Read Secret details | `GET /secrets/{secretID}` with `secrets:read`; metadata only, never the stored value |
+| Use business collaboration | `/collaboration` for groups, work, discussions, evidence and decisions; explicitly select `collaboration:read/write` and provide the matching login |
+
+Agent access search accepts the returned opaque Agent ID or `*`, with filters and pagination from its schema. Existing keys do not automatically gain collaboration scopes. A key's scopes do not grant Workspace membership or Agent execution access. New channel bindings coordinate execution authorization; saving an unchanged binding does not restore revoked access. An authorized user must explicitly restore the source.
+
+Business collaboration does not manage the personal Assistant. Historical handoffs remain readable and can be paused or revoked; create new arrangements through saved Tasks rather than creating or retrying retired handoff rules. The hosted configuration Assistant retains its own narrower tools and cannot approve or expand its own access.
 
 <h2 id="automatic-channels">Create channels through API or MCP</h2>
 

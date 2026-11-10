@@ -95,6 +95,21 @@ Profile API 密钥可以让客户端读取资源 `hast://guides/overview`。如�
 
 工具参数按 `path`、`query`、`body` 分组，请遵循每个工具的输入结构。结果包含 `status` 和 `body`；HTTP 失败会设置 MCP `isError`。
 
+在包含对应业务 API 的服务版本中，MCP 还提供执行证据和协作工具：
+
+| 用途 | 工具示例与权限 |
+| --- | --- |
+| 查看会话过程或结果 | `get_sessions_id_trace`、`get_sessions_id_result`；`sessions:read` |
+| 预览时间或查询定时执行 | `get_schedules_preview`、`get_schedules_scheduleID_runs_runID_trace`；`schedules:read` |
+| 添加自动评估 | `post_schedules_scheduleID_runs_runID_reviews`；`schedules:write` 与 Workspace 写入权限；记录为 `model`，不是人工验收 |
+| 查看 Secret 资料 | `get_secrets_secretID`；`secrets:read`；不会返回保存的值 |
+| 查看 Agent 授权 | `get_workspaces_id_agent_access`、`post_workspaces_id_agent_access_agentId_search`；`workspace-permissions:read` 和匹配的登录会话；搜索 POST 是只读操作 |
+| 管理协作组与工作 | 明确授予 `collaboration:read/write` 并提供匹配的登录会话，再发现 `/collaboration` 相关工具 |
+
+普通只携带 Bearer Key 的 MCP 客户端无法发现或调用上述需要登录态的授权查询与协作工具。客户端还必须支持密钥创建者在同一 Workspace 中当前有效的登录会话；不要把会话 Cookie 放进提示词或共享配置。角色和资源权限仍照常检查，协作权限不会授予 Agent 执行授权。内置助手沿用自己的较窄工具范围，不能给自己审批或提权。
+
+文档快照不代表生产环境已发布；所连接的服务更新后，请重新发现工具。协作接口保留历史交接的查看、暂停与撤销，不再提供已退役的创建交接或重试操作。
+
 - `202` 表示请求已接收。长任务需要继续按游标读取事件和状态，直到终态。
 - 工作区与知识库文件上传使用 `upload.filename`、`upload.data_base64` 和可选的 `form`，解码后最多 10 MiB。CRM 附件使用 JSON `body.data_base64`，受 MCP 传输大小限制。
 - MCP 请求与响应各有 1 GiB 的大小上限。较大的下载使用对应 Public API；二进制结果包含 `content_type` 和 `data_base64`。

@@ -66,7 +66,22 @@ curl --fail-with-body \
 
 通常タスクの SSE は `/sessions/{id}/events/stream` で受信できます。[SSE 接続](aip-api-events#sse)を参照してください。Profile API キーと単一 Agent のキーではアクセス範囲が異なり、`/agent/*` と通常タスクのパスを相互に置き換えることはできません。
 
-Profile API キーの権限だけでは実行できない操作があります。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management`、`assistant-sessions` の各操作には、キーと同じ Workspace に属する、キー作成者本人の現在の AIP サインインセッションも必要です。各操作に指定された API キー権限を付与してください。セッションは通常の認可や既存のロール・メンバーシップ確認の代わりにはなりません。REST と MCP の両方に同じ要件が適用されます。
+Profile API キーの権限だけでは実行できない操作があります。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management`、`assistant-sessions`、`collaboration` の各操作には、キーと同じ Workspace に属する、キー作成者本人の現在の AIP サインインセッションも必要です。各操作に指定された API キー権限を付与してください。セッションは通常の認可や既存のロール・メンバーシップ確認の代わりにはなりません。REST と MCP の両方に同じ要件が適用されます。
+
+以下の業務操作は接続先サーバーのバージョンによって利用可否が異なります。文書のスナップショットだけでは本番公開済みとは判断できません。パスは `$HAST_API_BASE` からの相対パスです。
+
+| 用途 | API と必要な権限 |
+| --- | --- |
+| Agent のアクセス確認 | `GET /workspaces/{id}/agent-access` と読み取り専用の `POST /workspaces/{id}/agent-access/{agentId}/search`。`workspace-permissions:read` と一致するサインインセッションが必要 |
+| 実行過程と結果の確認 | `/sessions/{id}/trace`、`/sessions/{id}/result` は `sessions:read`、`/schedules/{scheduleID}/runs/{runID}/trace` は `schedules:read` |
+| 実行時刻のプレビュー | `GET /schedules/preview` は `schedules:read` が必要。タスクの保存や実行は行わない |
+| 保存済み実行の評価 | `POST /schedules/{scheduleID}/runs/{runID}/reviews` は `schedules:write` と Workspace 書き込み権限が必要。評価は `model` と記録され、人による検証や指示の編集はできない |
+| Secret 情報の確認 | `GET /secrets/{secretID}` は `secrets:read` が必要。保存された値ではなくメタデータのみ返す |
+| 業務での協働 | `/collaboration` でグループ、作業、議論、証跡、判断を扱う。`collaboration:read/write` の明示的な選択と一致するサインインセッションが必要 |
+
+アクセス検索には応答された不透明な Agent ID または `*` を使い、フィルターとページングはスキーマに従います。既存キーに協働権限は自動追加されません。キーの権限は Workspace メンバー資格や Agent 実行権限を付与しません。新しいチャネル関連付けでは実行権限も調整しますが、既存の関連付けをそのまま保存しても取り消された権限は戻りません。権限のある本人による明示的な復元が必要です。
+
+業務の協働は個人 Assistant の管理ではありません。過去のハンドオフは参照、一時停止、取り消しが可能ですが、新しい構成は保存済みタスクを使用し、廃止されたルールの作成や再試行は行いません。組み込み設定 Assistant は既存の限定されたツールを使用し、自分の承認や権限拡大はできません。
 
 <h2 id="automatic-channels">API／MCP でチャネルを自動作成する</h2>
 
