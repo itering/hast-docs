@@ -91,6 +91,21 @@ A typical workflow discovers resources, prepares Skills, secrets, and knowledge,
 
 Arguments use `path`, `query`, and `body`; follow each tool's input schema. Results contain `status` and `body`, with MCP `isError` for HTTP failures.
 
+On server versions containing the corresponding business APIs, MCP also exposes execution evidence and collaboration:
+
+| Task | Example tools and scopes |
+| --- | --- |
+| Read a session trace or result | `get_sessions_id_trace`, `get_sessions_id_result`; `sessions:read` |
+| Preview or inspect a scheduled run | `get_schedules_preview`, `get_schedules_scheduleID_runs_runID_trace`; `schedules:read` |
+| Add an automated assessment | `post_schedules_scheduleID_runs_runID_reviews`; `schedules:write` and Workspace write access; recorded as `model`, not human verification |
+| Read Secret metadata | `get_secrets_secretID`; `secrets:read`; stored values are never returned |
+| Inspect Agent access | `get_workspaces_id_agent_access`, `post_workspaces_id_agent_access_agentId_search`; `workspace-permissions:read` and the matching login; the search POST is read-only |
+| Work with groups and work items | Discover `/collaboration` tools with explicitly granted `collaboration:read/write` and the matching login |
+
+An ordinary Bearer-only MCP client cannot discover or call the session-bound Agent access and collaboration tools. The client must support the key creator's current signed-in session in the same Workspace; never put session cookies in prompts or shared configuration. Existing role and resource checks still apply, and collaboration scopes do not grant Agent execution access. The hosted Assistant uses its own narrower tools and cannot approve or elevate itself.
+
+The documentation snapshot does not establish production availability. Refresh discovery after the connected server is updated. Collaboration supports historical handoff inspection and pause/revoke operations, not retired handoff creation or retry.
+
 - `202` means accepted. Continue reading event pages and state until a terminal result.
 - Workspace and knowledge-base uploads use `upload.filename`, `upload.data_base64`, and optional `form`; decoded files must not exceed 10 MiB. CRM attachments use JSON `body.data_base64` under the MCP transfer limit.
 - MCP requests and responses each have a 1 GiB limit. Use the corresponding Public API for larger downloads. Binary results contain `content_type` and `data_base64`.

@@ -66,7 +66,22 @@ curl --fail-with-body \
 
 普通任务可通过 `/sessions/{id}/events/stream` 接收 SSE，见 [SSE 接入](aip-api-events#sse)。Profile API 密钥与单 Agent 对话密钥的接口范围不同，不能混用 `/agent/*` 和普通任务路径。
 
-仅有 Profile API 密钥的权限范围不足以执行部分操作。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management` 和 `assistant-sessions` 相关操作还要求密钥创建者当前登录的 AIP 会话，且该会话属于与密钥相同的 Workspace。请为每项操作授予其明确要求的 API 密钥权限；会话不会取代该操作的常规授权，也不会绕过现有角色及成员资格检查。REST 和 MCP 均适用此要求。
+仅有 Profile API 密钥的权限范围不足以执行部分操作。`channel-credentials`、`knowledge-sharing`、`connector-permissions`、`connector-approvals`、`workspace-permissions`、`organization-permissions`、`key-management`、`assistant-sessions` 和 `collaboration` 相关操作还要求密钥创建者当前登录的 AIP 会话，且该会话属于与密钥相同的 Workspace。请为每项操作授予其明确要求的 API 密钥权限；会话不会取代该操作的常规授权，也不会绕过现有角色及成员资格检查。REST 和 MCP 均适用此要求。
+
+以下业务操作的可用性取决于所连接的服务版本，文档快照不代表生产环境已经发布。路径均相对于 `$HAST_API_BASE`。
+
+| 用途 | API 与所需权限 |
+| --- | --- |
+| 查看 Agent 授权 | `GET /workspaces/{id}/agent-access` 与只读的 `POST /workspaces/{id}/agent-access/{agentId}/search`；需要 `workspace-permissions:read` 和匹配的登录会话 |
+| 查看执行过程与结果 | `/sessions/{id}/trace`、`/sessions/{id}/result` 使用 `sessions:read`；`/schedules/{scheduleID}/runs/{runID}/trace` 使用 `schedules:read` |
+| 预览执行时间 | `GET /schedules/preview`，需要 `schedules:read`，不会保存或执行任务 |
+| 评估某次任务执行 | `POST /schedules/{scheduleID}/runs/{runID}/reviews`，需要 `schedules:write` 与 Workspace 写入权限；评估标记为 `model`，不是人工验收，也不能修改指令 |
+| 查看 Secret 资料 | `GET /secrets/{secretID}`，需要 `secrets:read`；只返回资料，不返回保存的值 |
+| 使用业务协作 | `/collaboration` 提供协作组、工作、讨论、证据和决策；需明确勾选 `collaboration:read/write` 并提供匹配的登录会话 |
+
+授权查询中的 Agent ID 使用接口返回的不透明标识或 `*`，筛选与分页按实际 Schema 填写。已有密钥不会自动获得协作权限；API Key 权限不等于 Workspace 成员资格或 Agent 执行授权。新增渠道绑定会协调执行授权，但原样保存已有绑定不会恢复已撤销的权限，需要有权用户明确恢复该来源。
+
+业务协作不是助手个人功能。历史交接可以查看、暂停或撤销；新安排使用已保存的任务，不再创建或重试已退役的交接规则。内置配置助手沿用自己较窄的工具范围，不能给自己审批或提权。
 
 <h2 id="automatic-channels">通过 API 或 MCP 自动创建渠道</h2>
 

@@ -91,6 +91,21 @@ Profile API キーでは `hast://guides/overview` を読み取ります。リソ
 
 引数は `path`、`query`、`body` に分け、各ツールのスキーマに従います。結果は `status` と `body` を含み、HTTP 失敗時は MCP `isError` が設定されます。
 
+対応する業務 API を含むサーバーバージョンでは、実行証跡と協働のツールも利用できます：
+
+| 用途 | ツール例と権限 |
+| --- | --- |
+| セッションの過程や結果を確認 | `get_sessions_id_trace`、`get_sessions_id_result`。`sessions:read` |
+| 時刻のプレビューと定期実行の確認 | `get_schedules_preview`、`get_schedules_scheduleID_runs_runID_trace`。`schedules:read` |
+| 自動評価の追加 | `post_schedules_scheduleID_runs_runID_reviews`。`schedules:write` と Workspace 書き込み権限。人による検証ではなく `model` として記録 |
+| Secret メタデータの確認 | `get_secrets_secretID`。`secrets:read`。保存された値は返さない |
+| Agent のアクセス確認 | `get_workspaces_id_agent_access`、`post_workspaces_id_agent_access_agentId_search`。`workspace-permissions:read` と一致するサインインセッション。検索 POST は読み取り専用 |
+| グループと作業の管理 | `collaboration:read/write` を明示的に付与し、一致するサインインセッションで `/collaboration` のツールを確認 |
+
+Bearer キーだけの通常の MCP クライアントでは、セッションが必要なアクセス検索や協働ツールを検出・実行できません。同じ Workspace に属するキー作成者本人の現在のサインインセッションに対応したクライアントが必要です。Cookie をプロンプトや共有設定に記載しないでください。既存のロールとリソース確認は継続され、協働権限は Agent 実行権限を付与しません。組み込み Assistant は既存の限定されたツールを使い、自分の承認や権限拡大はできません。
+
+文書のスナップショットは本番公開の証拠ではありません。接続先の更新後にツールを再検出してください。過去のハンドオフは参照、一時停止、取り消しが可能ですが、廃止された作成や再試行は提供しません。
+
 - `202` は受け付けです。イベントと状態を終端まで読み取ります。
 - ワークスペースとナレッジベースのアップロードは `upload.filename`、`upload.data_base64`、任意の `form` を使い、デコード後は 10 MiB 以下です。CRM 添付は JSON の `body.data_base64` を使い、MCP 転送上限が適用されます。
 - MCP のリクエストと応答はそれぞれ 1 GiB が上限です。大きなダウンロードは対応する Public API を使います。バイナリ結果は `content_type` と `data_base64` を含みます。

@@ -22,3 +22,12 @@ it.each(["zh-CN", "en", "ja"] as const)("links %s API key management directly to
   expect(html).not.toContain("agent.example.test");
   expect(html).not.toContain("/agent/api-keys");
 });
+
+it.each(["zh-CN", "en", "ja"] as const)("shows %s session requirements for collaboration operations", async (locale) => {
+  vi.stubGlobal("React", React);
+  const { TaskAgentApiReference } = await import("./task-agent-api-reference");
+  const { getApiReferenceLabels } = await import("./api-reference-labels");
+  const html = renderToStaticMarkup(<TaskAgentApiReference locale={locale} />);
+  expect(html).toContain("/api/public/v1/collaboration/teams");
+  expect(html).toContain(getApiReferenceLabels(locale).userSession.replaceAll("'", "&#x27;"));
+});

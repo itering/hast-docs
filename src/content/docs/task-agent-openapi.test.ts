@@ -16,11 +16,42 @@ describe("AIP public OpenAPI snapshot", () => {
       expect(() => expandSchema(operation)).not.toThrow();
       for (const requirement of operation.security ?? []) {
         for (const name of Object.keys(requirement)) {
-          expect(taskAgentSpec.securityDefinitions[name]).toMatchObject({ in: "header", name: "Authorization", type: "apiKey" });
+          const definition = taskAgentSpec.securityDefinitions[name];
+          if (name === "SupabaseJWT") {
+            expect(operation["x-hast-user-session"]).toBe(true);
+            expect(definition).toMatchObject({ in: "cookie", type: "apiKey" });
+          } else {
+            expect(definition).toMatchObject({ in: "header", name: "Authorization", type: "apiKey" });
+          }
         }
       }
     }
-    expect(Object.keys(taskAgentSpec.securityDefinitions).sort()).toEqual(["PublicBearer", "PublicTaskAgentAPIKey"]);
+    expect(Object.keys(taskAgentSpec.securityDefinitions).sort()).toEqual(["PublicBearer", "PublicTaskAgentAPIKey", "SupabaseJWT"]);
+  });
+  it("documents execution evidence and session-bound business collaboration", () => {
+    for (const path of [
+      "/workspaces/{id}/agent-access",
+      "/workspaces/{id}/agent-access/{agentId}/search",
+      "/sessions/{id}/trace",
+      "/sessions/{id}/result",
+      "/schedules/preview",
+      "/schedules/{scheduleID}/runs/{runID}/trace",
+      "/schedules/{scheduleID}/runs/{runID}/reviews",
+      "/secrets/{secretID}",
+    ]) {
+      expect(taskAgentSpec.paths[`/api/public/v1${path}`]).toBeDefined();
+    }
+    const collaboration = taskAgentOperations.filter((operation) =>
+      operation.path.startsWith("/api/public/v1/collaboration"),
+    );
+    expect(collaboration).toHaveLength(25);
+    for (const operation of collaboration) {
+      expect(operation["x-hast-user-session"]).toBe(true);
+      expect(operation.security).toEqual([{ PublicBearer: [], SupabaseJWT: [] }]);
+    }
+    expect(taskAgentSpec.paths["/api/public/v1/collaboration/handoffs"]?.post).toBeUndefined();
+    expect(taskAgentSpec.paths["/api/public/v1/collaboration/handoffs/{ruleID}/deliveries/{deliveryID}/retry"]).toBeUndefined();
+    expect(taskAgentSpec.paths["/api/public/v1/assistant/sessions"]).toBeUndefined();
   });
   it("publishes the WeChat discovery request and safe response schema", () => {
     const discovery = taskAgentOperations.find((entry) => entry.path.endsWith("/wechat-kf/accounts") && entry.method === "post")!;
