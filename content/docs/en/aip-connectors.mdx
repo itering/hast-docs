@@ -22,6 +22,10 @@ The platform can execute verified read-only actions automatically within current
 
 Use the native `connector` tool when available. External-account management stays in Connections and its management API. Custom HTTP tools use explicit destination rules and Secrets instead of Connector OAuth. Raw proxy execution is not a way around account or tool grants.
 
+<h2 id="share-tool-scope">Choose fixed tools or all tools</h2>
+
+When sharing an account, select named tools for a fixed grant, or choose **All tools** (`*`) to include the provider's available tools. A fixed list does not add new tools automatically; review it when the provider catalog changes. A grant for all tools can include tools added later, so use it only when that wider access is intended. Tool sharing is separate from account consent, organization app approval, and the background or external-access options. An **Awaiting approval** or **Partially approved** status is not full access. Check the displayed grant and approval status before relying on a tool.
+
 <h2 id="disconnect">Maintain or disconnect an account</h2>
 
 Read `/connectors/accounts/{id}` before changing supported status or metadata. Those updates cannot replace the provider identity or create consent; use a new authorization to connect a different external account.

@@ -16,6 +16,8 @@ For WeChat Customer Service, first create the draft with `corp_id`, `callback_to
 
 For OAuth providers, open the returned consent URL for the owner, complete the same authorization and read back the connection. Report denied, pending or unavailable setup without creating duplicate connections.
 
+For an embedded support widget, enable it in the Agent's widget settings and allow the exact website host that will embed it. Copy the generated public embed snippet into that site; do not put a private API key or other secret in the page. The widget refuses requests from an unlisted host, so add each intended host in the settings. If a streamed reply is interrupted, reload the widget and check the conversation before sending the same question again.
+
 <h2 id="bind">Bind the Agent and choose behavior</h2>
 
 Read `/webhooks/{hook_id}/channels`, then PUT the complete desired `connection_ids` list. Preserve other intended connections. One channel can have only one reply Agent; resolve a `409` using the current association. The same binding enables triggers and replies. Knowledge collection access is a separate grant. The legacy `/channels/{connection_id}/binding` route only releases an association and cannot assign a new Agent.
