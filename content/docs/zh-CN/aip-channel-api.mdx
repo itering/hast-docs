@@ -16,6 +16,8 @@
 
 OAuth 提供方需要所有者打开返回链接并完成同一次授权，再回读连接。明确说明拒绝、待授权或配置不可用，避免创建重复连接。
 
+嵌入客服 widget 时，请在 Agent 的 widget 设置中启用功能，并允许实际嵌入网站的准确 host。将生成的公开嵌入代码放入该网站；不要在网页中放置私有 API 密钥或其他 Secret。未列入允许列表的 host 会被拒绝，请在设置中添加所需 host。若流式回复中断，先重新加载 widget 并检查会话，再决定是否重发同一问题。
+
 <h2 id="bind">绑定 Agent 并选择行为</h2>
 
 读取 `/webhooks/{hook_id}/channels`，再 PUT 完整目标 `connection_ids`，保留仍需要的现有连接。一个渠道只能有一个回复 Agent；遇到 `409`，先检查当前关联。该绑定同时开启触发和回复，Knowledge collection 授权独立配置。旧 `/channels/{connection_id}/binding` 仅释放关联，不能分配新 Agent。

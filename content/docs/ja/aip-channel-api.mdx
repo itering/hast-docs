@@ -16,6 +16,8 @@ WeChat カスタマーサービスは `corp_id`、`callback_token`、`encoding_a
 
 OAuth は所有者が返された URL で同じ認可を完了し、接続を再確認します。拒否、未完了、利用不能を明示し、重複接続を作りません。
 
+埋め込みサポート widget を使う場合は、Agent の widget 設定で有効にし、設置する Web サイトの正確な host を許可します。生成された公開 embed snippet をそのサイトに配置します。非公開 API key や Secret をページに含めないでください。未登録 host からの要求は拒否されるため、必要な host を設定に追加します。返信ストリームが中断された場合は、同じ質問を再送する前に widget を再読み込みし、会話を確認してください。
+
 <h2 id="bind">Agent と動作を設定する</h2>
 
 `/webhooks/{hook_id}/channels` を読み、完全な `connection_ids` を PUT します。必要な既存接続を保ちます。返信 Agent はチャネルごとに一つで、`409` は現在の関連付けから解決します。同じ関連付けが起動と返信を有効にし、Knowledge collection の権限は別です。従来の `/channels/{connection_id}/binding` は関連付けの解除専用です。
