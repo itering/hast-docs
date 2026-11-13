@@ -24,6 +24,10 @@ Read `/webhooks/{hook_id}/channels`, then PUT the complete desired `connection_i
 
 WhatsApp, WeChat Customer Service and Telegram use admission by default. Choose the intended admission behavior before exposing customer service. Channel members and administrators are channel-scoped; Slack uses its own participation model.
 
+Feishu/Lark reply rules add conditions only for group messages without a Bot mention. When a mention is required, those no-mention conditions do not apply; when mentions are optional, all groups the Bot has joined are in scope. Selected groups or members are alternatives, and a message must also match the keyword condition. Selected members apply in any group visible to the Bot; choosing a group is only for finding members. No-mention replies also require group-message access.
+
+Browse the group and member choices across pages. If the app is reported unavailable, confirm in the Feishu/Lark Developer Console that it is published, approved by your organization, and enabled, then reopen reply rules. This is a different state from missing group-message access.
+
 Read current Slack installation before replacing trigger rules. `require_mention` and the sender/channel exemption lists work together. Empty arrays remove exemptions; both arrays allow up to 100 unique IDs. Own-bot messages never trigger. Preserve existing exceptions that should remain.
 
 New associations coordinate the execution grant before saving the binding.
