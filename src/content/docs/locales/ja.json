@@ -1064,5 +1064,23 @@
         "title": "アカウントを更新・切断する"
       }
     ]
+  },
+  "desktop-download": {
+    "title": "HAST Desktop をダウンロード",
+    "description": "HAST Desktop の安定版 macOS Universal 版をダウンロードしてインストールします。",
+    "toc": [
+      {
+        "id": "download",
+        "title": "安定版をダウンロードする"
+      },
+      {
+        "id": "install",
+        "title": "HAST Desktop をインストールして起動する"
+      },
+      {
+        "id": "verify",
+        "title": "リリース情報を確認する"
+      }
+    ]
   }
 }
