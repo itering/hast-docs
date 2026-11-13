@@ -1064,5 +1064,23 @@
         "title": "Maintain or disconnect an account"
       }
     ]
+  },
+  "desktop-download": {
+    "title": "Download HAST Desktop",
+    "description": "Download and install the stable macOS Universal version of HAST Desktop.",
+    "toc": [
+      {
+        "id": "download",
+        "title": "Download the stable release"
+      },
+      {
+        "id": "install",
+        "title": "Install and start HAST Desktop"
+      },
+      {
+        "id": "verify",
+        "title": "Check the release details"
+      }
+    ]
   }
 }

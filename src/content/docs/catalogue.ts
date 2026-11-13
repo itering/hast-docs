@@ -1168,7 +1168,18 @@ export const docsPages: DocsPageInfo[] = [
         "title": "续费与取消"
       }
     ]
-  }
+  },
+  {
+    "slug": "desktop-download",
+    "title": "下载 HAST Desktop",
+    "description": "下载并安装 HAST Desktop 的 macOS Universal 稳定版。",
+    "group": "开始使用",
+    "toc": [
+      { "id": "download", "title": "下载稳定版" },
+      { "id": "install", "title": "安装并启动 HAST Desktop" },
+      { "id": "verify", "title": "核对版本信息" }
+    ]
+  },
 ];
 
 const groups = {
