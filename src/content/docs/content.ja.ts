@@ -43,6 +43,7 @@ import Page30, { docsSearchText as Search30 } from "../../../content/docs/ja/gtm
 import Page31, { docsSearchText as Search31 } from "../../../content/docs/ja/gtm-growth-agent.mdx";
 import Page32, { docsSearchText as Search32 } from "../../../content/docs/ja/gtm-troubleshooting.mdx";
 import Page33, { docsSearchText as Search33 } from "../../../content/docs/ja/billing.mdx";
+import DesktopDownloadPage, { docsSearchText as DesktopDownloadSearch } from "../../../content/docs/ja/desktop-download.mdx";
 
 export const docsContent = {
   "aip-agent-client": AgentGuide0,
@@ -91,6 +92,7 @@ export const docsContent = {
   "gtm-growth-agent": Page31,
   "gtm-troubleshooting": Page32,
   "billing": Page33,
+  "desktop-download": DesktopDownloadPage,
 };
 
 export const docsSearchIndex: Record<string, string> = {
@@ -140,4 +142,5 @@ export const docsSearchIndex: Record<string, string> = {
   "gtm-growth-agent": Search31,
   "gtm-troubleshooting": Search32,
   "billing": Search33,
+  "desktop-download": DesktopDownloadSearch,
 };
