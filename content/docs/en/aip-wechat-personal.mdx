@@ -22,6 +22,8 @@ Issue a dedicated token scoped to the required account with `read`, adding `medi
 4. Select Load WeChat accounts. A single account is selected automatically; choose one when multiple accounts are available, then create the connection.
 5. Load chats, search by name or ID, browse pages, and select chats. Selections survive pagination and searches. Save the chat selection when finished.
 
+To include every existing chat and chats created later, enable **Sync all chats** instead of choosing individual chats, then save. The page shows when it is syncing available message history; history no longer available from WeChat cannot be restored. Attachment downloads are separate: enable them only when needed and grant the service's `media` scope.
+
 The native agent-wechat API uses Bearer tokens. Basic Auth and custom API keys require a gateway that validates them and forwards authentication accepted by the upstream service. Choosing an option in Hast does not configure that gateway.
 
 Edit service connection settings changes the URL or access credentials. It is not the WeChat sign-in screen.
