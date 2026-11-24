@@ -46,6 +46,12 @@ agent-wechat 原生 API 使用 Bearer Token。Basic Auth 或自定义 API Key �
 
 实例准备完成后扫码，并在手机确认。代理设置在创建时保存；暂停和恢复沿用原设置。当前不支持给正在运行的实例切换代理；已有登录不会因为此功能发布而重启。未完成首次登录且超时的实例会自动删除，再次创建时沿用保存的代理设置。删除渠道会清理托管实例和代理资源；已同步知识按删除页面的选择处理。
 
+<h2 id="session-recovery">恢复托管的个人微信会话</h2>
+
+打开原来的个人微信渠道，查看账号是在线还是已断开。**正在重连**表示托管实例正在尝试恢复已保存的登录，**未知**表示 Hast 最近没有收到状态报告。若显示等待手机确认，请打开手机微信批准登录。
+
+如果恢复失败或已关闭自动登录，请在同一渠道重新登录，按提示扫描新的二维码。原渠道和已保存的代理设置可以继续使用。重连后，所选聊天可继续同步到知识库。导入过程不会发送微信消息或已读回执。
+
 <h2 id="api-mcp">API 与 MCP</h2>
 
 公开 API 前缀为 `/api/public/v1`。使用 Profile API key；读取配置和会话列表需要 `channels:read`，创建、代理检查、更新、重试及读取扫码状态需要 `channels:write`。只读权限不会提供登录二维码。
@@ -78,5 +84,3 @@ agent-wechat 原生 API 使用 Bearer Token。Basic Auth 或自定义 API Key �
 | `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
 
 示例是创建请求体。不使用代理时省略 `proxy`。代理检查直接提交内层代理对象，返回 `exit_ip`、`latency_ms`。MCP 将请求 JSON 放在 `body`、连接 ID 放在 `path`、分页搜索放在 `query`。会话列表接受 `limit`（1–50）、`cursor`、`search`，使用返回的 `nextCursor` 翻页。PATCH `thread_ids`、`media_enabled` 保存采集范围。创建或重试后轮询状态，只有 `state=connected` 才表示已连接。已有服务使用 `mode=external`、`endpoint`、`account_id` 和 `credentials`，先 probe 获取账号。这些操作不会发送微信消息。
-
-对于 Hast 托管实例，排查前先查看渠道中显示的会话状态。状态可能为在线、已断开、正在重连、等待手机确认；如果近期没有状态报告，也可能显示未知。页面要求手机确认时，请在手机微信中批准登录。如果保存的会话未能恢复，请使用渠道现有的重试/登录流程，并在提示时重新扫码。不能保证每次都能自动恢复。该连接仍为只读，不会发送微信消息或已读回执。

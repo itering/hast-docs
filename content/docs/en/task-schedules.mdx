@@ -28,7 +28,15 @@ Use a timezone name such as `Asia/Shanghai`. Check Next run after saving; do not
 
 <h2 id="runs">Inspect results</h2>
 
-Select a schedule and view status and output in recent runs. Open the associated task or files. Run history is read-only; edit the schedule's instructions to change future executions.
+Select a schedule and view status and output in recent runs. Open the associated task or files. To compare runs across Agents, open the [Agent run report](aip-debug#run-report). Run history is read-only; edit the schedule's instructions to change future executions.
+
+<h2 id="saved-assignment">Follow up on a saved Team Task</h2>
+
+Saving a Team Task records its lead, members, permitted capabilities, and defaults. Later Team edits apply to new assignments. To use an updated Team for future runs of this Task, edit its assignment and save it again.
+
+In Task history, open the completed run you want. Its result stays available even after a newer run finishes. Select **Open original conversation** to continue a Team discussion, or **Ask Assistant** when that action is available for an individual run. To ask about an earlier result in your current chat, identify the Task and the run. Use **Run once** to start a separate execution.
+
+For a Task that groups events by topic, a new webhook event can continue the original work. Only Agents assigned to both the original work and the current Task can see the new input. A retry of the same event reuses its receipt. Private instructions and selected knowledge keep their existing access.
 
 <h2 id="pause">Pause, resume, and delete</h2>
 
@@ -38,4 +46,8 @@ An enabled schedule does not guarantee a successful run. On failure, inspect his
 
 <h2 id="preconditions">Optional Python preconditions</h2>
 
-A schedule can use an optional Python precondition to decide whether a run should proceed. If the check raises an error, inspect that run’s history for the surfaced diagnostic, then correct the precondition or its inputs before the next run. A failed check is not evidence that the scheduled task itself ran successfully.
+A timed Task can run a read-only Python check before it starts the Agent. The script reads the schedule ID, run time, and trigger as JSON from standard input. End the output with a JSON decision.
+
+- `{"run":true}` starts the Agent. Include `context` to pass data into the run.
+- `{"run":false,"reason":"No changes"}` skips the Agent and records the reason in the run history.
+- A script error, timeout, or invalid decision records a failed run. Open its diagnostic, correct the script or inputs, and use **Run once** to check the fix.

@@ -17,7 +17,9 @@ retain detailed private source notes outside this repository.
 2. Compare changes since the last successful checkpoint. State the actual
    coverage; a focused correction is not a complete historical audit.
 3. Update only the affected guides, translations, links, screenshots, navigation,
-   examples, or public API snapshot. Search for duplicate explanations first.
+   examples, or public API snapshot. For each confirmed change, identify the page
+   and section where a reader can complete the affected task in each language.
+   Check the text of any overlapping PR before counting a change as covered.
 4. Explain the change in terms of the user's task. Keep implementation details
    out of user-facing instructions unless the reader needs them to act.
 5. Run the repository checks and review the complete diff for public safety.
@@ -25,8 +27,11 @@ retain detailed private source notes outside this repository.
    before merging. If it changed, review and validate the new head.
 7. For an authorized mechanical correction, merge with an exact head match and
    an imperative commit message. Confirm its merge commit is on main.
-8. Verify the Staging deployment and its source commit. Report failed or pending
-   deployment separately from a successful merge. Daily maintenance stops at Staging. An accepted stable product release uses the narrow publication handoff in [RELEASES.md](RELEASES.md).
+8. Confirm the Staging release identifies the merged commit. Open the affected
+   sections in each language and verify the instructions there before closing
+   each item in the project checkpoint. Keep uncovered items open across runs.
+   Daily maintenance stops at Staging. For an accepted stable product release,
+   follow [RELEASES.md](RELEASES.md).
 
 ## Runtime
 
