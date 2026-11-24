@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 const locales = ['en', 'ja', 'zh-CN'];
 const baseline = (await readdir('content/docs/en')).filter(name => name.endsWith('.mdx')).sort();
+const sectionsByPage = new Map<string, string[]>();
 assert(baseline.length > 0, 'Documentation must include product pages');
 const forbidden = /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|xox[baps]-[A-Za-z0-9-]{20,}|hook_[a-f0-9]{40,})|\/Users\/[^\s]+/;
 for (const locale of locales) {
@@ -12,6 +13,9 @@ for (const locale of locales) {
   assert.deepEqual(files, baseline, `Page coverage differs for ${locale}`);
   for (const file of files) {
     const body = await readFile(join(directory, file), 'utf8');
+    const sections = Array.from(body.matchAll(/^<h[23]\b[^>]*?\sid="([^"]+)"/gm), match => match[1]).sort();
+    if (locale === 'en') sectionsByPage.set(file, sections);
+    else assert.deepEqual(sections, sectionsByPage.get(file), `Section IDs differ in ${locale}/${file}`);
     assert(!forbidden.test(body), `Private material in ${locale}/${file}`);
     assert(!body.includes('openwiki/') && !body.includes('github.com/itering/hast-mono/blob/'), `Private source link in ${locale}/${file}`);
     for (const match of body.matchAll(/(?:src=|\]\()"?(\/docs\/[^"\s)]+)/g)) {

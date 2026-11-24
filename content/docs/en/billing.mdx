@@ -16,18 +16,28 @@ Administrators manage members and invitations in the workspace. Pending invitati
 
 To reduce seats, change the next period's quantity. It cannot be lower than the seats needed by active members and pending invitations.
 
+When you add seats, they become available immediately. The fee uses the time left in the billing period and is rounded to cents for the whole change. The Organization balance pays the exact fee. A card charge below $0.50 moves to the next subscription invoice. The shared AI allowance increases in the billing period when payment is collected.
+
 <h2 id="renew">Renewal and cancellation</h2>
 
 Check renewal state and period end in plans and billing. Cancellation at period end keeps paid access through that date. Before confirming changes, read their effective time and charges in the UI.
 
-For an eligible Team subscription set to renew, the next period can be established when the first model request arrives after expiry. If billing needs attention, use the Team billing page: review the displayed renewal amount and choose **Renew now**, or **Check and retry** for an existing payment. A pending payment, incomplete activation, canceled renewal, and payment failure have different states; follow the action shown there rather than purchasing another subscription. Usage in a newly paid period is separate from any pending usage receipts from an earlier period.
+For an eligible Team with renewal enabled, the first model request after expiry can start the next billing period. Active Organization Owners can receive a renewal reminder by email. If billing suspends workspace access, an Owner or Billing Manager can still open **Organization → Billing** from the account and review the invoice.
+
+- If a previous payment exists, select **Check and retry**. Hast checks that payment first. If it is still pending, return to the invoice later.
+- If **Renew now** is available, check the renewal amount and select the Organization balance or a currently authorized card.
+- If the page offers **Restart subscription** after the recovery period, top up the Organization balance if needed and confirm. The new 30-day Team seat period starts on the restart date. Purchase add-ons separately.
+
+Usage from the newly paid period is tracked separately from unsettled usage in the previous period.
 
 When creating a workspace, the selected Team or Enterprise plan applies; check the plan shown in the creation notice before continuing.
 
-<h2 id="org-balance">Organization balance and billing changes</h2>
+<h2 id="org-balance">Top up the Organization balance</h2>
 
-An Organization billing admin can open the Organization or Team balance settings and start a crypto checkout by entering an amount. After payment is confirmed, the funds are credited to that Organization’s balance; use the displayed balance for a Team purchase or to retry an overdue renewal. Check the balance page for the payment state rather than assuming a checkout is credited immediately.
+Open **Organization → Billing** as an Owner or Billing Manager. Select **Top up balance**, enter the amount in USD, and select **Cryptocurrency**. You can open this checkout without a card or an active subscription.
 
-For eligible Team subscriptions, the amount for a seat change can be prorated for the remaining period. A small card charge for an added seat may be deferred to the next invoice, and the shared AI allowance is credited after payment. Read the amount and effective time shown before confirming. Organization Owners may also receive an upcoming-renewal reminder.
+After completing checkout, return to the same Organization and check the payment status. The balance updates once the payment provider confirms it. Use the credited funds for a Team purchase or an overdue renewal.
+
+<h2 id="trial">Recover a paused personal trial</h2>
 
 When a personal trial workspace is paused, follow the on-screen recovery steps. If the warning says access or files may be removed, download needed files or restore access within the stated period; the warning provides at least 72 hours. Do not rely on trial files remaining available after that notice.

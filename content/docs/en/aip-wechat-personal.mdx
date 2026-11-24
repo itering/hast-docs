@@ -46,6 +46,12 @@ Check proxy queries the outbound IP from Hast Server and shows latency. A config
 
 Scan the QR code after preparation and approve on your phone. Proxy settings are saved at creation and retained across pause/resume. Changing a running instance's proxy is not supported; this feature does not restart existing logins. An instance that never completes first login is removed after its setup deadline; recreation retains the saved proxy settings. Deleting the channel cleans up hosted instance and proxy resources; indexed knowledge follows your deletion selection.
 
+<h2 id="session-recovery">Recover a hosted WeChat session</h2>
+
+Open the existing Personal WeChat channel to see whether the account is online or disconnected. **Reconnecting** means the hosted instance is trying to restore the saved login. **Unknown** means Hast has no recent status report. If WeChat asks for phone approval, open WeChat on your phone and approve the login.
+
+If recovery fails or automatic login is off, use the channel’s sign-in action and scan the new QR code when asked. Keep the same channel and its saved proxy settings. When it reconnects, selected chats can resume syncing to Knowledge. This import does not send messages or read receipts.
+
 <h2 id="api-mcp">API and MCP</h2>
 
 Public API prefix: `/api/public/v1`. Use a Profile API key. Configuration and conversation listing require `channels:read`; creation, proxy checks, updates, retries and login-status/QR reads require `channels:write`. Read-only access does not expose login QR codes.
@@ -78,5 +84,3 @@ Public API prefix: `/api/public/v1`. Use a Profile API key. Configuration and co
 | `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
 
 The example is the create request body. Omit `proxy` for direct egress. Proxy check accepts the inner proxy object and returns `exit_ip` and `latency_ms`. For MCP, put request JSON under `body`, the connection ID under `path`, and pagination/search under `query`. Conversation listing accepts `limit` (1–50), `cursor`, and `search`; use the returned `nextCursor`. PATCH `thread_ids` and `media_enabled` to select ingestion. Poll status after creation or retry; never claim successful login before `state=connected`. Existing-service setup uses `mode=external`, `endpoint`, `account_id`, and `credentials`; probe first. These operations do not send WeChat messages.
-
-For a Hast-managed instance, check the session status shown in the channel before troubleshooting. The status can indicate that it is online, disconnected, reconnecting, awaiting approval on your phone, or unknown if no recent presence report is available. If phone approval is requested, approve the login in WeChat on your phone. If the saved session does not recover, use the channel’s existing retry/login flow and scan again when prompted. Recovery is not guaranteed to complete automatically. The connection remains read-only: it does not send WeChat messages or read receipts.
