@@ -51,3 +51,7 @@ A timed Task can run a read-only Python check before it starts the Agent. The sc
 - `{"run":true}` starts the Agent. Include `context` to pass data into the run.
 - `{"run":false,"reason":"No changes"}` skips the Agent and records the reason in the run history.
 - A script error, timeout, or invalid decision records a failed run. Open its diagnostic, correct the script or inputs, and use **Run once** to check the fix.
+
+<h2 id="blocked-run">When a scheduled run is blocked</h2>
+
+Open a **Blocked** entry in run history. If it says saved Workspace execution access was revoked, the entry has no task execution because the run did not start. Select **Edit**, review and update the execution access, and save the Task; then choose **Run once** or wait for the next scheduled occurrence. A Workspace transfer in progress or an unavailable authority service keeps the due time for a later retry instead of recording a blocked run.
