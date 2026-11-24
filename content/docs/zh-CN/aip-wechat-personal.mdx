@@ -78,3 +78,5 @@ agent-wechat 原生 API 使用 Bearer Token。Basic Auth 或自定义 API Key �
 | `DELETE /channels/{connection_id}/remove` | `delete_channels_connection_id_remove` |
 
 示例是创建请求体。不使用代理时省略 `proxy`。代理检查直接提交内层代理对象，返回 `exit_ip`、`latency_ms`。MCP 将请求 JSON 放在 `body`、连接 ID 放在 `path`、分页搜索放在 `query`。会话列表接受 `limit`（1–50）、`cursor`、`search`，使用返回的 `nextCursor` 翻页。PATCH `thread_ids`、`media_enabled` 保存采集范围。创建或重试后轮询状态，只有 `state=connected` 才表示已连接。已有服务使用 `mode=external`、`endpoint`、`account_id` 和 `credentials`，先 probe 获取账号。这些操作不会发送微信消息。
+
+对于 Hast 托管实例，排查前先查看渠道中显示的会话状态。状态可能为在线、已断开、正在重连、等待手机确认；如果近期没有状态报告，也可能显示未知。页面要求手机确认时，请在手机微信中批准登录。如果保存的会话未能恢复，请使用渠道现有的重试/登录流程，并在提示时重新扫码。不能保证每次都能自动恢复。该连接仍为只读，不会发送微信消息或已读回执。
