@@ -35,3 +35,7 @@ Select a schedule and view status and output in recent runs. Open the associated
 Pausing stops future automatic scheduling. Check Next run after resuming. Deleting a schedule prevents later automatic runs; confirm the selected task first.
 
 An enabled schedule does not guarantee a successful run. On failure, inspect history, model availability, authorization, and inputs.
+
+<h2 id="preconditions">Optional Python preconditions</h2>
+
+A schedule can use an optional Python precondition to decide whether a run should proceed. If the check raises an error, inspect that run’s history for the surfaced diagnostic, then correct the precondition or its inputs before the next run. A failed check is not evidence that the scheduled task itself ran successfully.

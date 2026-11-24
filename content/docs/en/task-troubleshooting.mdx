@@ -11,3 +11,5 @@
 <h2 id="support">What to include in a report</h2>
 
 Record the product, time and timezone, Profile, session or task identifier, UI error, and expected result. Do not include API keys, credentials embedded in invocation URLs, or business secret values.
+
+<Accordion title="Why was a scheduled run skipped by its precondition?" id="schedule-precondition">Open that run in schedule history and read the surfaced error diagnostic. Correct the Python precondition or its inputs, then check a later run; a precondition error means the check failed, not that the task completed.</Accordion>
