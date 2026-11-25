@@ -1,0 +1,45 @@
+Follow updates to Hast AIP, Hast Agent, and Hast GTM.
+
+<h2 id="release-history">Release history</h2>
+
+<h3 id="v1-4-6">v1.4.6</h3>
+
+**November 25, 2026, 13:58 (Beijing time, UTC+8 · Production release)**
+
+This update makes knowledge base recovery more targeted, messaging channels more reliable, and conversations and reports faster to open.
+
+<Frame caption="v1.4.6 release walkthrough">
+  <video controls playsInline preload="metadata" aria-label="v1.4.6 release walkthrough" style={{ width: "100%" }}>
+    <source src="/docs/releases/hast-v1.4.6.mp4" type="video/mp4" />
+  </video>
+</Frame>
+
+**New features**
+
+- Personal WeChat can sync all conversations, automatically including new ones. Sync remains read-only.
+- Shared apps can call app APIs directly after receiving “All tools” authorization and any required organization approval.
+
+**Improvements**
+
+- The knowledge base shows processing status by source, with separate indicators for attachment, import, web crawling, and indexing issues.
+- Open the corresponding CRM read results from work records to verify the sources behind an answer.
+- Video editing now protects unsaved changes and provides better feedback for keyboard actions.
+
+**Fixes**
+
+- Slack replies can still be sent when avatar lookups are rate-limited.
+- Fixed recovery for stalled knowledge ingestion and Wiki publishing. Retries are limited to the selected source.
+- WeChat Customer Service accounts within the same enterprise share a callback domain, reducing setup conflicts when adding accounts.
+- The payment card selected before subscribing for an organization is now saved correctly.
+- Trying an Agent immediately after saving now uses the version just saved.
+
+**Performance**
+
+- Reduced initial waits for the Agent directory, run reports, and billing pages.
+- Existing messages appear earlier when opening or resuming a conversation.
+
+**Upgrade notes**
+
+- Before a paid rerun, review the specific items and potential duplicate charges, then confirm each item individually.
+- If a task reports invalid access after an authorization change, check its execution settings, save, and run it again.
+- Keep the existing callback URL when adding customer service accounts to an already connected WeCom app.

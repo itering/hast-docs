@@ -1,4 +1,15 @@
 {
+  "release-notes": {
+    "title": "リリースノート",
+    "description": "Hast の新機能、改善、不具合修正を確認します。",
+    "toc": [
+      {
+        "id": "release-history",
+        "title": "リリース履歴"
+      },
+      { "id": "v1-4-6", "title": "v1.4.6" }
+    ]
+  },
   "overview": {
     "title": "Hast について",
     "description": "Hast AIP、Hast Agent、Hast GTM と、FDE チームによる導入支援を紹介します。",

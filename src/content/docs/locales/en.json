@@ -1,4 +1,15 @@
 {
+  "release-notes": {
+    "title": "Release notes",
+    "description": "Product updates, improvements, and fixes for Hast.",
+    "toc": [
+      {
+        "id": "release-history",
+        "title": "Release history"
+      },
+      { "id": "v1-4-6", "title": "v1.4.6" }
+    ]
+  },
   "overview": {
     "title": "Meet Hast",
     "description": "Learn about Hast AIP, Hast Agent, Hast GTM, and delivery with the FDE team.",

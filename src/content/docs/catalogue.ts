@@ -1180,6 +1180,16 @@ export const docsPages: DocsPageInfo[] = [
       { "id": "verify", "title": "核对版本信息" }
     ]
   },
+  {
+    "slug": "release-notes",
+    "title": "更新日志",
+    "description": "查看 Hast 的产品更新、功能改进和问题修复。",
+    "group": "开始使用",
+    "toc": [
+      { "id": "release-history", "title": "发布记录" },
+      { "id": "v1-4-6", "title": "v1.4.6" }
+    ]
+  },
 ];
 
 const groups = {

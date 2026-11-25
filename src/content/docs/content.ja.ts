@@ -1,3 +1,4 @@
+import ReleaseNotesPage, { docsSearchText as ReleaseNotesSearch } from "../../../content/docs/ja/release-notes.mdx";
 import AgentGuide0, { docsSearchText as AgentGuideSearch0 } from "../../../content/docs/ja/aip-agent-client.mdx";
 import AgentGuide1, { docsSearchText as AgentGuideSearch1 } from "../../../content/docs/ja/aip-enterprise-agent.mdx";
 import AgentGuide2, { docsSearchText as AgentGuideSearch2 } from "../../../content/docs/ja/aip-channel-api.mdx";
@@ -46,6 +47,7 @@ import Page33, { docsSearchText as Search33 } from "../../../content/docs/ja/bil
 import DesktopDownloadPage, { docsSearchText as DesktopDownloadSearch } from "../../../content/docs/ja/desktop-download.mdx";
 
 export const docsContent = {
+  "release-notes": ReleaseNotesPage,
   "aip-agent-client": AgentGuide0,
   "aip-enterprise-agent": AgentGuide1,
   "aip-channel-api": AgentGuide2,
@@ -96,6 +98,7 @@ export const docsContent = {
 };
 
 export const docsSearchIndex: Record<string, string> = {
+  "release-notes": ReleaseNotesSearch,
   "aip-agent-client": AgentGuideSearch0,
   "aip-enterprise-agent": AgentGuideSearch1,
   "aip-channel-api": AgentGuideSearch2,
