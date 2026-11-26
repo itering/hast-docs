@@ -55,3 +55,9 @@ A timed Task can run a read-only Python check before it starts the Agent. The sc
 <h2 id="blocked-run">When a scheduled run is blocked</h2>
 
 Open a **Blocked** entry in run history. If it says saved Workspace execution access was revoked, the entry has no task execution because the run did not start. Select **Edit**, review and update the execution access, and save the Task; then choose **Run once** or wait for the next scheduled occurrence. A Workspace transfer in progress or an unavailable authority service keeps the due time for a later retry instead of recording a blocked run.
+
+<h2 id="webhook-runs">Invoke a saved Task with a webhook or manual run</h2>
+
+Use `POST /api/public/v1/schedules/{id}/invoke` with a key that has `schedules:write`, a unique `request_id`, and optionally a JSON `payload`. Treat the payload as untrusted input. Retrying the same retained event returns its original run receipt; reusing its ID with changed payload returns HTTP 409. A paused Task rejects a new event, but an exact retry returns the original receipt.
+
+For a Task that groups events by a field, each event must include a nonblank string or a plain JSON integer for that field. An integer and its decimal string identify the same group; string identifiers keep leading zeros. Missing or invalid values return HTTP 400 before a run starts. A configured header webhook reads its case ID only from the selected payload headers and acknowledges delivery with an empty HTTP 200 response. To start a separate manual run, use the signed-in UI or `POST /api/public/v1/schedules/{id}/run`.

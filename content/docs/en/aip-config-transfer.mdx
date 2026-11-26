@@ -15,3 +15,7 @@ Exports exclude invocation credentials, secret values, and secret bindings. Inli
 Still review free text such as prompts, descriptions, and business paths before sharing. After importing into another Profile, reselect resources, restore secret bindings and placeholders, and debug.
 
 An export can help with manual recovery; there is no automatic configuration rollback UI.
+
+<h2 id="workspace-copy">Review a copied or transferred Workspace</h2>
+
+Workspace copy or transfer is different from copying one Agent configuration. Before confirming, review whether the destination has an available AIP Workspace slot; a full or paused destination cannot receive it. After the operation, open its receipt to review the included Agents and saved Tasks, their status, and their original resource or connection selections. A copy does not bring over provider connections, permissions, credentials, or run history. Set up and authorize the needed resources in the destination, then enable the Agent or Task when you are ready.
