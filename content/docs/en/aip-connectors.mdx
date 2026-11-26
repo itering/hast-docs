@@ -31,3 +31,7 @@ When sharing an account, select named tools for a fixed grant, or choose **All t
 Read `/connectors/accounts/{id}` before changing supported status or metadata. Those updates cannot replace the provider identity or create consent; use a new authorization to connect a different external account.
 
 `DELETE /connectors/accounts/{id}` disconnects the provider account and removes the local reference. Read back its absence and status before reporting success. A provider error can prevent the operation. Keep other accounts and their grants unchanged. See the [API reference](aip-api-reference) for current fields and [business tools](aip-tools) for custom services.
+
+<h2 id="automation-account-selection">Choose accounts for background and external runs</h2>
+
+Scheduled or saved Task runs use the Agent's background account selection; channel-triggered runs use its external selection. These selections are separate from the account pinned in a human conversation. Review the intended providers and accounts for each run mode in the Agent's Connector settings. If no account is selected for a provider, a run can use its sole eligible account; when there is more than one, choose the intended account explicitly. Runs keep their selected accounts rather than silently switching to another one. If a selected account is no longer available under current grants, choose an eligible account for that mode and retry the run.
