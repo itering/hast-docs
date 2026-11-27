@@ -1,10 +1,16 @@
 <h2 id="prepare">Before you start</h2>
 
-Prepare the site URL and verify the current Profile has an active plan and room within its project limit to create a project and run website diagnosis. Without a GTM subscription, website diagnosis and the generated profile are unavailable; you can still enter product details manually and save your product profile. This guide retains English button names used by GTM.
+Prepare the site URL. Check that the current Profile's plan and project limit allow the website project and diagnosis you need. Running website diagnosis or Growth Agent tasks requires an active GTM subscription. Without one, you can still enter product details manually and save your product profile. This guide retains English button names used by GTM.
 
 <Steps titleSize="h2">
 
-<Step title="Create a project" id="create" stepNumber={1}>
+<Step title="Choose a marketing workspace" id="workspace" stepNumber={1}>
+
+In GTM, select the Marketing Workspace for this business. If you need one, choose **New marketing workspace**, enter the business name, choose **My account** or an Organization you can administer as its owner when that choice is available, and create it. Check the selected workspace in the switcher before continuing. A Marketing Workspace keeps a business’s brand, plan, content, and connections together; a website project is created inside it, not instead of it.
+
+</Step>
+
+<Step title="Create a website project" id="create" stepNumber={2}>
 
 1. Open the project list and start a new project.
 2. Enter the domain or a page URL in `Website`.
@@ -16,7 +22,7 @@ If disabled, inspect URL validation, plan, and project-limit messages.
 
 </Step>
 
-<Step title="Wait for initialization" id="setup" stepNumber={2}>
+<Step title="Wait for initialization" id="setup" stepNumber={3}>
 
 The initialization page shows stages such as reading the website, understanding the company, and preparing visibility analysis. Jobs have dependencies, so some wait for earlier data.
 
@@ -24,11 +30,17 @@ Watch progress instead of creating the same project again. Record failed tasks a
 
 </Step>
 
-<Step title="Check results" id="review" stepNumber={3}>
+<Step title="Check results" id="review" stepNumber={4}>
 
 Check the company name, product description, URL, and sources first. Then inspect available PageSpeed, buyer-question, and AI mention results. Google Analytics requires separate authorization and a GA property selection.
 
 For your first content task, try an [article draft](gtm-articles). Set the language and audience, verify product facts, then copy it into your publishing tool.
+
+</Step>
+
+<Step title="Review and activate your first plan" id="plan" stepNumber={5}>
+
+Review the generated product profile, correct uncertain suggestions, and fill in missing facts before confirming it. Then prepare the first marketing plan. Open **Marketing → Plan** to review the proposed cycle and its recommendations. Activate the plan only after review; a proposed plan does not replace the current plan until you activate it.
 
 </Step>
 
